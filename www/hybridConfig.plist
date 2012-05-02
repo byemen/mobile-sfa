@@ -24,7 +24,7 @@
 	<key>forcedCopy</key>
 	<true/>
 	<key>initialPatchNumber</key>
-	<integer>0</integer>
+	<integer>1</integer>
 	<key>refreshUpdatePolicy</key>
 	<false/>
 	<key>server</key>
