@@ -1,0 +1,247 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?xml-stylesheet href="/mp/css/frame.css" type="text/css"?>
+<html xmlns="http://www.w3.org/1999/xhtml"
+    xmlns:ev="http://www.w3.org/2001/xml-events"
+    xmlns:w2="http://www.inswave.com/websquare" xmlns:xf="http://www.w3.org/2002/xforms">
+    <head>
+        <w2:buildDate/>
+        <xf:model>
+            <xf:instance>
+                <data xmlns="">               
+		        </data>
+		    </xf:instance>
+        </xf:model>
+        <script type="javascript" src="/mp/js/common.js"></script>
+        <script type="javascript"><![CDATA[
+        var FV_sUpGroupId = GV_UP_GROUP_ID;
+    	var FV_sDealerId = "";	//GV_GROUP_ID;
+        var FV_sYyyyMm = gfn_GetDate(0,0,0).substring(0,7);
+        var FV_sToday = gfn_GetDate(0,0,0);
+       	var FV_sSvcNm = parent.FV_SvcNm;
+        cb_Year.setValue(gfn_GetDate(0,0,0).substring(0,4));
+        cb_Month.setValue(gfn_GetDate(0,0,0).substring(5,7));
+		parent.fn_SpinnerShow();
+		setTimeout("parent.fn_SpinnerHide()", 3000);
+		function fn_Search(){
+			// To show Loading Image
+			parent.fn_SpinnerShow();
+			setTimeout("parent.fn_SpinnerHide()", 3000);
+        	ifrm_1.setSrc("/mp/FusionCharts/Code/S210002_C01.jsp");
+        	ifrm_2.setSrc("/mp/FusionCharts/Code/S210002_C02.jsp");
+        	ifrm_3.setSrc("/mp/FusionCharts/Code/S210002_C03.jsp");
+        	ifrm_4.setSrc("/mp/FusionCharts/Code/S210002_C04.jsp");
+        	ifrm_5.setSrc("/mp/FusionCharts/Code/S210002_C05.jsp");
+        	ifrm_6.setSrc("/mp/FusionCharts/Code/S210002_C06.jsp");
+			FV_sToday = cb_Year.getValue()+"-"+cb_Month.getValue() + "-31";
+        }
+        ]]></script>
+    </head>
+    <body>
+    	<xf:output class="sub_title_b" id="output30" label=""
+    		style="position: absolute ;height:20px;width:204px;left:20px;top:11px;">
+    		<xf:label>Contract</xf:label>
+    	</xf:output>
+    	<xf:output id="sub_title"
+    		style="position: absolute ;height:20px;width:204px;left:20px;top:10px;"
+    		class="sub_title" label="">
+    		<xf:label>Contract</xf:label>
+    	</xf:output>
+    	<xf:output class="sub_title_b" id="output31" label=""
+    		style="position: absolute ;height:20px;width:204px;left:524px;top:11px;">
+    		<xf:label>Sales</xf:label>
+    	</xf:output>
+    	<xf:output class="sub_title" id="output32" label=""
+    		style="position: absolute ;height:20px;width:204px;left:524px;top:11px;">
+    		<xf:label>Sales</xf:label>
+    	</xf:output>
+    	<xf:image id="image29" src="/mp/images/eis/shape_2.png"
+    		style="position: absolute ;height:180px;width:514px;left:0px;top:26px;">
+    	</xf:image>
+    	<w2:iframe id="ifrm_1" scrolling="no"
+    		src="/mp/FusionCharts/Code/S210002_C01.jsp"
+    		style="position: absolute ;height:156px;width:488px;background-color:#4d4d4d;left:13px;top:37px;">
+    	</w2:iframe>
+
+    	<xf:image id="image30"
+    		style="position: absolute ;height:180px;width:514px;left:506px;top:26px;"
+    		src="/mp/images/eis/shape_2.png">
+    	</xf:image>
+    	<w2:iframe id="ifrm_2"
+    		src="/mp/FusionCharts/Code/S210002_C02.jsp"
+    		style="position: absolute ;height:156px;width:488px;background-color:#4d4d4d;left:519px;top:37px;"
+    		scrolling="no">
+    	</w2:iframe>
+
+    	<xf:output id="output40"
+    		style="position: absolute ;height:20px;width:243px;left:20px;top:206px;"
+    		class="sub_title_b" label="">
+    		<xf:label>Available Stock / BOC Status by Dealer</xf:label>
+    	</xf:output>
+    	<xf:output id="output41"
+    		style="position: absolute ;height:20px;width:289px;left:20px;top:205px;"
+    		class="sub_title" label="">
+    		<xf:label>Available Stock / BOC Status by Dealer</xf:label>
+    	</xf:output>
+    	<xf:output id="output42"
+    		style="position: absolute ;height:20px;width:243px;left:524px;top:206px;"
+    		class="sub_title_b" label="">
+    		<xf:label>Available Stock / BOC Status by Model</xf:label>
+    	</xf:output>
+    	<xf:output id="output43"
+    		style="position: absolute ;height:20px;width:289px;left:524px;top:206px;"
+    		class="sub_title" label="">
+    		<xf:label>Available Stock / BOC Status by Model</xf:label>
+    	</xf:output>
+    	<xf:image id="image31"
+    		style="position: absolute ;height:180px;width:514px;left:0px;top:221px;"
+    		src="/mp/images/eis/shape_2.png">
+    	</xf:image>
+    	<w2:iframe id="ifrm_3"
+    		src="/mp/FusionCharts/Code/S210002_C03.jsp"
+    		style="position: absolute ;height:156px;width:488px;background-color:#4d4d4d;left:13px;top:233px;"
+    		scrolling="no">
+    	</w2:iframe>
+    	<xf:image id="image32"
+    		style="position: absolute ;height:180px;width:514px;left:507px;top:221px;"
+    		src="/mp/images/eis/shape_2.png">
+    	</xf:image>
+    	<w2:iframe id="ifrm_4"
+    		src="/mp/FusionCharts/Code/S210002_C04.jsp"
+    		style="position: absolute ;height:156px;width:488px;background-color:#4d4d4d;left:519px;top:233px;"
+    		scrolling="no">
+    	</w2:iframe>
+    	<xf:output id="output44"
+    		style="position: absolute ;height:20px;width:204px;left:20px;top:402px;"
+    		class="sub_title_b" label="">
+    		<xf:label>Showroom</xf:label>
+    	</xf:output>
+    	<xf:output id="output45"
+    		style="position: absolute ;height:20px;width:204px;left:20px;top:401px;"
+    		class="sub_title" label="">
+    		<xf:label>Showroom</xf:label>
+    	</xf:output>
+    	<xf:output id="output46"
+    		style="position: absolute ;height:20px;width:204px;left:524px;top:402px;"
+    		class="sub_title_b" label="">
+    		<xf:label>Test Drive</xf:label>
+    	</xf:output>
+    	<xf:output id="output47"
+    		style="position: absolute ;height:20px;width:204px;left:524px;top:402px;"
+    		class="sub_title" label="">
+    		<xf:label>Test Drive</xf:label>
+    	</xf:output>
+    	<xf:image id="image33"
+    		style="position: absolute ;height:180px;width:514px;left:0px;top:417px;"
+    		src="/mp/images/eis/shape_2.png">
+    	</xf:image>
+    	<w2:iframe id="ifrm_5"
+    		src="/mp/FusionCharts/Code/S210002_C05.jsp"
+    		style="position: absolute ;height:156px;width:488px;left:13px;top:429px;"
+    		scrolling="no">
+    	</w2:iframe>
+    	<xf:image id="image34"
+    		style="position: absolute ;height:180px;width:514px;left:507px;top:417px;"
+    		src="/mp/images/eis/shape_2.png">
+    	</xf:image>
+    	<w2:iframe id="ifrm_6"
+    		src="/mp/FusionCharts/Code/S210002_C06.jsp"
+    		style="position: absolute ;height:156px;width:488px;background-color:#4d4d4d;left:519px;top:429px;"
+    		scrolling="no">
+    	</w2:iframe>
+    	<xf:select1 allOption="" appearance="minimal" chooseOption=""
+    		direction="auto" disabled="false" displayMode="label" id="cb_Year"
+    		style="position: absolute ;cursor:pointer;height:22px;color:#ffffff;font-size:11px;width:80px;background-color:#222223;left:831px;border:1px solid #494949;top:5px;"
+    		submenuSize="auto" visibleRowNum="10">
+    		<xf:choices>
+    			<xf:item>
+    				<xf:label>2008</xf:label>
+    				<xf:value>2008</xf:value>
+    			</xf:item>
+    			<xf:item>
+    				<xf:label>2009</xf:label>
+    				<xf:value>2009</xf:value>
+    			</xf:item>
+    			<xf:item>
+    				<xf:label>2010</xf:label>
+    				<xf:value>2010</xf:value>
+    			</xf:item>
+    			<xf:item>
+    				<xf:label>2011</xf:label>
+    				<xf:value>2011</xf:value>
+    			</xf:item>
+    			<xf:item>
+    				<xf:label>2012</xf:label>
+    				<xf:value>2012</xf:value>
+    			</xf:item>
+    			<xf:item>
+    				<xf:label>2013</xf:label>
+    				<xf:value>2013</xf:value>
+    			</xf:item>
+    		</xf:choices>
+    	</xf:select1>
+    	<xf:select1 allOption="" appearance="minimal" chooseOption=""
+    		direction="auto" disabled="false" displayMode="label"
+    		id="cb_Month"
+    		style="position: absolute ;height:22px;cursor:pointer;color:#ffffff;width:50px;font-size:11px;background-color:#222223;left:917px;border:1px solid #494949;top:5px;"
+    		submenuSize="auto" visibleRowNum="12">
+    		<xf:choices>
+    			<xf:item>
+    				<xf:label>01</xf:label>
+    				<xf:value>01</xf:value>
+    			</xf:item>
+    			<xf:item>
+    				<xf:label>02</xf:label>
+    				<xf:value>02</xf:value>
+    			</xf:item>
+    			<xf:item>
+    				<xf:label>03</xf:label>
+    				<xf:value>03</xf:value>
+    			</xf:item>
+    			<xf:item>
+    				<xf:label>04</xf:label>
+    				<xf:value>04</xf:value>
+    			</xf:item>
+    			<xf:item>
+    				<xf:label>05</xf:label>
+    				<xf:value>05</xf:value>
+    			</xf:item>
+    			<xf:item>
+    				<xf:label>06</xf:label>
+    				<xf:value>06</xf:value>
+    			</xf:item>
+    			<xf:item>
+    				<xf:label>07</xf:label>
+    				<xf:value>07</xf:value>
+    			</xf:item>
+    			<xf:item>
+    				<xf:label>08</xf:label>
+    				<xf:value>08</xf:value>
+    			</xf:item>
+    			<xf:item>
+    				<xf:label>09</xf:label>
+    				<xf:value>09</xf:value>
+    			</xf:item>
+    			<xf:item>
+    				<xf:label>10</xf:label>
+    				<xf:value>10</xf:value>
+    			</xf:item>
+    			<xf:item>
+    				<xf:label>11</xf:label>
+    				<xf:value>11</xf:value>
+    			</xf:item>
+    			<xf:item>
+    				<xf:label>12</xf:label>
+    				<xf:value>12</xf:value>
+    			</xf:item>
+    		</xf:choices>
+    	</xf:select1>
+    	<xf:image id="image35"
+    		style="position: absolute ;height: 22px;width:30px;left:975px;top:6px;"
+    		src="/mp/images/eis/m_bt_cal_pop.png">
+    		<script ev:event="onclick" type="javascript"><![CDATA[ 
+    			FV_sYyyyMm = cb_Year.getValue()+"-"+cb_Month.getValue();
+    			fn_Search();
+    		]]></script>
+    	</xf:image>
+    </body>
+</html>

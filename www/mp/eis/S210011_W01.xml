@@ -1,0 +1,184 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?xml-stylesheet href="/mp/css/frame.css" type="text/css"?>
+<html xmlns="http://www.w3.org/1999/xhtml"
+    xmlns:ev="http://www.w3.org/2001/xml-events"
+    xmlns:w2="http://www.inswave.com/websquare" xmlns:xf="http://www.w3.org/2002/xforms">
+    <head>
+        <w2:buildDate/>
+        <xf:model>
+            <xf:instance>
+                <data xmlns="">               
+		        </data>
+            </xf:instance>
+		    <xf:submission id="submissionYYYYMM" ref="request" target="resDay"
+        		action=""
+        		method="post" mediatype="application/xml" encoding="UTF-8" instance="" replace="instance"
+        		errorHandler="" customHandler="" mode="asynchronous"
+        		processMsg="">
+        		<script type="javascript" ev:event="xforms-submit-done"><![CDATA[
+					FV_yyyymm = WebSquare.ModelUtil.getInstanceValue("resDay/root/dataset[@id='ds_T_Cond']/record/YYYYMM");
+					cb_Year.setValue(FV_yyyymm.substring(0,4));
+					cb_Month.setValue(FV_yyyymm.substring(5,8));
+			       	fn_SetData();
+            	]]></script>
+        	</xf:submission>
+        </xf:model>        
+        <script type="javascript" src="/mp/js/common.js"></script>
+		<script type="javascript" src="/mp/js/WebSquare.js"></script>
+        <script type="javascript"><![CDATA[
+		var FV_yyyymm = "";
+		var FV_sSvcNm = parent.FV_SvcNm;
+       	var FV_sUpGroupId = GV_UP_GROUP_ID;
+    	var FV_sDealerId = parent.FV_DealerId;	//GV_GROUP_ID;
+    	var FV_sToMonthDay = gfn_GetDate(0,0,0).substring(0,7);
+    	var FV_sBeMonth = gfn_GetDate(0,-1,0,"FM").substring(0,7);
+    	var FV_sTargetDay = gfn_GetDate(0,0,0).substring(8);
+    	var FV_sToday = gfn_GetDate(0,0,0);
+        var FV_nWidth = 999;
+        var FV_nHeight = 567;
+		var isFirst = true;
+
+		var sTitle = "";
+
+		if(FV_sSvcNm=="L"){
+			sTitle = "LEXUS";
+			output30.setLabel( "LEXUS" );
+			sub_title.setLabel( "LEXUS" );
+		}else{
+			sTitle = "TOYOTA";
+			output30.setLabel( "TOYOTA" );
+			sub_title.setLabel( "TOYOTA" );
+		}
+
+		var actionNm = "";
+		if(FV_sSvcNm == "T"){
+			actionNm = "TOYOTAAction";
+		}
+
+       	function fn_SetData(){
+			parent.fn_SpinnerShow();
+			setTimeout("parent.fn_SpinnerHide()", 3000);
+
+			FV_yyyymm = cb_Year.getValue()+"-"+cb_Month.getValue();
+
+			ifrm_1.setSrc("/mp/FusionCharts/Code/S210011_C01.jsp");	       		
+       	}
+
+		setTitSendInfo("request", actionNm, "", "mdms/mp/eis:S210011_W01_S03");
+		setSubmissison("submissionYYYYMM");
+
+		]]></script>
+    </head>
+    <body>
+    	<xf:image id="image24"
+    		src="/mp/images/eis/shape_5.png"
+    		style="position: absolute ;height:591px;width:1024px;left:0px;top:24px;">
+    	</xf:image>
+    	<xf:output class="sub_title_b" id="output30" label=""
+    		style="position: absolute ;height:20px;width:204px;left:20px;top:11px;">
+    		<xf:label></xf:label>
+    	</xf:output>
+    	<xf:output id="sub_title"
+    		style="position: absolute ;height:20px;width:204px;left:20px;top:10px;"
+    		class="sub_title" label="">
+    		<xf:label></xf:label>
+    	</xf:output>
+    	<w2:iframe id="ifrm_1" scrolling="no"
+    		style="position: absolute ;left:15px;top:39px;width:995px;height:561px;">
+    	</w2:iframe>
+    	<xf:select1 allOption="" appearance="minimal" chooseOption=""
+    		direction="auto" disabled="false" displayMode="label" id="cb_Year"
+    		style="position: absolute ;cursor:pointer;height:22px;color:#ffffff;font-size:11px;width:80px;background-color:#222223;left:831px;border:1px solid #494949;top:5px;"
+    		submenuSize="auto" visibleRowNum="10">
+    		<xf:choices>
+    			<xf:item>
+    				<xf:label>2008</xf:label>
+    				<xf:value>2008</xf:value>
+    			</xf:item>
+    			<xf:item>
+    				<xf:label>2009</xf:label>
+    				<xf:value>2009</xf:value>
+    			</xf:item>
+    			<xf:item>
+    				<xf:label>2010</xf:label>
+    				<xf:value>2010</xf:value>
+    			</xf:item>
+    			<xf:item>
+    				<xf:label>2011</xf:label>
+    				<xf:value>2011</xf:value>
+    			</xf:item>
+    			<xf:item>
+    				<xf:label>2012</xf:label>
+    				<xf:value>2012</xf:value>
+    			</xf:item>
+    			<xf:item>
+    				<xf:label>2013</xf:label>
+    				<xf:value>2013</xf:value>
+    			</xf:item>
+    		</xf:choices>
+    	</xf:select1>
+    	<xf:select1 allOption="" appearance="minimal" chooseOption=""
+    		direction="auto" disabled="false" displayMode="label"
+    		id="cb_Month"
+    		style="position: absolute ;height:22px;cursor:pointer;color:#ffffff;width:50px;font-size:11px;background-color:#222223;left:917px;border:1px solid #494949;top:5px;"
+    		submenuSize="auto" visibleRowNum="12">
+    		<xf:choices>
+    			<xf:item>
+    				<xf:label>01</xf:label>
+    				<xf:value>01</xf:value>
+    			</xf:item>
+    			<xf:item>
+    				<xf:label>02</xf:label>
+    				<xf:value>02</xf:value>
+    			</xf:item>
+    			<xf:item>
+    				<xf:label>03</xf:label>
+    				<xf:value>03</xf:value>
+    			</xf:item>
+    			<xf:item>
+    				<xf:label>04</xf:label>
+    				<xf:value>04</xf:value>
+    			</xf:item>
+    			<xf:item>
+    				<xf:label>05</xf:label>
+    				<xf:value>05</xf:value>
+    			</xf:item>
+    			<xf:item>
+    				<xf:label>06</xf:label>
+    				<xf:value>06</xf:value>
+    			</xf:item>
+    			<xf:item>
+    				<xf:label>07</xf:label>
+    				<xf:value>07</xf:value>
+    			</xf:item>
+    			<xf:item>
+    				<xf:label>08</xf:label>
+    				<xf:value>08</xf:value>
+    			</xf:item>
+    			<xf:item>
+    				<xf:label>09</xf:label>
+    				<xf:value>09</xf:value>
+    			</xf:item>
+    			<xf:item>
+    				<xf:label>10</xf:label>
+    				<xf:value>10</xf:value>
+    			</xf:item>
+    			<xf:item>
+    				<xf:label>11</xf:label>
+    				<xf:value>11</xf:value>
+    			</xf:item>
+    			<xf:item>
+    				<xf:label>12</xf:label>
+    				<xf:value>12</xf:value>
+    			</xf:item>
+    		</xf:choices>
+    	</xf:select1>
+    	<xf:image id="image35"
+    		style="position: absolute ;height: 22px;width:30px;left:975px;top:6px;"
+    		src="/mp/images/eis/m_bt_cal_pop.png">
+    		<script ev:event="onclick" type="javascript"><![CDATA[ 
+    			fn_SetData();
+    		]]></script>
+    	</xf:image>
+    </body>
+</html>

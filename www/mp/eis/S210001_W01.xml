@@ -1,0 +1,567 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?xml-stylesheet href="/mp/css/frame.css" type="text/css"?>
+<html xmlns="http://www.w3.org/1999/xhtml"
+    xmlns:ev="http://www.w3.org/2001/xml-events"
+    xmlns:w2="http://www.inswave.com/websquare" xmlns:xf="http://www.w3.org/2002/xforms">
+    <head>
+        <w2:buildDate/>
+        <xf:model>
+            <xf:instance>
+                <data xmlns="">               
+		        </data>
+		    </xf:instance>
+            <xf:submission id="submissionDay" ref="request"
+    			target="resDay" action="" method="post"
+    			mediatype="application/xml" encoding="UTF-8" instance=""
+    			replace="instance" errorHandler="" customHandler=""
+    			mode="asynchronous" processMsg="">
+    			<script type="javascript" ev:event="xforms-submit-done"><![CDATA[ 
+					yesterday_1 = WebSquare.ModelUtil.getInstanceValue("resDay/root/dataset[@id='ds_Today']/record/YESTERDAY_1");
+					fn_Search();
+       			]]></script>
+    		</xf:submission>
+		    <xf:submission id="submissionTrend" ref="request" target="resTrend"
+        		action=""
+        		method="post" mediatype="application/xml" encoding="UTF-8" instance="" replace="instance"
+        		errorHandler="" customHandler="" mode="asynchronous"
+        		processMsg="">
+        		<script type="javascript" ev:event="xforms-submit-done"><![CDATA[
+            		grd_DailyTrend.setXML(WebSquare.ModelUtil.findInstanceNode("resTrend/root/dataset[@id='ds_DailyTrend']"));
+            	]]></script>
+        	</xf:submission>
+        	<xf:submission id="submissionDate" ref="request" target="resDate"
+        		action=""
+        		method="post" mediatype="application/xml" encoding="UTF-8" instance="" replace="instance"
+        		errorHandler="" customHandler="" mode="asynchronous"
+        		processMsg="">
+        		<script type="javascript" ev:event="xforms-submit-done"><![CDATA[
+            		EnglishDay = WebSquare.ModelUtil.getInstanceValue("resDate/root/dataset[@id='ds_BefToday']/record/TODAY");
+					grd_DailyTrend.setHeaderValue( "column01", "Result of "+EnglishDay );
+            	]]></script>
+        	</xf:submission>
+        </xf:model>
+        <script type="javascript" src="/mp/js/common.js"></script>
+		<script type="javascript" src="/mp/js/WebSquare.js"></script>
+        <script type="javascript"><![CDATA[
+
+       	var FV_sSvcNm = parent.FV_SvcNm;
+       	var FV_sUpGroupId = GV_UP_GROUP_ID;
+    	var FV_sDealerId = parent.FV_DealerId;	//GV_GROUP_ID;
+    	var FV_sToMonthDay = gfn_GetDate(0,0,0).substring(0,7);
+    	var FV_sBeMonth = gfn_GetDate(0,-1,0,"FM").substring(0,7);
+    	var FV_sTargetDay = gfn_GetDate(0,0,0).substring(8);
+    	var FV_sToday = gfn_GetDate(0,0,0);
+    	var FV_sBeYear = gfn_GetDate(-1,0,0).substring(0,7);
+		var yesterday_1;
+		var yesterday_2 = gfn_GetDate(0,0,-2);
+		var EnglishDay="";
+		var FV_frm1 = false;
+		var FV_frm2 = false;
+		var FV_frm3 = false;
+		var FV_frm4 = false;
+	
+		
+		if(GV_UP_GROUP_ID != "TM00000" && FV_sDealerId.length == 0){
+			FV_sDealerId = GV_UP_GROUP_ID;
+		}
+
+		setTitSendInfo("request", "", "", "mdms/mp/eis:TOP_S01");
+		setSubmissison("submissionDay");
+
+		function fn_Search(){
+			// To show Loading Image
+			parent.fn_SpinnerShow();
+			setTimeout("parent.fn_SpinnerHide()", 3000);
+			ifrm_1.setSrc("/mp/FusionCharts/Code/S210001_C01.jsp");	
+			ifrm_2.setSrc("/mp/FusionCharts/Code/S210001_C02.jsp");	
+			ifrm_3.setSrc("/mp/FusionCharts/Code/S210001_C03.jsp");	
+			ifrm_4.setSrc("/mp/FusionCharts/Code/S210001_C04.jsp");	
+			var actionNm = "";
+			if(FV_sSvcNm == "T"){
+				actionNm = "TOYOTAAction";
+			}
+	    	setTitSendInfo("request", actionNm, "", "mdms/mp/eis:S210001_W01_S01");
+	       	setInputParamData("DEALER_ID", FV_sDealerId);
+	       	setInputParamData("FR8_DATE", gfn_GetDate(0,0,0,"FM").replaceAll("-",""));
+	       	setInputParamData("FR10_DATE", gfn_GetDate(0,0,0,"FM")); 
+	       	setInputParamData("TO10_DATE", gfn_GetDate(0,0,0));
+	       	setInputParamData("TO10_DATE31", gfn_GetDate(0,0,0,"TM")); 
+	       	setInputParamData("TARGET_DAY", FV_sTargetDay);
+	       	setInputParamData("TOMONTH_DAY", FV_sToMonthDay);      	
+	       	setInputParamData("BEFORE_TARGET", yesterday_1.substring(8));
+	       	if(yesterday_1.substring(8) != '01'){  
+	       		setInputParamData("BEFORE_TARGET2", yesterday_2.substring(8));
+	       	}else{
+	       		setInputParamData("BEFORE_TARGET2", "");
+	       	}     	
+	       	setInputParamData("BEFORE_DAY", yesterday_1);
+	   		setSubmissison("submissionTrend");
+
+	   		setTitSendInfo("request", actionNm, "", "mdms/mp/eis:S210001_W01_S05");
+	   		setInputParamData("BEFORE_DAY", yesterday_1);
+	   		setSubmissison("submissionDate");
+	   	}
+	   	/****************************************************************
+		* 날짜 변경
+		* @param  : 
+		* @return : 없음
+		******************************************************************/
+        function fn_PlusDay(){
+        	yesterday_1=gfn_addDate("d", 1, yesterday_1, "-");
+        	yesterday_2=gfn_addDate("d", 1, yesterday_2, "-");
+        	fn_Search();
+        }
+        
+        function fn_MinusDay(){
+        	yesterday_1=gfn_addDate("d", -1, yesterday_1, "-");
+        	yesterday_2=gfn_addDate("d", -1, yesterday_2, "-");
+        	fn_Search();
+        }
+   		/****************************************************************
+		* 팝업 닫기
+		* @param  : flag	팝업 닫은 후 재조회 여부
+		* @return : 없음
+		******************************************************************/
+        function fn_PopupClose(){
+        	gfn_PopupClose();
+        }
+
+        /****************************************************************
+		* 로딩 이미지 hiding
+		* @param  : 각 frame id
+		* @return : 없음
+		******************************************************************/
+       	function fn_hideLoading(f_id){
+       		switch(f_id){
+			case "1":
+				FV_frm1 = true;
+				break;
+			case "2":
+				FV_frm2 = true;
+				break;
+			case "3":
+				FV_frm3 = true;
+				break;
+			case "4":
+				FV_frm4 = true;
+				break;
+			}
+	    	if(FV_frm1 == true&&FV_frm2==true&&FV_frm3==true&&FV_frm4==true) {
+	      		parent.fn_SpinnerHide();
+	      	}
+       	}
+        ]]></script>
+    </head>
+    <body>
+    	<xf:image id="image2"
+    		style="position: absolute ;height:384px;width:528px;left:-1px;top:26px;"
+    		src="/mp/images/shape_1.png">
+    	</xf:image>
+    	<w2:grid baseNode="dataset" repeatNode="record" id="grd_DailyTrend"
+    		style="position: absolute;left:13px;top:37px;width:499px;height:357px;"
+    		class="grid" resize="" overflowX="hidden" overflowY="hidden"
+    		valueNode="" readOnly="true">
+    		<w2:header id="header1" style="" class="gridHeaderTable"
+    			columnClass="gridHeaderTD">
+    			<w2:row id="row1" style="">
+    				<w2:column id="columnL01" hidden=""
+    					inputType="button" width="40" valueType="binary" colSpan=""
+    					rowSpan="" value="&lt;&lt;" onclick="fn_MinusDay()">
+    				</w2:column>
+    				<w2:column id="column01" hidden=""
+    					inputType="button" width="80" valueType="binary" colSpan="2"
+    					rowSpan="" value="Result of Yesterday">
+    				</w2:column>
+    				<w2:column id="columnR01" hidden=""
+    					inputType="button" width="40" valueType="binary" colSpan=""
+    					rowSpan="" value=">>" onclick="fn_PlusDay()">
+    				</w2:column>
+    				<w2:column id="column03" hidden=""
+    					width="68" inputType="text" valueType="binary" value="Model"
+    					colSpan="" rowSpan="2">
+    				</w2:column>
+    				<w2:column id="column7" hidden=""
+    					inputType="text" width="120" valueType="binary" colSpan="4"
+    					rowSpan="" value="Contract">
+    				</w2:column>
+    				<w2:column id="column4" hidden=""
+    					inputType="text" width="90" valueType="binary" colSpan="3"
+    					rowSpan="" value="Sales">
+    				</w2:column>
+    				<w2:column id="column116" hidden=""
+    					inputType="text" width="30" valueType="binary" colSpan=""
+    					rowSpan="" value="Cncl">
+    				</w2:column>
+    				<w2:column id="column1" hidden=""
+    					width="30" inputType="text" valueType="binary" value="STK"
+    					colSpan="" rowSpan="2">
+    				</w2:column>
+    				<w2:column id="column1_0" hidden="true"
+    					width="0" inputType="text" valueType="binary" value=""
+    					colSpan="" rowSpan="2">
+    				</w2:column>
+    				<w2:column id="column1_1" hidden="true"
+    					width="0" inputType="text" valueType="binary" value=""
+    					colSpan="" rowSpan="2">
+    				</w2:column>
+    				<w2:column id="column1_2" hidden="true"
+    					width="0" inputType="text" valueType="binary" value=""
+    					colSpan="" rowSpan="2">
+    				</w2:column>
+    				<w2:column id="column1_3" hidden="true"
+    					width="0" inputType="text" valueType="binary" value=""
+    					colSpan="" rowSpan="2">
+    				</w2:column>
+    				<w2:column id="column1_4" hidden="true"
+    					width="0" inputType="text" valueType="binary" value=""
+    					colSpan="" rowSpan="2">
+    				</w2:column>
+    				<w2:column id="column1_5" hidden="true"
+    					width="0" inputType="text" valueType="binary" value=""
+    					colSpan="" rowSpan="2">
+    				</w2:column>
+    				<w2:column id="column1_6" hidden="true"
+    					width="0" inputType="text" valueType="binary" value=""
+    					colSpan="" rowSpan="2">
+    				</w2:column>
+    				<w2:column id="column1_7" hidden="true"
+    					width="0" inputType="text" valueType="binary" value=""
+    					colSpan="" rowSpan="2">
+    				</w2:column>
+    			</w2:row>
+    			<w2:row id="row4" style="">
+    				<w2:column id="column10" style="color:#2fe9ee;"
+    					height="18" hidden="" width="40" inputType="text"
+    					valueType="binary" value="Cont">
+    				</w2:column>
+    				<w2:column id="column87" height="18" hidden=""
+    					inputType="text" width="40" valueType="binary" value="P.tgt">
+    				</w2:column>
+    				<w2:column id="column92" style="color:#2fe9ee;"
+    					height="18" hidden="" inputType="text" width="40"
+    					valueType="binary" value="Sales">
+    				</w2:column>
+    				<w2:column id="column102" height="18" hidden=""
+    					inputType="text" width="40" valueType="binary" value="P.tgt">
+    				</w2:column>
+    				<w2:column id="column010" style="color:#F0B500;"
+    					hidden="" width="30" inputType="text"
+    					valueType="binary" value="Mon">
+    				</w2:column>
+    				<w2:column id="column870" height="18" hidden=""
+    					inputType="text" width="30" valueType="binary" value="M.tgt">
+    				</w2:column>
+    				<w2:column id="column920" style="color:#F0B500;"
+    					hidden="" inputType="text" width="30"
+    					valueType="binary" value="Day">
+    				</w2:column>
+    				<w2:column id="column1020" hidden=""
+    					inputType="text" width="30" valueType="binary" value="BOC">
+    				</w2:column>
+    				<w2:column id="column11" style="color:#F0B500;"
+    					hidden="" width="30" inputType="text"
+    					valueType="binary" value="Mon">
+    				</w2:column>
+    				<w2:column id="column14" height="18" hidden=""
+    					inputType="text" width="30" valueType="binary" value="M.tgt">
+    				</w2:column>
+    				<w2:column id="column18" style="color:#F0B500;"
+    					hidden="" inputType="text" width="30"
+    					valueType="binary" value="Day">
+    				</w2:column>
+    				<w2:column id="column117" hidden=""
+    					inputType="text" width="30" valueType="binary"
+    					value="Mon">
+    				</w2:column>
+    			</w2:row>
+    		</w2:header>
+    		<w2:gBody id="gBody1" style="" class="gridBodyTable"
+    			columnClass="gridBodyTD">
+    			<w2:row id="row2" style="">
+    				<w2:column id="BF_CO_TOTAL" style="color:#2fe9ee;"
+    					hidden="" inputType="text" width="40" valueType="binary"
+    					textAlign="right">
+    				</w2:column>
+    				<w2:column id="BF_CO_TARGET" hidden=""
+    					inputType="text" width="40" valueType="binary"
+    					textAlign="right">
+    				</w2:column>
+    				<w2:column id="BF_RS_TOTAL" style="color:#2fe9ee;"
+    					hidden="" inputType="text" width="40" valueType="binary"
+    					textAlign="right">
+    				</w2:column>
+    				<w2:column id="BF_RS_TARGET" hidden=""
+    					inputType="text" width="40" valueType="binary"
+    					textAlign="right">
+    				</w2:column>
+    				<w2:column id="VARIANT_NM" hidden=""
+    					width="68" inputType="text" valueType="binary" value=""
+    					textAlign="center">
+    				</w2:column>
+    				<w2:column id="CO_TOTAL" style="color:#F0B500;"
+    					hidden="" inputType="text" width="30" valueType="binary"
+    					textAlign="right">
+    				</w2:column>
+    				<w2:column id="CO_TARGET_QTY" hidden=""
+    					inputType="text" width="30" valueType="binary"
+    					textAlign="right">
+    				</w2:column>
+    				<w2:column id="CO_DAILY_QTY" style="color:#F0B500;"
+    					hidden="" inputType="text" width="30" valueType="binary"
+    					textAlign="right">
+    				</w2:column>
+    				<w2:column id="BOC_CNT" hidden=""
+    					inputType="text" width="30" valueType="binary"
+    					textAlign="right">
+    				</w2:column>
+    				<w2:column id="RS_TOTAL" style="color:#F0B500;"
+    					hidden="" inputType="text" width="30"
+    					valueType="binary" value="0" textAlign="right">
+    				</w2:column>
+    				<w2:column id="SALES_TARGET_QTY" 
+    					hidden="" inputType="text" width="30" valueType="binary"
+    					textAlign="right">
+    				</w2:column>
+    				<w2:column id="SALES_DAILY_QTY"
+    					style="color:#F0B500;" hidden="" inputType="text"
+    					width="15" valueType="binary" textAlign="right">
+    				</w2:column>
+    				<w2:column id="CANCEL_TOTAL" hidden=""
+    					inputType="text" width="30" valueType="binary"
+    					textAlign="right">
+    				</w2:column>
+    				<w2:column id="AVAILABLE_CNT" hidden="" inputType="text" width="30" valueType="binary"
+    					textAlign="right">
+    				</w2:column>
+    				<w2:column id="BF_CO_DAILY" hidden="true" inputType="text" width="0" valueType="binary"
+    					textAlign="right">
+    				</w2:column>
+    				<w2:column id="BF_RS_DAILY" hidden="true" inputType="text" width="0" valueType="binary"
+    					textAlign="right">
+    				</w2:column>
+    				<w2:column id="CO_MTD_CNT" hidden="true" inputType="text" width="0" valueType="binary"
+    					textAlign="right">
+    				</w2:column>
+    				<w2:column id="RS_MTD_CNT" hidden="true" inputType="text" width="0" valueType="binary"
+    					textAlign="right">
+    				</w2:column>
+    				<w2:column id="BF_CO_TARGET_S" hidden="true" inputType="text" width="0" valueType="binary"
+    					textAlign="right">
+    				</w2:column>
+    				<w2:column id="BF_RS_TARGET_S" hidden="true" inputType="text" width="0" valueType="binary"
+    					textAlign="right">
+    				</w2:column>
+    				<w2:column id="DAY_CO_TARGET" hidden="true" inputType="text" width="0" valueType="binary"
+    					textAlign="right">
+    				</w2:column>
+    				<w2:column id="DAY_RS_TARGET" hidden="true" inputType="text" width="0" valueType="binary"
+    					textAlign="right">
+    				</w2:column>
+    			</w2:row>
+    		</w2:gBody>
+    		<w2:footer id="footer1" style="" columnClass="gridFooterTD"
+    			class="gridFooterTable">
+    			<w2:row id="row3" style="">
+    				<w2:column id="column940" style="color:#2fe9ee;"
+    					hidden="" inputType="expression" width="40" valueType="binary" value="0"
+    					expression="sum('CO_MTD_CNT')+'('+sum('BF_CO_DAILY')+')'" textAlign="right">
+    				</w2:column>
+    				<w2:column id="column1090" hidden=""
+    					inputType="expression" width="40" valueType="binary" value="0"
+    					expression="sum('BF_CO_TARGET_S')+'('+sum('DAY_CO_TARGET')+')'" textAlign="right">
+    				</w2:column>
+    				<w2:column id="column600" style="color:#2fe9ee;"
+    					hidden="" inputType="expression" width="40"
+    					valueType="binary" value="0" expression="sum('RS_MTD_CNT')+'('+sum('BF_RS_DAILY')+')'"
+    					textAlign="right">
+    				</w2:column>
+    				<w2:column id="column890" hidden=""
+    					inputType="expression" width="40" valueType="binary" value="0"
+    					expression="sum('BF_RS_TARGET_S')+'('+sum('DAY_RS_TARGET')+')'" textAlign="right">
+    				</w2:column>
+    				<w2:column id="column3" hidden=""
+    					width="68" inputType="text" valueType="binary" value="SUM" textAlign="center">
+    				</w2:column>
+    				<w2:column id="column6" style="color:#F0B500;"
+    					hidden="" inputType="expression" width="30"
+    					valueType="binary" value="0" expression="sum('CO_TOTAL')"
+    					textAlign="right">
+    				</w2:column>
+    				<w2:column id="column89" hidden=""
+    					inputType="expression" width="30" valueType="binary" value="0"
+    					expression="sum('CO_TARGET_QTY')" textAlign="right">
+    				</w2:column>
+    				<w2:column id="column94" style="color:#F0B500;"
+    					hidden="" inputType="expression" width="30" valueType="binary" value="0"
+    					expression="sum('CO_DAILY_QTY')" textAlign="right">
+    				</w2:column>
+
+    				<w2:column id="column109" sheight="18" hidden=""
+    					inputType="expression" width="30" valueType="binary" value="0"
+    					expression="sum('BOC_CNT')" textAlign="right">
+    				</w2:column>
+    				<w2:column id="column9" style="color:#F0B500;"
+    					hidden="" inputType="expression" width="30"
+    					valueType="binary" value="0" expression="sum('RS_TOTAL')"
+    					textAlign="right">
+    				</w2:column>
+    				<w2:column id="column16" hidden=""
+    					inputType="expression" width="30" valueType="binary" value="0"
+    					expression="sum('SALES_TARGET_QTY')" textAlign="right">
+    				</w2:column>
+    				<w2:column id="column20" style="color:#F0B500;"
+    					hidden="" inputType="expression" width="30"
+    					valueType="binary" value="0"
+    					expression="sum('SALES_DAILY_QTY')" textAlign="right">
+    				</w2:column>
+    				<w2:column id="column119" height="18" hidden=""
+    					inputType="expression" width="30" valueType="binary" value="0"
+    					expression="sum('CANCEL_TOTAL')" textAlign="right">
+    				</w2:column>
+    				<w2:column id="column124" height="18" hidden=""
+    					inputType="expression" width="30" valueType="binary" value="0"
+    					expression="sum('AVAILABLE_CNT')" textAlign="right">
+    				</w2:column>
+    			</w2:row>
+    			<w2:row id="row5" style="">
+    				<w2:column id="column1050" hidden=""
+    					inputType="expression" width="80" valueType="binary"
+    					colSpan="2" rowSpan="" 
+    					expression="if(sum('BF_CO_TARGET_S')==0) '0%'; else ((sum('CO_MTD_CNT')/sum('BF_CO_TARGET_S')) * 100).toFixed(1) + '%';">
+    				</w2:column>
+    				<w2:column id="column250" hidden=""
+    					width="80" inputType="expression" valueType="binary"
+    					colSpan="2" rowSpan="" value="0%"
+    					expression="if(sum('BF_RS_TARGET_S')==0) '0%'; else ((sum('RS_MTD_CNT')/sum('BF_RS_TARGET_S')) * 100).toFixed(1) + '%';">
+    				</w2:column>
+    				<w2:column id="column30" hidden=""
+    					width="68" inputType="text" valueType="binary" value="A/R" textAlign="center">
+    				</w2:column>
+    				<w2:column id="column25" hidden=""
+    					width="90" inputType="expression" valueType="binary"
+    					colSpan="3" rowSpan="" value="0%"
+    					expression="if(sum('CO_TARGET_QTY')==0) '0%'; else ((sum('CO_TOTAL')/sum('CO_TARGET_QTY')) * 100).toFixed(1) + '%';">
+    				</w2:column>
+    				<w2:column id="column105" hidden=""
+    					inputType="expression" width="30" valueType="binary"
+    					expression="sum('BOC_CNT')" textAlign="right">
+    				</w2:column>
+    				<w2:column id="column29" hidden=""
+    					width="90" inputType="expression" valueType="binary"
+    					colSpan="3" rowSpan="" value="0%"
+    					expression="if(sum('SALES_TARGET_QTY')==0) '0%'; else ((sum('RS_TOTAL')/sum('SALES_TARGET_QTY')) * 100).toFixed(1) + '%';">
+    				</w2:column>
+    				<w2:column id="column120" hidden=""
+    					inputType="expression" width="30" valueType="binary"
+    					expression="sum('CANCEL_TOTAL')" textAlign="right">
+    				</w2:column>
+    				<w2:column id="column125" hidden=""
+    					inputType="expression" width="30" valueType="binary"
+    					expression="sum('AVAILABLE_CNT')" textAlign="right">
+    				</w2:column>
+    			</w2:row>
+    		</w2:footer>
+    	</w2:grid>
+    	<xf:image id="image15" src="/mp/images/shape_2.png"
+    		style="position: absolute ;height:202px;width:500px;left:520px;top:25px;">
+    	</xf:image>
+    	<xf:image id="image17" src="/mp/images/shape_2.png"
+    		style="position: absolute ;height:167px;width:500px;left:520px;top:242px;">
+    	</xf:image>
+    	<xf:image id="image18" src="/mp/images/shape_3.png"
+    		style="position: absolute ;height:167px;width:528px;left:-1px;top:425px;">
+    	</xf:image>
+    	<xf:image id="image19" src="/mp/images/shape_3.png"
+    		style="position: absolute ;height:167px;width:500px;left:520px;top:425px;">
+    	</xf:image>
+    	<w2:textbox class="sub_title_b" id="output30" label="Daily Trend"
+    		style="position: absolute ;height:20px;width:204px;left:20px;top:11px;">
+    	</w2:textbox>
+    	<w2:textbox id="sub_title"
+    		style="position: absolute ;height:20px;width:204px;left:20px;top:10px;"
+    		class="sub_title" label="Daily Trend">
+    	</w2:textbox>
+    	<xf:output class="sub_title_b" id="output31" label=""
+    		style="position: absolute ;height:20px;width:204px;left:524px;top:11px;">
+    		<xf:label>Monthly Sales Progrese</xf:label>
+    	</xf:output>
+    	<xf:output class="sub_title" id="output32" label=""
+    		style="position: absolute ;height:20px;width:204px;left:524px;top:11px;">
+    		<xf:label>Monthly Sales Progress</xf:label>
+    	</xf:output>
+    	<xf:output id="output35"
+    		style="position: absolute ;height:20px;width:204px;left:524px;top:410px;"
+    		class="sub_title_b" label="">
+    		<xf:label>Test Drive</xf:label>
+    	</xf:output>
+    	<xf:output id="output36"
+    		style="position: absolute ;height:20px;width:204px;left:524px;top:410px;"
+    		class="sub_title" label="">
+    		<xf:label>Test Drive</xf:label>
+    	</xf:output>
+    	<xf:output id="output37"
+    		style="position: absolute ;height:20px;width:204px;left:20px;top:409px;"
+    		class="sub_title_b" label="">
+    		<xf:label>Showroom Traffic (Visitor)</xf:label>
+    	</xf:output>
+    	<xf:output id="output38"
+    		style="position: absolute ;height:20px;width:204px;left:20px;top:409px;"
+    		class="sub_title" label="">
+    		<xf:label>Showroom Traffic (Visitor)</xf:label>
+    	</xf:output>
+    	<w2:iframe id="ifrm_1"
+    		style="position: absolute ;left:533px;top:38px;width:474px;height:176px;"
+    		src=""
+    		scrolling="no">
+    	</w2:iframe>
+    	<w2:iframe id="ifrm_2"
+    		src=""
+    		style="position: absolute ;left:533px;top:253px;width:474px;height:144px;"
+    		scrolling="no">
+    	</w2:iframe>
+    	<w2:iframe id="ifrm_4" scrolling="no"
+    		src=""
+    		style="position: absolute ;left:533px;top:437px;width:474px;height:144px;">
+    	</w2:iframe>
+    	<w2:iframe id="ifrm_3" scrolling="no"
+    		src=""
+    		style="position: absolute ;left:12px;top:437px;width:502px;height:144px;">
+    	</w2:iframe>
+    	<xf:image id="btn_P01"
+    		style="position: absolute ;left:981px;top:5px;width: 32px;height: 24px;;cursor:pointer"
+    		src="/mp/images/bt_pop_01.png" localeRef="">
+    		<script type="javascript" ev:event="onclick"><![CDATA[
+    			gfn_OpenPopup("/mp/eis/S210001_P01.xml","Annual Sales Trend vs Last Year",831,579,65,10);
+    		]]></script>
+    	</xf:image>
+    	<xf:output class="sub_title_b" id="output48" label=""
+    		style="position: absolute ;height:20px;width:204px;left:524px;top:226px;">
+    		<xf:label>Monthly Contract Progrese</xf:label>
+    	</xf:output>
+    	<xf:output class="sub_title" id="output47" label=""
+    		style="position: absolute ;height:20px;width:204px;left:524px;top:226px;">
+    		<xf:label>Monthly Contract Progress</xf:label>
+    	</xf:output>
+    	<xf:image id="btn_P02" localeRef=""
+    		src="/mp/images/bt_pop_01.png"
+    		style="position: absolute ;cursor:pointer;height: 24px;width: 32px;left:981px;top:222px;">
+    		<script ev:event="onclick" type="javascript"><![CDATA[
+    			gfn_OpenPopup("/mp/eis/S210001_P02.xml","Annual Contract Trend vs Last Year",831,579,65,10);
+    		]]></script>
+    	</xf:image>
+    	<xf:image id="btn_P03" localeRef=""
+    		src="/mp/images/bt_pop_01.png"
+    		style="position: absolute ;left:485px;top:406px;width: 32px;height: 24px;;cursor:pointer">
+    		<script ev:event="onclick" type="javascript"><![CDATA[
+    			gfn_OpenPopup("/mp/eis/S210001_P03.xml","Showroom Traffic(Visitor)",831,579,65,10);
+    		]]></script>
+    	</xf:image>
+    	<xf:image id="btn_P04" localeRef=""
+    		src="/mp/images/bt_pop_01.png"
+    		style="position: absolute ;cursor:pointer;height: 24px;width: 32px;left:981px;top:406px;">
+    		<script ev:event="onclick" type="javascript"><![CDATA[
+    			gfn_OpenPopup("/mp/eis/S210001_P04.xml","Test Drive",828,578,65,10);
+    		]]></script>
+    	</xf:image>
+    </body>
+</html>

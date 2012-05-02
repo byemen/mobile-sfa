@@ -1,0 +1,48 @@
+<html>
+<head>
+<meta http-equiv="expires" content="0" />
+<meta http-equiv="pragma" content="no-cache" />
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+
+<title>Source</title>
+
+<style type="text/css">
+body		{ background-color:#F6F4F1; margin-top:0pt; margin-left:0pt; margin-right:0pt }
+
+
+#title 		{ margin-left:5pt;  padding-top:5pt; height:22pt; color:#B3550A; font-size:9pt; font-family:굴림; line-height:14pt; visibility:visible }
+#main 		{ margin-left:0pt; text-align:center; visibility:visible; }
+#sub 		{ text-align:center; padding-top:7px; visibility:visible }
+</style>
+
+<script type="text/javascript" src="../javascript.wq?q=/bootloader"></script>
+<script type="text/javascript">
+window.onload=doInit;
+
+function doInit() {
+	if( WebSquare.core.browserCheck.ie ) {
+		document.getElementById("main").style.setExpression("height",  "document.body.clientHeight - 65");
+	} else {
+		document.getElementById("main").style.height="86%";
+	}
+
+	document.getElementById("title").innerHTML = "<img src='images/bullet_info.gif' style='vertical-align:middle; margin-right:5px' /><b>" + WebSquare.language.getMessage( "E_viewSource_title" ) + "</b>";
+
+	var str = opener.WebSquare.util.getSource();
+	var layerY = 245;
+//	document.getElementById("main").value =  str;
+	document.getElementById("main").innerHTML =  str;
+}
+
+</script>
+</head>
+
+<body>
+	<div id="title"></div>
+	<!--textArea id="main" style='line-height:20px; width:100%; border:1pt #777777; border-style:solid; text-align:left;' readOnly="true"></textArea-->
+	<div id="main" style='overflow:auto;width:98%; margin-left:3px;border:4px #d7d7d7; border-style:solid; text-align:left;font-size:9pt;'></div>
+	<div id="sub">
+		<input type="button" class="Button1" value=" close " onClick="self.close()" />
+	</div>
+</body>
+</html>

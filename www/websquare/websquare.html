@@ -1,0 +1,57 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns='http://www.w3.org/1999/xhtml' xmlns:ev='http://www.w3.org/2001/xml-events' xmlns:w2='http://www.inswave.com/websquare' xmlns:xf='http://www.w3.org/2002/xforms'>
+	<head>
+		<meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+		<meta name="viewport"  content="width=device-width, height=device-height, initial-scale=0.8, user-scalable=1" />
+		<title>	WebSquare </title>
+		<script type="text/javascript">
+			var externalValue = {
+					hybridApp  : true,
+					configPath : "config.xml",
+					w2xDocumentRoot : "..",
+					isHoneyComb : false,
+					traceEvent : false,
+					startDate : new Date()
+			}
+			function linkIframe(iframe, src) {				
+				window['sessionStorage'][iframe.getID()] = src;
+				iframe.setSrc(src);			
+			}
+	 
+			function link(src) {
+				window['sessionStorage']['w2xpath'] = src;
+				var idx = ( location.toString().indexOf("?") );
+				var str = location.toString().substring( 0, idx );
+				location.href = str;
+			}
+		</script>
+		<link href="skin/stylesheet_ext.css" rel="stylesheet" type="text/css" />		
+		<script type="text/javascript" src="externalJS/spin.js"></script>
+		<script type="text/javascript" src="../cordova.js"></script>		
+		<script type="text/javascript" src="HybridPluginAll.js"></script>
+		<script type="text/javascript">
+       		window.onload = init;
+       		function init() {
+				try{
+					var src = window['sessionStorage']['w2xpath'];
+					if(window.frameElement) {
+						src = window['sessionStorage'][window.frameElement.id];
+						delete window['sessionStorage'][window.frameElement.id];
+					}					
+					delete window['sessionStorage']['w2xpath'];
+					if( src != null && typeof src != "undefined" ) {
+						console.log("session src : " + src);
+						WebSquare.startApplication(src);
+					} else {
+						WebSquare.startApplication();
+					}
+				} catch(e) {
+					alert(e.message);
+				}
+			}			
+		</script>
+	</head>
+	<body>
+		Loading.
+	</body>
+</html>

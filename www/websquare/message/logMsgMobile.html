@@ -1,0 +1,22 @@
+<html>
+<head>
+<meta http-equiv="expires" content="0" />
+<meta http-equiv="pragma" content="no-cache" />
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+
+<title>Log</title>
+
+<script type="text/javascript">
+window.onload=doInit;
+function doInit() {
+	var str = opener.WebSquare.logger.getLog();
+	document.getElementById("main").innerHTML =  str;
+}
+
+</script>
+</head>
+
+<body onscroll="cancelFocus()" >
+<pre id="main"></pre>
+</body>
+</html>

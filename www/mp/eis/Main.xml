@@ -1,0 +1,566 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?xml-stylesheet href="/mp/css/frame.css" type="text/css"?>
+<html xmlns="http://www.w3.org/1999/xhtml"
+    xmlns:ev="http://www.w3.org/2001/xml-events"
+    xmlns:w2="http://www.inswave.com/websquare" xmlns:xf="http://www.w3.org/2002/xforms">
+    <head>
+        <w2:buildDate/>
+        <xf:model>
+            <xf:instance>
+                <data xmlns="">
+
+		        </data>
+		    </xf:instance>
+            <xf:submission id="submissionLogin" ref="request"
+            	target="resUser" action="" method="post"
+            	mediatype="application/xml" encoding="UTF-8" instance=""
+            	replace="instance" errorHandler="" customHandler=""
+            	mode="asynchronous" processMsg="">
+            	<script type="javascript" ev:event="xforms-submit-done"><![CDATA[ 
+            		fn_AfterLogin();
+            	]]></script>
+            </xf:submission>
+            <xf:submission id="submissionDay" ref="request"
+    			target="resDay" action="" method="post"
+    			mediatype="application/xml" encoding="UTF-8" instance=""
+    			replace="instance" errorHandler="" customHandler=""
+    			mode="asynchronous" processMsg="">
+    			<script type="javascript" ev:event="xforms-submit-done"><![CDATA[ 
+    				var today = WebSquare.ModelUtil.getInstanceValue("resDay/root/dataset[@id='ds_Today']/record/TODAY");
+    				var workDay = WebSquare.ModelUtil.getInstanceValue("resDay/root/dataset[@id='ds_WorkDay']/record/WORK_DAY");
+					yesterday = WebSquare.ModelUtil.getInstanceValue("resDay/root/dataset[@id='ds_Today']/record/YESTERDAY");
+					yesterday_1 = WebSquare.ModelUtil.getInstanceValue("resDay/root/dataset[@id='ds_Today']/record/YESTERDAY_1");
+    				st_Day.setLabel(today+"<br>"+workDay);
+    			//	FV_LCNT = WebSquare.ModelUtil.getInstanceValue("resDay/root/dataset[@id='ds_LDlrCnt']/record/CNT");
+    			//	FV_TCNT = WebSquare.ModelUtil.getInstanceValue("resDay/root/dataset[@id='ds_TDlrCnt']/record/CNT"); 
+
+    				var lexus = WebSquare.ModelUtil.findInstanceNodes("resDay/root/dataset[@id='ds_LDlrCnt']/record");
+    				var toyota = WebSquare.ModelUtil.findInstanceNodes("resDay/root/dataset[@id='ds_TDlrCnt']/record");
+    				FV_LCNT = lexus.length;
+    				FV_TCNT = toyota.length;
+
+    				for(var i=0; i<FV_LCNT; i++){
+    					FV_Lexus[i] = WebSquare.xml.getValue(lexus[i],"DEALER_ID");
+    					cb_LDealer.addItem(WebSquare.xml.getValue(lexus[i],"DEALER_ID"),WebSquare.xml.getValue(lexus[i],"CB_DEALER"), i+1);
+    				}
+    				for(var i=0; i<FV_TCNT; i++){
+    					FV_Toyota[i] = WebSquare.xml.getValue(toyota[i],"DEALER_ID");
+    					cb_TDealer.addItem(WebSquare.xml.getValue(toyota[i],"DEALER_ID"),WebSquare.xml.getValue(toyota[i],"CB_DEALER"), i+1);				 
+    				}
+       			]]></script>
+    		</xf:submission>
+        </xf:model>
+    	<script type="javascript" src="/mp/js/common.js"></script>
+		<script type="javascript" src="/mp/js/WebSquare.js"></script>
+    	<script type="javascript"><![CDATA[     	
+		var FV_MenuId = "stA_Main";		// 메뉴아이디 
+		var FV_Dlr_Type = WebSquare.cookie.getCookie("DLR_TYPE");		// Lexus, Toyota 구분
+		var FV_SvcNm = "";		// Lexus, Toyota 구분
+		var FV_GroupId = "";	// 사용자 그룹아이디
+		var FV_LCNT = 0;		// Lexus shop cnt
+		var FV_TCNT = 0;		// Toyota shop cnt
+		var FV_Lexus = new Array();
+		var FV_Toyota = new Array();
+		var FV_FsDlrUrl = "";	// DLR FS Dealer 화면 Url
+		var FV_DealerId = "";
+		var yesterday = "";
+		var yesterday_1 = "";
+		var isFirst = true;
+        function fn_SpinnerHide(){
+        	document.getElementById("spinner").style.display = "none";
+        }
+
+        function fn_SpinnerShow(){
+        	document.getElementById("spinner").style.display = "";
+        }
+
+		/****************************************************************
+		* 화면로드
+		* @param  : 없음
+		* @return : 없음
+		******************************************************************/
+        function fn_OnLoad(){
+        	var sSqlid = "mdms/mp/comm:LOGIN_S01";        	
+        	setTitSendInfo("request", "", "", sSqlid);
+			setInputParamData("USER_ID", WebSquare.cookie.getCookie("USER_ID"));
+			setInputParamData("PASSWORD", "123");
+			setSubmissison("submissionLogin");		
+        }
+        /****************************************************************
+		* callback (Login)
+		* @param  : 없음
+		* @return : 없음
+		******************************************************************/
+        function fn_AfterLogin(){
+        	// 사용자 정보
+        	var userinfo = WebSquare.ModelUtil.findInstanceNodes("resUser/root/dataset[@id='ds_UserInfo']/record");
+			
+			if(userinfo.length <= 0){
+				if(isFirst){
+					var sSqlid = "mdms/mp/comm:LOGIN_S01";        	
+					setTitSendInfo("request", "TOYOTAAction", "", sSqlid);
+					setInputParamData("USER_ID", WebSquare.cookie.getCookie("USER_ID"));
+					setInputParamData("PASSWORD", "123");
+					setSubmissison("submissionLogin");		
+					isFirst = false;
+					return;
+				}
+			}
+
+        	FV_GroupId = WebSquare.xml.getValue(userinfo[0],"GROUP_ID");
+
+			WebSquare.session.setAttribute("USER_ID",WebSquare.xml.getValue(userinfo[0],"USER_ID"));
+			WebSquare.session.setAttribute("NAME",WebSquare.xml.getValue(userinfo[0],"NAME"));
+			WebSquare.session.setAttribute("GROUP_ID",FV_GroupId);
+			WebSquare.session.setAttribute("UP_GROUP_ID",WebSquare.xml.getValue(userinfo[0],"UP_GROUP_ID"));
+			WebSquare.session.setAttribute("UP_GROUP_NAME",WebSquare.xml.getValue(userinfo[0],"UP_GROUP_NAME"));
+			WebSquare.session.setAttribute("USER_GROUP",WebSquare.xml.getValue(userinfo[0],"USER_GROUP"));
+			WebSquare.session.setAttribute("USER_TYPE",WebSquare.xml.getValue(userinfo[0],"USER_TYPE"));
+			WebSquare.session.setAttribute("DEPT_NM",WebSquare.xml.getValue(userinfo[0],"DEPT_NM"));
+			WebSquare.session.setAttribute("DEPT_CD",WebSquare.xml.getValue(userinfo[0],"DEPT_CD"));
+			WebSquare.session.setAttribute("TEL_NO",WebSquare.xml.getValue(userinfo[0],"TEL_NO"));
+			WebSquare.session.setAttribute("BRAND_CD",WebSquare.xml.getValue(userinfo[0],"BRAND_CD"));
+
+
+			// 날짜 설정, shop		
+			setTitSendInfo("request", "", "", "mdms/mp/eis:TOP_S01,mdms/mp/eis:TOP_S02,mdms/mp/eis:LOGL_S01,mdms/mp/eis:LOGT_S01");
+			setSubmissison("submissionDay");
+
+			FV_SvcNm = FV_Dlr_Type;
+			// 로고 , 메뉴 설정
+			if(FV_GroupId == "TM00000"){
+				FV_SvcNm = "L";
+
+			//	if(FV_SvcNm == "T"){
+			//		btn_Lexus.setSrc("/mp/images/eis/lexus_tab_def.png");
+			//		btn_Toyota.setSrc("/mp/images/eis/toyota_tab_sel.png");
+			//	} else if(FV_SvcNm == "L"){
+					btn_Lexus.setSrc("/mp/images/eis/lexus_tab_def.png");
+					btn_Toyota.setSrc("/mp/images/eis/toyota_tab_sel.png");
+			//	}
+				switch_Menu.setSelectedIndex(0);
+				FV_MenuId = "stA_Main";
+			} else{
+				btn_Toyota.hide();
+				if(FV_SvcNm == "T"){
+					btn_Lexus.setSrc("/mp/images/eis/toyota_tab_sel_.png");
+					t_sys_name.setSrc("/mp/images/eis/t_sys_name_d.png");
+					document.getElementById("btn_Lexus").style.left = "2px";
+					document.getElementById("t_sys_name").style.left = "150px";
+				} else if(FV_SvcNm == "L"){
+					btn_Lexus.setSrc("/mp/images/eis/lexus_tab_sel_.png");
+					t_sys_name.setSrc("/mp/images/eis/t_sys_name_d.png");
+					document.getElementById("btn_Lexus").style.left = "2px";
+					document.getElementById("t_sys_name").style.left = "150px";
+				}
+				switch_Menu.setSelectedIndex(1);
+				FV_MenuId = "stD_Main";
+			}
+
+			fn_SetDealer("Main");			
+			fn_SetDealer("Model");			
+			fn_SetDealer("Forecast");			
+			//st_Title.setValue("EIS Visualization Kanban");
+			ifrm_Main.setSrc("/mp/eis/S210001_W01.xml");
+        }
+         /****************************************************************
+		* 로고 change
+		* @param  : id	메뉴 구분
+		* @return : 없음
+		******************************************************************/
+        function fn_LogoChange(id){
+        	if(FV_GroupId == "TM00000"){
+        		if(id == "btn_Lexus"){
+        			FV_SvcNm = "L";
+        			btn_Lexus.setSrc("/mp/images/eis/lexus_tab_def.png");
+					btn_Toyota.setSrc("/mp/images/eis/toyota_tab_sel.png");
+        		} else if(id == "btn_Toyota"){
+        			FV_SvcNm = "T";
+        			btn_Lexus.setSrc("/mp/images/eis/lexus_tab_sel.png");
+					btn_Toyota.setSrc("/mp/images/eis/toyota_tab_def.png");
+        		}
+        	}
+        }
+        /****************************************************************
+		* 메뉴 이동
+		* @param  : id	메뉴 구분
+		* @return : 없음
+		******************************************************************/
+        function fn_MenuChange(id){
+        	var urls = "";
+        	var menuId = id.substring(4);
+
+			if(menuId=="Forecast"){
+//				alert("Preparing for this menu");
+//				return;
+			}
+
+        	var sTitle = "";
+        	document.getElementById(FV_MenuId).className = "mud";
+        	document.getElementById(id).className = "mu";
+
+			fn_SetDealer(menuId);
+
+			switch(menuId) {
+				case "Main":
+					sTitle = "EIS Visualization Kanban";
+					urls = "/mp/eis/S210001_W01.xml";
+					break;
+				case "Dealer": // 메뉴명 by Dealer
+					sTitle = "Sales Status by Dealer";
+					urls = "/mp/eis/S210002_W01.xml";
+					break;
+				case "Model": // 메뉴명 by Model
+					sTitle = "Sales Status by Model";
+					urls = "/mp/eis/S210003_W01.xml";
+					break;
+				case "Area": // 메뉴명 By Area
+					sTitle = "Sales Status by Area";
+					urls = "/mp/eis/S210004_W01.xml";
+					break;
+				case "Kpi": // 메뉴명 Service KPI
+					sTitle = "Monthly Service KPI";
+					urls = "/mp/eis/S210005_W01.xml";
+					break;
+				case "FsAll": // 메뉴명 DLR FS By Brand
+					sTitle = "Dealer Financial Status_All";
+					urls = "/mp/eis/S210006_W01.xml";
+					break;
+				case "FsDealer": // 메뉴명 DLR FS
+					sTitle = "Dealer Financial Status_Dir";
+/*
+					// DLR FS Dealer 화면 Url 설정
+					if(FV_GroupId == "TM00000"){
+						if(FV_SvcNm == "T"){
+//							if(FV_TCNT > 6)
+	//							FV_FsDlrUrl = "/mp/eis/S210007_W01.xml";
+		//					else
+								FV_FsDlrUrl = "/mp/eis/S210007_W02.xml";
+						} else if(FV_SvcNm == "L"){
+							if(FV_LCNT > 6)
+								FV_FsDlrUrl = "/mp/eis/S210007_W01.xml";
+							else
+								FV_FsDlrUrl = "/mp/eis/S210007_W02.xml";
+						}
+					} else{
+						FV_FsDlrUrl = "/mp/eis/S210007_W03.xml";
+					}
+
+*/
+					// DLR FS Dealer 화면 Url 설정
+					if(FV_GroupId == "TM00000"){
+						FV_FsDlrUrl = "/mp/eis/S210011_W01.xml";
+					} else{
+						FV_FsDlrUrl = "/mp/eis/S210007_W03.xml";
+					}
+					urls = FV_FsDlrUrl;
+					break;
+				case "SSBYTeam": // 메뉴명 by SC
+					sTitle = "Sales Status by Team";
+					urls = "/mp/eis/S210014_W01.xml";
+					break;
+				case "SSBYSC": // 메뉴명 by SC
+					sTitle = "Sales Status by SC";
+					urls = "/mp/eis/S210008_W01.xml";
+					break;
+				case "DnCToday": // 메뉴명 Today Result
+					sTitle = "Delivery&Contract of 2day";
+					urls = "/mp/eis/S210009_W01.xml";
+					break;
+				case "MonthSaProg": // 메뉴명 Monthly Progress
+					sTitle = "Monthly Sales Progress";
+					urls = "/mp/eis/S210010_W01.xml";
+					break;
+				case "Process": // 메뉴명 Process Rpt
+					sTitle = "Sales Process Report";
+					urls = "/mp/eis/S210013_W01.xml";
+					break;
+			    case "Forecast": // 메뉴명 C/S Forecast
+					sTitle = "Sales Process Report";
+					urls = "/mp/eis/S210012_W01.xml";
+//					alert("We are preparing for this menu");
+//					return;
+					break;
+			}
+			//st_Title.setValue(sTitle);
+        	ifrm_Main.setSrc(urls);
+        	FV_MenuId = id;
+						//alert(sTitle + ":::" + urls);
+
+        }
+        function fn_SetDealer(id){
+	    	if(id == "Main"|| id=="Model" || id=="Forecast"){
+		    	if(FV_GroupId == "TM00000"){
+		        	if(FV_SvcNm == "T"){
+						cb_TDealer.show();
+						cb_LDealer.hide();
+					} else if(FV_SvcNm == "L"){
+						cb_TDealer.hide();
+						cb_LDealer.show();
+					}
+	        	} else{
+	        		cb_TDealer.hide();
+	        		cb_LDealer.hide();
+	        	}
+	        } else{
+	        	cb_TDealer.hide();
+	        	cb_LDealer.hide();	        
+	        }
+        }
+        /****************************************************************
+		* 로그아웃
+		* @param  : 없음
+		* @return : 없음
+		******************************************************************/
+       	function fn_Logout(){
+       		var result = confirm("Do you want to close this window?");
+
+	    	if(result == true) {
+	      		document.location.href = path+"/mp/comm/Mdms.xml";
+	      	} else {
+	      		return;
+	      	}
+       	}
+        fn_OnLoad();
+        ]]></script>
+    </head>
+    <body>
+    	<xf:image id="image20"
+    		src="/mp/images/eis/top_bg.png"
+    		style="position: absolute ;height:52px;width:1024px;right:0px;top:0px;">
+    	</xf:image>
+    	<xf:image id="image1"
+    		style="position: absolute ;height:52px;width:1024px;left:0px;top:0px;"
+    		src="/mp/images/eis/top_bg.png">
+    	</xf:image>
+    	<!--w2:textbox id="st_Title"
+    		style="position: absolute ;vertical-align:middle;height:16px;width:255px;left:300px;top:16px;"
+    		label="" class=" title">
+    		</w2:textbox-->
+    	<xf:image id="t_sys_name"
+    		style="position: absolute ;height: 40px;width: 116px;left:300px;top:5px;"
+    		src="/mp/images/eis/t_sys_name.png">
+    	</xf:image>
+    	<w2:textbox id="st_Day"
+    		style="position: absolute ;height:20px;text-align:right;width:254px;left:692px;top:12px;"
+    		class=" date" label="">
+    	</w2:textbox>
+    	<xf:image id="btn_Toyota"
+    		style="position: absolute ;height: 40px;width: 142px;left:149px;top:5px;"
+    		src="/mp/images/eis/toyota_tab_sel.png">
+    		<script ev:event="onclick" type="javascript"><![CDATA[ 
+    			FV_SvcNm = "T";
+
+    			btn_Lexus.setSrc("/mp/images/eis/lexus_tab_sel.png");
+				btn_Toyota.setSrc("/mp/images/eis/toyota_tab_def.png");				
+
+				cb_LDealer.setValue("");
+				cb_TDealer.setValue("");
+
+				fn_MenuChange(FV_MenuId);
+    		]]></script>
+    	</xf:image>
+    	<xf:image id="btn_Lexus"
+    		src="/mp/images/eis/lexus_tab_def.png"
+    		style="position: absolute ;cursor:pointer;height: 40px;width: 142px;left:7px;top:5px;">
+    		<script ev:event="onclick" type="javascript"><![CDATA[ 
+    			if(FV_GroupId == "TM00000"){
+	    			FV_SvcNm = "L";
+
+	    			btn_Lexus.setSrc("/mp/images/eis/lexus_tab_def.png");
+					btn_Toyota.setSrc("/mp/images/eis/toyota_tab_sel.png");
+
+					cb_LDealer.setValue("");
+					cb_TDealer.setValue("");
+
+					fn_MenuChange(FV_MenuId);
+				}
+    		]]></script>
+    	</xf:image>
+    	<xf:image id="logout"
+    		style="position: absolute ;cursor:pointer;height: 40px;width: 58px;left:953px;top:5px;"
+    		src="/mp/images/eis/logout.png">
+    		<script ev:event="onclick" type="javascript"><![CDATA[ 
+    			fn_Logout();
+    		]]></script>
+    	</xf:image>
+    	<w2:iframe id="ifrm_Main"
+    		style="position: absolute ;height:610px;width:1024px;left:1px;top:81px;"
+    		src="" scrolling="no">
+    	</w2:iframe>
+    	<xf:switch caseClass="" class="" id="switch_Menu"
+    		style="position: absolute ;height:28px;width:1024px;left:0px;top:52px;">
+    		<xf:case class="" id="case1"
+    			style="position:absolute;height:28px;width:1024px;left:0px;top:0px;">
+    			<xf:image id="image39"
+    				src="/mp/images/eis/submenu_bg.png"
+    				style="position: absolute ;height:28px;width: 1024px;left:0px;top:0px;">
+    			</xf:image>
+    			<xf:output class="mu" id="stA_Main" label=""
+    				style="position: absolute ;height:20px;cursor:pointer;width:112px;left:0px;top:0px;">
+    				<xf:label>Main</xf:label>
+    				<script ev:event="onclick" type="javascript"><![CDATA[ 
+		    			fn_MenuChange(this.id);
+		    		]]></script>
+    			</xf:output>
+    			<xf:output class="mud" id="stA_Forecast" label=""
+    				style="position: absolute ;height:20px;cursor:pointer;width:112px;left:114px;top:0px;">
+    				<xf:label>C/S Forecast</xf:label>
+    				<script ev:event="onclick" type="javascript"><![CDATA[ 
+		    			fn_MenuChange(this.id);
+		    		]]></script>
+    			</xf:output>
+    			<xf:output class="mud" id="stA_Model" label=""
+    				style="position: absolute ;height:20px;cursor:pointer;width:112px;left:228px;top:0px;">
+    				<xf:label>By Model</xf:label>
+    				<script ev:event="onclick" type="javascript"><![CDATA[ 
+		    			fn_MenuChange(this.id);
+		    		]]></script>
+    			</xf:output>
+    			<xf:output class="mud" id="stA_Dealer" label=""
+    				style="position: absolute ;height:20px;cursor:pointer;width:112px;left:342px;top:0px;">
+    				<xf:label>By Dealer</xf:label>
+    				<script ev:event="onclick" type="javascript"><![CDATA[ 
+		    			fn_MenuChange(this.id);
+		    		]]></script>
+    			</xf:output>
+    			<xf:output class="mud" id="stA_Process" label=""
+    				style="position: absolute ;height:20px;cursor:pointer;width:112px;left:456px;top:0px;">
+    				<xf:label>Process Rpt</xf:label>
+    				<script ev:event="onclick" type="javascript"><![CDATA[ 
+		    			fn_MenuChange(this.id);
+		    		]]></script>
+    			</xf:output>
+    			<xf:output class="mud" id="stA_Area" label="" 
+				style="position: absolute ;height:20px;cursor:pointer;width:112px;left:570px;top:0px;">
+    				<xf:label>By Area</xf:label>
+    				<script ev:event="onclick" type="javascript"><![CDATA[
+		    			fn_MenuChange(this.id);
+		    		]]></script>
+    			</xf:output><xf:output class="mud" id="stA_Kpi" label=""
+    				style="position: absolute ;height:20px;cursor:pointer;width:112px;left:684px;top:0px;">
+    				<xf:label>SVC KPI</xf:label>
+    				<script ev:event="onclick" type="javascript"><![CDATA[ 
+		    			fn_MenuChange(this.id);
+		    		]]></script>
+    			</xf:output>
+    			<xf:output id="stA_FsDealer"
+    				style="position: absolute ;height:20px;cursor:pointer;width:112px;left:798px;top:0px;"
+    				class="mud" label="">
+    				<xf:label>DLR FS</xf:label>
+    				<script ev:event="onclick" type="javascript"><![CDATA[ 
+		    			fn_MenuChange(this.id);
+		    		]]></script>
+    			</xf:output>
+				<xf:output id="stA_FsAll" 
+					style="position: absolute ;height:20px;cursor:pointer;width:112px;left:912px;top:0px;" 
+					class="mud" label="">
+					<xf:label>FS by Brand</xf:label>
+					<script ev:event="onclick" type="javascript"><![CDATA[ 
+								fn_MenuChange(this.id);
+							]]></script>
+		    	</xf:output>
+    		</xf:case>
+    		<xf:case class="" id="case2"
+    			style="position:absolute;height:28px;width:1024px;left:0px;top:0px;">
+    			<xf:image id="image40"
+    				src="/mp/images/eis/submenu_bg.png"
+    				style="position: absolute ;height:28px;width: 1024px;left:0px;top:0px;">
+    			</xf:image>
+    			<xf:output class="mu" id="stD_Main" label=""
+    				style="position: absolute ;cursor:pointer;height:20px;width:112px;left:0px;top:0px;">
+    				<xf:label>Main</xf:label>
+    				<script ev:event="onclick" type="javascript"><![CDATA[ 
+		    			fn_MenuChange(this.id);
+		    		]]></script>
+    			</xf:output>
+    			<xf:output class="mud" id="stD_MonthSaProg"
+    				label="MonthSaProg"
+    				style="position: absolute ;height:20px;cursor:pointer;width:112px;left:114px;top:0px;">
+    				<xf:label><![CDATA[ Monthly Progress]]></xf:label>
+    				<script ev:event="onclick" type="javascript"><![CDATA[ 
+		    			fn_MenuChange(this.id);
+		    		]]></script>
+    			</xf:output>
+    			<xf:output class="mud" id="stD_Model" label="By Model"
+    				style="position: absolute ;height:20px;cursor:pointer;width:112px;left:228px;top:0px;">
+    				<xf:label>By Model</xf:label>
+    				<script ev:event="onclick" type="javascript"><![CDATA[ 
+		    			fn_MenuChange(this.id);
+		    		]]></script>
+    			</xf:output>
+    			<xf:output class="mud" id="stD_SSBYTeam" label="SSBYTeam"
+    				style="position: absolute ;height:20px;cursor:pointer;width:112px;left:342px;top:0px;">
+    				<xf:label>By Team</xf:label>
+    				<script ev:event="onclick" type="javascript"><![CDATA[ 
+		    			fn_MenuChange(this.id);
+		    		]]></script>
+    			</xf:output>
+    			<xf:output class="mud" id="stD_SSBYSC" label="SSBYSC"
+    				style="position: absolute ;height:20px;cursor:pointer;width:112px;left:456px;top:0px;">
+    				<xf:label>By SC</xf:label>
+    				<script ev:event="onclick" type="javascript"><![CDATA[ 
+		    			fn_MenuChange(this.id);
+		    		]]></script>
+    			</xf:output>
+    			<xf:output class="mud" id="stD_Area" label="SSBYSC"
+    				style="position: absolute ;height:20px;cursor:pointer;width:112px;left:570px;top:0px;">
+    				<xf:label>By Area</xf:label>
+    				<script ev:event="onclick" type="javascript"><![CDATA[ 
+		    			fn_MenuChange(this.id);
+		    		]]></script>
+    			</xf:output>
+    			<xf:output class="mud" id="stD_DnCToday"
+    				label="DnCToday"
+    				style="position: absolute ;height:20px;cursor:pointer;width:112px;left:684px;top:0px;">
+    				<xf:label><![CDATA[Today Result]]></xf:label>
+    				<script ev:event="onclick" type="javascript"><![CDATA[ 
+		    			fn_MenuChange(this.id);
+		    		]]></script>
+    			</xf:output>
+    			<xf:output class="mud" id="stD_Kpi" label="Service KPI"
+    				style="position: absolute ;height:20px;cursor:pointer;width:112px;left:798px;top:0px;">
+    				<xf:label>Service KPI</xf:label>
+    				<script ev:event="onclick" type="javascript"><![CDATA[ 
+		    			fn_MenuChange(this.id);
+		    		]]></script>
+    			</xf:output>
+    			<xf:output class="mud" id="stD_FsDealer"
+    				label="DLR FS_Dealer"
+    				style="position: absolute ;height:20px;cursor:pointer;width:112px;left:912px;top:0px;">
+    				<xf:label>Financial Status</xf:label>
+    				<script ev:event="onclick" type="javascript"><![CDATA[ 
+		    			fn_MenuChange(this.id);
+		    		]]></script>
+    			</xf:output>
+    		</xf:case>
+    	</xf:switch>
+    	<xf:select1 allOption="" appearance="minimal"
+    		chooseOption="true" direction="auto" disabled="false"
+    		displayMode="label" id="cb_LDealer"
+    		style="position: absolute ;cursor:pointer;height:22px;color:#ffffff;font-size:11px;width:80px;background-color:#222223;display:none;left:596px;border:1px solid #494949;top:16px;"
+    		submenuSize="auto" visibleRowNum="10" chooseOptionLabel="ALL">
+    		<script ev:event="onchange" type="javascript"><![CDATA[ 
+    			FV_DealerId = this.getValue();
+    			fn_MenuChange(FV_MenuId);
+    		]]></script>
+    		<xf:choices></xf:choices>
+    	</xf:select1>
+    	<xf:select1 allOption="" appearance="minimal"
+    		chooseOption="true" chooseOptionLabel="ALL" direction="auto"
+    		disabled="false" displayMode="label" id="cb_TDealer"
+    		style="position: absolute ;cursor:pointer;height:22px;color:#ffffff;font-size:11px;width:80px;background-color:#222223;display:none;left:596px;border:1px solid #494949;top:16px;"
+    		submenuSize="auto" visibleRowNum="10">
+    		<script ev:event="onchange" type="javascript"><![CDATA[ 
+    			FV_DealerId = this.getValue();
+    			fn_MenuChange(FV_MenuId);
+    		]]></script>
+    		<xf:choices></xf:choices>
+    	</xf:select1>
+    	<div id="spinner"
+    		style="position: absolute; margin-top:306px; margin-left:447px; display:none; text-align:center">
+    		<img
+    			src="/mp/images/loading-black.gif" />
+    	</div>
+    </body>
+</html>

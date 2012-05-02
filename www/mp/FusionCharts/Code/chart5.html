@@ -1,0 +1,50 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<title>My First chart using FusionCharts - Rendering HTML5 based chart</title>
+<script type="text/javascript" src="../Charts/FusionCharts.js"></script>
+</head>
+<body topmargin="0" leftmargin="0" marginheight="0" marginwidth="0">
+	<div id="chartContainer">FusionCharts will load here</div>
+	<script type="text/javascript"><!--
+/*
+	  FusionCharts.setCurrentRenderer('JavaScript');
+	  var myChart = new FusionCharts("../Charts/MSLine.swf", "myChartId", "476", "164", "0", "1");
+	  myChart.setXMLUrl("MSLine1.xml");
+	  myChart.render("chartContainer");
+*/
+
+	var HChart = new FusionCharts({'swfUrl': 'MSLine.swf', 'id': 'javascript-chart', 'width': '470', 'height': '200', 'debugMode': '0', 'registerWithJS': '0', renderer: 'javascript'});
+	HChart.setDataURL('chartxml2.jsp');
+	if (typeof HChart._overrideJSChartConfiguration === 'function') {
+	    HChart._overrideJSChartConfiguration({
+	        chart: {
+	            defaultSeriesType: 'spline'
+	            ,borderRadius: 15
+	            ,zoomType: 'x'
+	        },
+	        credits: {
+	            enabled: false
+	        },
+	        title: {
+	            style: {
+	                color: '#FFFFFF'
+	            }
+	        }
+	    });
+	}
+	HChart.setTransparent('true');
+	HChart.render('chartContainer');
+	// -->
+  	</script>
+	</div>
+<table width="800" height="30" bgColor = "2a2a2a">
+	<tr>
+		<td align="center">
+			<img src="/mp/images/bt_pop_close.png" width="30" height="24" hspace="3" align="absmiddle" border="0" onClick="javascript:window.close();" style="cursor:hand">
+		</td>
+	</tr>
+</table>					  	  
+</body>
+</html>

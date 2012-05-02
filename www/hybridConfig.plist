@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>DTR</key>
+	<string>D</string>
+	<key>appID</key>
+	<string>TEST</string>
+	<key>applicationUpdatePolicy</key>
+	<false/>
+	<key>directory</key>
+	<dict>
+		<key>backupDirectory</key>
+		<string>/backup</string>
+		<key>workingDirectory</key>
+		<string>/appdata</string>
+		<key>wqDirectory</key>
+		<string>/appdata/websquare</string>
+	</dict>
+	<key>engineUpdatePolicy</key>
+	<false/>
+	<key>errorPage</key>
+	<string>error.html</string>
+	<key>forcedCopy</key>
+	<true/>
+	<key>initialPatchNumber</key>
+	<integer>0</integer>
+	<key>refreshUpdatePolicy</key>
+	<false/>
+	<key>server</key>
+	<string>http://192.168.2.22</string>
+	<key>startPage</key>
+	<string>index.html</string>
+	<key>version</key>
+	<dict>
+		<key>appVersion</key>
+		<string>1.0.0</string>
+		<key>engineVersion</key>
+		<string>1.0.0</string>
+	</dict>
+	<key>wqStartPage</key>
+	<string>/mp/comm/Mdms.xml</string>
+</dict>
+</plist>

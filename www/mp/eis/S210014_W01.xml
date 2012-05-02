@@ -1,0 +1,458 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?xml-stylesheet href="/mp/css/frame.css" type="text/css"?>
+<html xmlns="http://www.w3.org/1999/xhtml"
+    xmlns:ev="http://www.w3.org/2001/xml-events"
+    xmlns:w2="http://www.inswave.com/websquare" xmlns:xf="http://www.w3.org/2002/xforms">
+    <head>
+        <w2:buildDate/>
+        <xf:model>
+            <xf:instance>
+                <data xmlns="">               
+		        </data>
+            </xf:instance>
+		    <xf:submission id="submissionData" ref="request" target="resData"
+        		action=""
+        		method="post" mediatype="application/xml" encoding="UTF-8" instance="" replace="instance"
+        		errorHandler="" customHandler="" mode="asynchronous"
+        		processMsg="">
+        		<script type="javascript" ev:event="xforms-submit-done"><![CDATA[
+					fn_SetGrid();
+            	]]></script>
+        	</xf:submission>
+        </xf:model>        
+        <script type="javascript" src="/mp/js/common.js"></script>
+		<script type="javascript" src="/mp/js/WebSquare.js"></script>
+        <script type="javascript"><![CDATA[
+     	var FV_sUpGroupId = GV_UP_GROUP_ID;
+        var FV_yyyymm = gfn_GetDate(0,0,0).substring(0,7);
+		var FV_sSvcNm = parent.FV_SvcNm;
+
+		var FV_TScnt = 0;
+		var FV_RScnt = 0;
+		var FV_TCcnt = 0;
+		var FV_RCcnt = 0;
+		var FV_SRate = 0;
+		var FV_CRate = 0;
+
+		cb_Year.setValue(FV_yyyymm.substring(0,4));
+		cb_Month.setValue(FV_yyyymm.substring(5,8));
+		fn_Search();
+
+		function fn_Search(){
+			// To show Loading Image
+			parent.fn_SpinnerShow();
+			var actionNm = "";
+			if(FV_sSvcNm == "T"){
+				actionNm = "TOYOTAAction";
+			}
+
+			setTitSendInfo("request", actionNm, "", "mdms/mp/eis:S210016_W01_S01,mdms/mp/eis:S210016_W01_S02");
+	       	setInputParamData("DEALER_ID", FV_sUpGroupId);
+	       	setInputParamData("YYYY", cb_Year.getValue());
+			setSubmissison("submissionData");
+        }
+
+        function fn_SetGrid(){
+			var contract = WebSquare.ModelUtil.findInstanceNodes("resData/root/dataset[@id='ds_Contract']/record");
+			var sales = WebSquare.ModelUtil.findInstanceNodes("resData/root/dataset[@id='ds_Sales']/record");
+			fn_Set_Dataset(contract,grid2,"contract");
+			fn_Set_Dataset(sales,grid1,"sales");
+        }
+
+		function fn_Set_Dataset(sDsName, gridNm,flag){
+			gridNm.initGrid();
+			var sfx = cb_Month.getValue();
+			var sDeptNm = "";
+			var sAchieve = "";
+			var sTValue = "";
+			var sSValue = "";
+
+			var tValueTotal = 0;
+			var sValueTotal = 0;
+
+			if(flag == "sales"){
+				FV_TCcnt = 0;
+				FV_RCcnt = 0;
+				FV_CRate = 0;
+			}else{
+				FV_TScnt = 0;
+				FV_RScnt = 0;
+				FV_SRate = 0;
+			}
+
+			for(var i=0;i<sDsName.length;i++){
+				gridNm.insertRow(i);
+
+   				sDeptNm = WebSquare.xml.getValue(sDsName[i],"DEPT_NM");
+   				sAchieve = WebSquare.xml.getValue(sDsName[i],"P_"+sfx);
+				sTValue = WebSquare.xml.getValue(sDsName[i],"T_"+sfx);
+
+				if(flag == "sales")
+					sSValue = WebSquare.xml.getValue(sDsName[i],"S_"+sfx);
+				else
+					sSValue = WebSquare.xml.getValue(sDsName[i],"C_"+sfx);
+
+				gridNm.setCellData( i, 0, sDeptNm );
+				gridNm.setCellData( i, 1, sAchieve );
+				gridNm.setCellData( i, 2, sSValue );
+				gridNm.setCellData( i, 3, sTValue+"%" );
+				gridNm.setCellColor( i, 3, "#f0b501");
+
+				if(flag == "sales"){
+					FV_TCcnt += parseInt(sSValue);
+					FV_RCcnt += parseInt(sTValue);
+				}else{
+					FV_TScnt += parseInt(sSValue);
+					FV_RScnt += parseInt(sTValue);
+				}
+			}
+			if(flag == "sales"){
+				if(FV_RScnt==0){
+					FV_CRate = 0;
+				}else{
+					FV_CRate = Math.round((FV_TCcnt/FV_RCcnt)*100, 1);
+				}
+				textbox2.setValue(FV_RCcnt);
+				textbox5.setValue(FV_TCcnt);
+				textbox7.setValue(FV_CRate+"%");
+			}else{
+				if(FV_RScnt==0){
+					FV_SRate=0;
+				}else{
+					FV_SRate = Math.round((FV_TScnt/FV_RScnt)*100, 1);
+				}
+				textbox14.setValue(FV_RScnt);
+				textbox24.setValue(FV_TScnt);
+				textbox19.setValue(FV_SRate+"%");
+			}
+			textbox1.setValue(cb_Month.getValue()+"월 목표");
+			textbox25.setValue(cb_Month.getValue()+"월 목표");
+			parent.fn_SpinnerHide();
+		}
+
+        ]]></script>
+    </head>
+    <body>
+    	<xf:output class="sub_title_b" id="output30" label=""
+    		style="position: absolute ;height:20px;width:204px;left:20px;top:11px;">
+    		<xf:label>판매</xf:label>
+    	</xf:output>
+    	<xf:output id="sub_title"
+    		style="position: absolute ;height:20px;width:204px;left:20px;top:10px;"
+    		class="sub_title" label="">
+    		<xf:label>판매</xf:label>
+    	</xf:output>
+    	<xf:image id="image26"
+    		style="position: absolute ;height:582px;width:512px;left:0px;top:26px;"
+    		src="/mp/images/eis/shape_7.png">
+    	</xf:image>
+    	<xf:output id="output49"
+    		style="position: absolute ;height:20px;width:253px;left:532px;top:11px;"
+    		class="sub_title_b" label="">
+    		<xf:label>계약</xf:label>
+    	</xf:output>
+    	<xf:output id="output50"
+    		style="position: absolute ;height:20px;width:253px;left:531px;top:10px;"
+    		class="sub_title" label="">
+    		<xf:label>계약</xf:label>
+    	</xf:output>
+
+    	<xf:image id="image30"
+    		style="position: absolute ;height:582px;width:512px;left:506px;top:26px;"
+    		src="/mp/images/eis/shape_7.png">
+    	</xf:image>
+    	<xf:select1 allOption="" appearance="minimal" chooseOption=""
+    		direction="auto" disabled="false" displayMode="label" id="cb_Year"
+    		style="position: absolute ;cursor:pointer;height:22px;color:#ffffff;font-size:11px;width:80px;background-color:#222223;left:831px;border:1px solid #494949;top:5px;"
+    		submenuSize="auto" visibleRowNum="10">
+    		<xf:choices>
+    			<xf:item>
+    				<xf:label>2008</xf:label>
+    				<xf:value>2008</xf:value>
+    			</xf:item>
+    			<xf:item>
+    				<xf:label>2009</xf:label>
+    				<xf:value>2009</xf:value>
+    			</xf:item>
+    			<xf:item>
+    				<xf:label>2010</xf:label>
+    				<xf:value>2010</xf:value>
+    			</xf:item>
+    			<xf:item>
+    				<xf:label>2011</xf:label>
+    				<xf:value>2011</xf:value>
+    			</xf:item>
+    			<xf:item>
+    				<xf:label>2012</xf:label>
+    				<xf:value>2012</xf:value>
+    			</xf:item>
+    			<xf:item>
+    				<xf:label>2013</xf:label>
+    				<xf:value>2013</xf:value>
+    			</xf:item>
+    		</xf:choices>
+    		<script ev:event="onchange" type="javascript"><![CDATA[ fn_Search(); ]]></script>
+    	</xf:select1>
+    	<xf:select1 allOption="" appearance="minimal" chooseOption=""
+    		direction="auto" disabled="false" displayMode="label"
+    		id="cb_Month"
+    		style="position: absolute ;height:22px;cursor:pointer;color:#ffffff;width:50px;font-size:11px;background-color:#222223;left:917px;border:1px solid #494949;top:5px;"
+    		submenuSize="auto" visibleRowNum="12">
+    		<xf:choices>
+    			<xf:item>
+    				<xf:label>01</xf:label>
+    				<xf:value>01</xf:value>
+    			</xf:item>
+    			<xf:item>
+    				<xf:label>02</xf:label>
+    				<xf:value>02</xf:value>
+    			</xf:item>
+    			<xf:item>
+    				<xf:label>03</xf:label>
+    				<xf:value>03</xf:value>
+    			</xf:item>
+    			<xf:item>
+    				<xf:label>04</xf:label>
+    				<xf:value>04</xf:value>
+    			</xf:item>
+    			<xf:item>
+    				<xf:label>05</xf:label>
+    				<xf:value>05</xf:value>
+    			</xf:item>
+    			<xf:item>
+    				<xf:label>06</xf:label>
+    				<xf:value>06</xf:value>
+    			</xf:item>
+    			<xf:item>
+    				<xf:label>07</xf:label>
+    				<xf:value>07</xf:value>
+    			</xf:item>
+    			<xf:item>
+    				<xf:label>08</xf:label>
+    				<xf:value>08</xf:value>
+    			</xf:item>
+    			<xf:item>
+    				<xf:label>09</xf:label>
+    				<xf:value>09</xf:value>
+    			</xf:item>
+    			<xf:item>
+    				<xf:label>10</xf:label>
+    				<xf:value>10</xf:value>
+    			</xf:item>
+    			<xf:item>
+    				<xf:label>11</xf:label>
+    				<xf:value>11</xf:value>
+    			</xf:item>
+    			<xf:item>
+    				<xf:label>12</xf:label>
+    				<xf:value>12</xf:value>
+    			</xf:item>
+    		</xf:choices>
+    		<script ev:event="onchange" type="javascript"><![CDATA[ fn_Search(); ]]></script>
+    	</xf:select1>
+    	<w2:roundRectangle id="roundRectangle1"
+    		style="position: absolute ;height:86px;width:114px;left:142px;top:51px;"
+    		arcsize="5" borderWidth="3">
+    		<w2:gradient gradientType="top_bottom" color2="#643636"
+    			color1="#bb8d8d">
+    		</w2:gradient>
+    	</w2:roundRectangle>
+    	<w2:roundRectangle id="roundRectangle2"
+    		style="position: absolute ;height:86px;width:114px;left:259px;top:51px;"
+    		arcsize="5" borderWidth="3">
+    		<w2:gradient gradientType="top_bottom" color2="#37466f"
+    			color1="#93a2cb">
+    		</w2:gradient>
+    	</w2:roundRectangle>
+    	<w2:roundRectangle id="roundRectangle3"
+    		style="position: absolute ;height:86px;width:114px;left:377px;top:51px;"
+    		arcsize="5" borderWidth="3">
+    		<w2:gradient gradientType="top_bottom" color2="#456536"
+    			color1="#9fbf90">
+    		</w2:gradient>
+    	</w2:roundRectangle>
+    	<w2:textbox id="textbox1" label="월 목표"
+    		style="position: absolute ;left:152px;top:64px;width: 95px;height: 28px;font: bold 18px Helvetica,AppleGothic,Sans-serif;color: #ffffff;;text-align:center">
+    	</w2:textbox>
+    	<w2:textbox id="textbox2"
+    		style="position: absolute ;height: 28px;text-align:center;color: #ffffff;font:bold 20px Helvetica,AppleGothic,Sans-serif;width: 95px;left:152px;top:100px;"
+    		label="0">
+    	</w2:textbox>
+    	<w2:textbox id="textbox4"
+    		style="position: absolute ;left:269px;top:64px;width: 95px;height: 28px;font: bold 18px Helvetica,AppleGothic,Sans-serif;color: #ffffff;;text-align:center"
+    		label="출고">
+    	</w2:textbox>
+    	<w2:textbox id="textbox5"
+    		style="position: absolute ;height: 28px;text-align:center;color: #ffffff;font:bold 20px Helvetica,AppleGothic,Sans-serif;width: 95px;left:269px;top:100px;"
+    		label="0">
+    	</w2:textbox>
+    	<w2:textbox id="textbox6"
+    		style="position: absolute ;left:387px;top:64px;width: 95px;height: 28px;font: bold 18px Helvetica,AppleGothic,Sans-serif;color: #ffffff;;text-align:center"
+    		label="목표대비">
+    	</w2:textbox>
+    	<w2:textbox id="textbox7"
+    		style="position: absolute ;height: 28px;text-align:center;color: #f0b501;font:bold 20px Helvetica,AppleGothic,Sans-serif;width: 95px;left:387px;top:100px;"
+    		label="0%">
+    	</w2:textbox>
+    	<w2:grid baseNode="vector" repeatNode="data/INFO" id="grid1"
+    		style="position: absolute ;left:21px;top:146px;width:471px;height:442px;"
+    		overflowX="hidden" overflowY="hidden" class="gridR" readOnly="true"
+    		rowMouseOver="false" oddEvenColorDisplay="false">
+    		<w2:header id="header1" style="" class="gridHeaderTableR"
+    			columnClass="gridHeaderTDR">
+    			<w2:row id="row1" style="">
+    				<w2:column id="column7" style="height:40px;"
+    					hidden="" inputType="text" width="116" valueType="binary">
+    				</w2:column>
+    				<w2:column id="column5" style="height:40px;"
+    					hidden="" inputType="text" width="118" valueType="binary"
+    					value="목표">
+    				</w2:column>
+    				<w2:column id="column3" style="height:40px;"
+    					hidden="" inputType="text" width="118" valueType="binary"
+    					value="출고">
+    				</w2:column>
+    				<w2:column id="column1" style="height:40px;"
+    					hidden="" width="118" inputType="text" valueType="binary"
+    					value="목표대비">
+    				</w2:column>
+    			</w2:row>
+    		</w2:header>
+    		<w2:gBody id="gBody1" style="" class="gridBodyTableR"
+    			columnClass="gridBodyTDR">
+    			<w2:row id="row2" style="">
+    				<w2:column id="column8" style="height:40px;"
+    					hidden="" inputType="text" width="116" valueType="binary">
+    				</w2:column>
+    				<w2:column id="column6"
+    					style='height:40px;background: url("/mp/images/eis/grid_bgR.png");'
+    					hidden="" inputType="text" width="118" valueType="binary"
+    					value="0" imageSrc="">
+    				</w2:column>
+    				<w2:column id="column4"
+    					style='height:40px;background: url("/mp/images/eis/grid_bgR.png");'
+    					hidden="" inputType="text" width="118" valueType="binary">
+    				</w2:column>
+    				<w2:column id="column2"
+    					style="height:40px;color:#f0b501;background: url(/mp/images/eis/grid_bgR.png);"
+    					hidden="" width="118" inputType="text" valueType="binary">
+    				</w2:column>
+    			</w2:row>
+    		</w2:gBody>
+    	</w2:grid>
+    	<w2:textbox id="textbox8" label=""
+    		style="position: absolute ;left: 153px;top: 92px;width: 93px;height: 1px;background-color:#120000;">
+    	</w2:textbox>
+    	<w2:textbox id="textbox9" label=""
+    		style="position: absolute ;left:155px;top:93px;width: 93px;height: 1px;background-color:#a88484;">
+    	</w2:textbox>
+    	<w2:textbox id="textbox11" label=""
+    		style="position: absolute ;left:270px;top:93px;width: 93px;height: 1px;background-color:#120000;">
+    	</w2:textbox>
+    	<w2:textbox id="textbox10" label=""
+    		style="position: absolute ;left:270px;top:94px;width: 93px;height: 1px;background-color:#8491b1;">
+    	</w2:textbox>
+
+    	<w2:textbox id="textbox13" label=""
+    		style="position: absolute ;left:388px;top:93px;width: 93px;height: 1px;background-color:#120000;">
+    	</w2:textbox>
+    	<w2:textbox id="textbox12" label=""
+    		style="position: absolute ;left:388px;top:94px;width: 93px;height: 1px;background-color:#90a884;">
+    	</w2:textbox>
+
+    	<w2:roundRectangle arcsize="5" borderWidth="3" id="roundRectangle4" style="position: absolute ;height:86px;width:114px;left:764px;top:51px;">
+    		<w2:gradient color1="#93a2cb" color2="#37466f" gradientType="top_bottom">
+    		</w2:gradient>
+    	</w2:roundRectangle><w2:roundRectangle arcsize="5" borderWidth="3" id="roundRectangle5" style="position: absolute ;height:86px;width:114px;left:647px;top:51px;">
+    		<w2:gradient color1="#bb8d8d" color2="#643636" gradientType="top_bottom">
+    		</w2:gradient>
+    	</w2:roundRectangle><w2:roundRectangle arcsize="5" borderWidth="3" id="roundRectangle6" style="position: absolute ;height:86px;width:114px;left:882px;top:51px;">
+    		<w2:gradient color1="#9fbf90" color2="#456536" gradientType="top_bottom">
+    		</w2:gradient>
+    	</w2:roundRectangle><w2:textbox id="textbox14" label="0"
+    		style="position: absolute ;height: 28px;text-align:center;color: #ffffff;font:bold 20px Helvetica,AppleGothic,Sans-serif;width: 95px;left:657px;top:100px;">
+    	</w2:textbox>
+    	<w2:textbox id="textbox15" label=""
+    		style="position: absolute ;left:775px;top:94px;width: 93px;height: 1px;background-color:#8491b1;">
+    	</w2:textbox>
+    	
+    	<w2:textbox id="textbox16" label=""
+    		style="position: absolute ;left:658px;top:92px;width: 93px;height: 1px;background-color:#120000;">
+    	</w2:textbox>
+    	<w2:textbox id="textbox17" label=""
+    		style="position: absolute ;left:775px;top:93px;width: 93px;height: 1px;background-color:#120000;">
+    	</w2:textbox>
+    	<w2:textbox id="textbox18" label=""
+    		style="position: absolute ;left:893px;top:93px; width: 93px; height: 1px; background-color:#120000; ">
+    	</w2:textbox>
+    	<w2:textbox id="textbox19" label="0%"
+    		style="position: absolute ;height: 28px;text-align:center;color: #f0b501;font:bold 20px Helvetica,AppleGothic,Sans-serif;width: 95px;left:892px;top:100px;">
+    	</w2:textbox>
+    	<w2:textbox id="textbox20" label=""
+    		style="position: absolute ;left:893px;top:94px;width: 93px;height: 1px;background-color:#90a884;">
+    	</w2:textbox>
+    	<w2:textbox id="textbox21" label=""
+    		style="position: absolute ;left:660px;top:93px;width: 93px;height: 1px;background-color:#a88484;">
+    	</w2:textbox>
+    	<w2:textbox id="textbox22" label="계약"
+    		style="position: absolute ;left:774px;top:64px;width: 95px;height: 28px;font: bold 18px Helvetica,AppleGothic,Sans-serif;color: #ffffff;;text-align:center">
+    	</w2:textbox>
+    	<w2:grid baseNode="vector" class="gridR" id="grid2"
+    		oddEvenColorDisplay="false" overflowX="hidden" overflowY="hidden"
+    		repeatNode="data/INFO" rowMouseOver="false" readOnly="true"
+    		style="position: absolute ;left:526px;top:146px;width:471px;height:442px;">
+    		<w2:header class="gridHeaderTableR"
+    			columnClass="gridHeaderTDR" id="header2" style="">
+    			<w2:row id="row3" style="">
+    				<w2:column hidden="" id="column9" inputType="text"
+    					style="height:40px;" valueType="binary" width="116">
+    				</w2:column>
+    				<w2:column hidden="" id="column10" inputType="text"
+    					style="height:40px;" value="목표" valueType="binary"
+    					width="118">
+    				</w2:column>
+    				<w2:column hidden="" id="column11" inputType="text"
+    					style="height:40px;" value="계약" valueType="binary"
+    					width="118">
+    				</w2:column>
+    				<w2:column hidden="" id="column12" inputType="text"
+    					style="height:40px;" value="목표대비" valueType="binary"
+    					width="118">
+    				</w2:column>
+    			</w2:row>
+    		</w2:header>
+    		<w2:gBody class="gridBodyTableR" columnClass="gridBodyTDR"
+    			id="gBody2" style="">
+    			<w2:row id="row4" style="">
+    				<w2:column hidden="" id="column13" inputType="text"
+    					style="height:40px;" valueType="binary" width="116">
+    				</w2:column>
+    				<w2:column hidden="" id="column14" imageSrc=""
+    					inputType="text"
+    					style='height:40px;background: url("/mp/images/eis/grid_bgR.png");'
+    					value="0" valueType="binary" width="118">
+    				</w2:column>
+    				<w2:column hidden="" id="column15" inputType="text"
+    					style='height:40px;background: url("/mp/images/eis/grid_bgR.png");'
+    					valueType="binary" width="118">
+    				</w2:column>
+    				<w2:column hidden="" id="column16" inputType="text"
+    					style="height:40px;color:#f0b501;background: url(/mp/images/eis/grid_bgR.png);"
+    					valueType="binary" width="118">
+    				</w2:column>
+    			</w2:row>
+    		</w2:gBody>
+    	</w2:grid>
+    	
+    	<w2:textbox id="textbox23" label="목표대비"
+    		style="position: absolute ;left:892px;top:64px;width: 95px;height: 28px;font: bold 18px Helvetica,AppleGothic,Sans-serif;color: #ffffff;;text-align:center">
+    	</w2:textbox>
+    	<w2:textbox id="textbox24" label="0"
+    		style="position: absolute ;height: 28px;text-align:center;color: #ffffff;font:bold 20px Helvetica,AppleGothic,Sans-serif;width: 95px;left:774px;top:100px;">
+    	</w2:textbox>
+    	
+    	<w2:textbox id="textbox25" label="월 목표"
+    		style="position: absolute ;left:657px;top:64px;width: 95px;height: 28px;font: bold 18px Helvetica,AppleGothic,Sans-serif;color: #ffffff;;text-align:center">
+    	</w2:textbox>
+    </body>
+</html>

@@ -1,0 +1,272 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta name="viewport" content="width=device-width, maximum-scale=1.0, user-scalable=no;" />
+    <meta http-equiv="Content-type" content="text/html; charset=utf-8">
+	<script type="text/javascript" charset="utf-8" src="cordova-1.5.0.js"></script>
+	<script type="text/javascript" charset="utf-8" src="json2.js"></script>
+	<script type="text/javascript" charset="utf-8" src="InAppUpdate.js"></script>
+   	<script type="text/javascript" charset="utf-8" src="barcodescanner.js"></script>
+    <script type="text/javascript" charset="utf-8" src="spin.js"></script>
+    <script type="text/javascript">
+        var debug_mode = 0;
+        var error_mode = 0;
+        function onBodyLoad()
+        {		
+            document.addEventListener("deviceready",onDeviceReady,false);
+        }
+        
+        function onInitSuccess() {
+            window.plugins.inappupdate.copyResource("checkEngineUpdate", "onFail");
+            /*
+            if(window.plugins.inappupdate.isFirstLaunch()) {
+                window.plugins.inappupdate.copyResource("checkEngineUpdate", "onFail");
+            } else {
+                checkEngineUpdate();
+            }*/
+        }	
+        
+        function checkApplicationUpdate() {
+            console.log("checkApplicationUpdate");
+            if(window.plugins.inappupdate.getApplicationUpdatePolicy()) {
+                if(!window.plugins.inappupdate.applicationStatus) {
+                    navigator.notification.confirm(
+                       'App을 복구하시겠습니까?',
+                       onConfirmApplication,
+                       'Engine error',
+                       '예,아니오'		
+                    );
+                } else {
+                    onApplicationUpdate();
+                }
+            } else {
+                checkRefreshUpdate();
+            }
+        }
+        
+        function checkRefreshUpdate() {
+            console.log("checkRefreshUpdate");
+            if(window.plugins.inappupdate.getRefreshUpdatePolicy()) {
+                onRefreshUpdate();
+            } else {
+                launch();
+            }
+        }
+        
+        function launch() {
+            setStatus("완료");
+            window.plugins.inappupdate.hideProgress();
+            window.plugins.inappupdate.launch();
+        }
+        
+        function onRefreshUpdate() {
+            console.log("onRefreshUpdate");
+            window.plugins.inappupdate.getRefreshUpdate("launch", "onFail");
+        }
+        
+        function onEngineUpdate() {
+            console.log("onEngineUpdate");
+            window.plugins.inappupdate.getEngineUpdate("checkApplicationUpdate", "onFail");
+        }
+        
+        function onEngineRestore() {
+            console.log("onEngineRestore");
+            window.plugins.inappupdate.getEngineRecovery("checkApplicationUpdate", "onFail");
+        }        
+        
+        function onApplicationUpdate() {
+            console.log("onApplicationUpdate");
+            window.plugins.inappupdate.getAppUpdate("checkRefreshUpdate", "onFail");
+        }
+        
+        function onApplicationRestore() {
+            console.log("onApplicationRestore");
+            window.plugins.inappupdate.getAppRecovery("checkRefreshUpdate", "onFail");
+        }
+        
+        
+        function onConfirmEngine(button) {
+            if(button == 1) {
+                onEngineRestore();
+            } else {
+                //onError('Engine is broken. You need restore');
+                onEngineUpdate();
+            }
+        }
+        
+        function onConfirmApplication(button) {
+            if(button == 1) {
+                onApplicationRestore();
+            } else {
+                //onError('Engine is broken. You need restore');
+                onApplicationUpdate();
+            }
+        }
+        
+        function onError(msg) {
+            
+        }
+        
+        function checkEngineUpdate() {
+            if(window.plugins.inappupdate.getEngineUpdatePolicy()) {
+                if(!window.plugins.inappupdate.engineStatus) {
+                    navigator.notification.confirm(
+                        '엔진을 복구하시겠습니까?',
+                        onConfirmEngine,
+                        'Engine error',
+                        '예,아니오'		
+                    );
+                } else {
+                    onEngineUpdate();
+                }			
+            } else {
+                checkApplicationUpdate();
+            }
+        }
+        
+        function onFail(errormsg) {
+            setStatus(errormsg);
+            window.plugins.inappupdate.hideProgress();
+            error_switch();
+        }
+        
+        function onSuccess() {
+            alert("Success");
+        }
+    
+        function onDeviceReady()
+        {            
+            window.plugins.inappupdate.showProgress("progressBox");
+            window.plugins.inappupdate.init("onInitSuccess", "onFail");
+            window.plugins.inappupdate.setStatusFunction("setStatus");
+            window.plugins.inappupdate.setProgressFunction("setProgress");
+        }  
+        
+        function onPing()
+        {
+            window.plugins.inappupdate.ping("onSuccess", "onFail");
+        }
+        
+        function setStatus(msg) {
+            //alert(msg);
+            var logdiv = document.getElementById("progressStatus");
+            logdiv.innerHTML = msg;
+        }
+        
+        function setProgress(progressInfo) {
+            var progressdiv = document.getElementById("progressMessage");
+            var filename = progressInfo.name;
+            if(filename.length > 15) {
+                filename = filename.substr(0,12) + "...";
+            }
+            if(progressInfo.progress >= 0.999) {
+                progressdiv.innerHTML = "";
+            } else {
+                var progressdata = Math.round(progressInfo.progress * 100);
+                var progressmessage = progressInfo.message;
+                progressdiv.innerHTML = filename + " " + progressdata  + "% " + progressmessage;
+            }
+        }
+        
+        function debug_switch() {
+            if(debug_mode == 0) {
+                debug_mode = 1;
+                document.getElementById("debugfunctions").style.display = "block";                
+            } else {
+                debug_mode = 0;
+                document.getElementById("debugfunctions").style.display = "none"; 
+            }
+        }
+        
+        function error_switch() {
+            if(error_mode == 0) {
+                error_mode = 1;
+                document.getElementById("errorfunctions").style.display = "block";                
+            } else {
+                error_mode = 0;
+                document.getElementById("errorfunctions").style.display = "none"; 
+            }
+        }
+        
+        function scanSuccess(result) {
+            setTimeout("callAlert('succ')", 2000);
+            if(result.cancelled) {
+                callAlert("the user cancelled the scan");
+            } else {
+                console.log("we got a barcode : " + result.text);
+            }
+        } 
+        
+        function scanError(error) {
+            alert("scanning failed : " + error);            
+        }
+        
+        function scanBarcode() {
+            alert("Scan");
+            window.plugins.barcodeScanner.scan(scanSuccess,scanError);
+        }
+        
+        function callAlert(msg) {
+            alert(msg);
+        }
+        
+        </script>
+    </head>
+    <body style="margin:0px;" onload='onBodyLoad()'>
+        <button id="debugbutton"
+            style="position:absolute; width:30%; height:10%; left:65%; top:5%; z-index:666;"
+            onclick="debug_switch()">
+            DebugMode
+        </button>
+        <div id="inappframe"
+    	 	style="position:absolute; width:100%; height:100%;">
+    	 	<div id="progressBox"
+    	 		style="overflow:hidden;position:relative;width:80%;height:40%;top:20%;left:10%;">
+    	 		<div id="progressStatus"
+    	 			style="position:relative;width:80%;height:20px;top:65%;left:10%;overflow:auto;text-align:center;text-overflow:ellipsis;">
+    	 		</div>
+    	 		<div id="progressMessage"
+    	 			style="position:relative;width:80%;height:20px;top:70%;left:10%;overflow:auto;text-align:center;text-overflow:ellipsis;">
+    	 		</div>
+    	 	</div>
+    	 	<div id="debugfunctions"
+    	 		style="position:absolute; width: 100%;height:20%;top:80%;display:none;"
+    	 		class="">
+    	 		<button
+    	 			style="position: absolute ;top:5%;left:2%;width:30%;height:40%;"
+    	 			onclick="scanBarcode()">
+    	 			ScanBarcode
+    	 		</button>
+    	 		<button
+    	 			style="position: absolute ;top:5%;left:34%;width:30%;height:40%;"
+    	 			onclick="window.plugins.inappupdate.clean();">
+    	 			Clean
+    	 		</button>
+    	 		<button id="trigger5"
+    	 			style="position: absolute ;top:5%;left:66%;width:30%;height:40%;"
+    	 			onclick="onDeviceReady()">
+    	 			StartUpdate
+    	 		</button>
+    	 		<button id="trigger6"
+    	 			style="position: absolute;top:50%;left:2%;width:94%;height:40%;"
+    	 			onclick="window.plugins.inappupdate.launch();">
+    	 			Launch
+    	 		</button>
+    	 	</div>
+    	 	<div id="errorfunctions"
+    	 		style="position:absolute; width: 100%;height:20%;top:60%;display:none;"
+    	 		class="">    	 		
+    	 		<button id="button2"
+    	 			style="position: absolute ;top:10%;left:50%;width:40%;height:60%;"
+    	 			onclick="window.plugins.inappupdate.launch();">
+    	 			오프라인 모드
+    	 		</button>
+    	 		<button id="button3"
+    	 			style="position: absolute ;top:10%;left:10%;width:40%;height:60%;"
+    	 			onclick="error_switch();onDeviceReady();">
+    	 			패치 재시작
+    	 		</button>    	 		
+    	 	</div>
+        </div>
+    </body>
+</html>

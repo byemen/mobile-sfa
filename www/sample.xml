@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<html xmlns="http://www.w3.org/1999/xhtml"
+    xmlns:ev="http://www.w3.org/2001/xml-events"
+    xmlns:w2="http://www.inswave.com/websquare" xmlns:xf="http://www.w3.org/2002/xforms">
+    <head>
+        <w2:buildDate/>
+        <xf:model>
+            <xf:instance>
+                <data xmlns=""/>
+            </xf:instance>
+        </xf:model>
+        <script type="javascript"><![CDATA[
+          	var pictureSource; 	  //카메라 촬영 / 라이브러리 등 이미지 소스 종류 
+            var destinationType;  //경로로 받을 것인지, 데이터를 직접 받을 것인지 		
+			// Cordova 초기화가 끝나면 deviceready 이벤트 발생
+			document.addEventListener("deviceready",onDeviceReady,false);
+			
+			function onDeviceReady() {
+			    pictureSource=navigator.camera.PictureSourceType;
+			    destinationType=navigator.camera.DestinationType;
+			} 
+			
+			function getPhoto(source) {
+			      navigator.camera.getPicture(onPhotoURISuccess, onFail,
+			     { quality: 50, destinationType: destinationType.FILE_URI,
+			        sourceType: source });
+			     // getPicture 함수에 onPhotoURISuccess 라는 성공 콜백함수 및 onFail 실패 콜백함수 등록
+			     // 사진 퀄리티는 1~100 중 50, URI경로만 넘기는 방식, 소스 종류는 argument로 설정
+			} 
+			
+			function onPhotoURISuccess(imageURI) {
+                      var largeImage = document.getElementById('group2');
+                      largeImage.style.display='block'; //group2 를 숨겨놨다가 표시
+                      largeImage.src = imageURI;        // 동적으로 URI 설정
+			}
+			
+			function onFail(mesage) {
+			      alert('Failed because: ' + message);
+			} 
+			
+			function onConfirm(button) { //버튼이 눌러졌을 때 콜백함수
+			        alert('You selected button ' + button); //버튼이름이 인자로 넘어옴
+		    } 
+		 
+		    function showConfirm() { 
+		        navigator.notification.confirm( 
+		            'Are you happy?',  // 메시지 
+		            onConfirm,         // 버튼이 눌렸을 때 콜백함수 
+		            'Question',        // 창의 제목
+		            "Yes,I don't know" // 버튼 각각의 Label(콤마로 구분) 
+		        ); 
+		    } 
+    	]]></script>
+    </head>
+    <body>
+    	<xf:group id="group1" class=""
+    		style="position: absolute ;left: 8px;top: 13px;width:300px;height:450px; border:1px solid black;">
+    		<xf:image id="group2" class=""
+    			style="position: absolute ;left:11px;top:77px;width:280px;height:363px; display:none;" src="">
+    		</xf:image>
+    		<xf:trigger type="button" id="trigger1"
+    			style="position: absolute ;left:6px;top:15px;width:140px;height:50px;">
+    			<xf:label>Select Picture</xf:label>
+    			<script ev:event="onclick" type="javascript"><![CDATA[
+    				getPhoto(pictureSource.PHOTOLIBRARY);
+    			]]></script>
+    		</xf:trigger>
+    		<xf:trigger id="trigger2"
+    			style="position: absolute ;left:155px;top:15px;width:140px;height:50px;"
+    			type="button">
+    			<xf:label>Call Notification</xf:label>
+    			<script ev:event="onclick" type="javascript"><![CDATA[
+	    			 showConfirm();
+    			]]></script>
+    		</xf:trigger>
+    	</xf:group>
+    </body>
+</html>

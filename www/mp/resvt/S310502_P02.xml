@@ -1,0 +1,304 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?xml-stylesheet href="/mp/css/style.css" type="text/css"?>
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:ev="http://www.w3.org/2001/xml-events"
+    xmlns:w2="http://www.inswave.com/websquare" xmlns:xf="http://www.w3.org/2002/xforms">
+    <head>
+    	<w2:buildDate />
+    	<xf:model>
+    		<xf:instance>
+    			<data xmlns="" />
+    		</xf:instance>
+    		<xf:submission id="submissionSave" ref="request"
+    			target="resSave" action="" method="post"
+    			mediatype="application/xml" encoding="UTF-8" instance=""
+    			replace="instance" errorHandler="" customHandler=""
+    			mode="asynchronous" processMsg="">
+    			<script type="javascript" ev:event="xforms-submit-done"><![CDATA[ 
+  					fn_AfterSave();
+    			]]></script>
+    		</xf:submission>
+    	</xf:model>
+    	<script type="javascript" src="/mp/js/common.js"></script>
+		<script type="javascript" src="/mp/js/WebSquare.js"></script>
+    	<script type="javascript"><![CDATA[
+    	/****************************************************************
+		* 화면로드
+		* @param  : 없음
+		* @return : 없음
+		******************************************************************/
+        function fn_OnLoad(){
+        	var sResvLocNm = parent.cb_ResvLocCd.getText();
+        	var sResvSaNm = parent.cb_ResvSaId.getText();
+        	if(sResvLocNm == "선택")	sResvLocNm = "";
+        	if(sResvSaNm == "선택")	sResvSaNm = "";
+        	
+        	st_ResvStallNo.setValue(parent.edt_ResvStallNm.getValue());
+			st_ResvTypeCd.setValue(parent.edt_ResvTypeCd.getValue());
+			st_ResvFmsCd.setValue(parent.edt_ResvFmsCd.getValue());
+			st_ResvLocCd.setValue(sResvLocNm);
+			st_ResvDt.setValue(parent.edt_ResvDt.getValue());
+			st_ResvStYm.setValue(parent.edt_ResvStYm.getDisplayValue());
+			st_ResvEndYm.setValue(parent.edt_ResvEndYm.getDisplayValue());
+			st_ResvSaId.setValue(sResvSaNm);
+			st_ResvInDt.setValue(parent.edt_ResvInDt.getValue());
+			st_ResvOutDt.setValue(parent.edt_ResvOutDt.getValue());
+			st_ResvVehicNo1.setValue(parent.edt_ResvVehicNo1.getValue());
+			st_ResvVehicNo2.setValue(parent.edt_ResvVehicNo2.getValue());
+			st_ResvVariantNm.setValue(parent.edt_ResvVariantNm.getValue());
+			st_ResvCustNm.setValue(parent.edt_ResvCustNm.getValue());
+			st_ResvHpNo.setValue(parent.edt_ResvHpNo.getValue());
+			st_ResvManCustNm.setValue(parent.edt_ResvManCustNm.getValue());
+			st_ResvHpArea.setValue(parent.cb_ResvHpArea.getValue());
+			st_ResvManHpNo.setValue(parent.edt_ResvManHpNo.getValue());
+			st_ResvCustRqst.setValue(parent.ta_ResvCustRqst.getValue());
+			st_VariantCd.setValue(parent.edt_ResvVariantCd.getValue());
+			st_Vin.setValue(parent.edt_Vin.getValue());
+        	if(parent.chk_ResvSms.getValue() == "Y")
+        		st_ResvSms.setValue("수신원함");
+        	else
+        		st_ResvSms.setValue("수신원하지않음");
+        }
+        /****************************************************************
+		* 예약등록
+		* @param  : 없음
+		* @return : 없음
+		******************************************************************/
+        function fn_NewResv(){
+        	
+        	setTitSendInfo("request", "S310502_P02Action", "save", "");
+			
+			setInputParamData("SHOP_CD",parent.cb_ResvShopCd.getValue());
+			setInputParamData("RESV_STALL_NO",parent.edt_ResvStallNo.getValue());
+			setInputParamData("REAL_RESV_DATE",st_ResvDt.getValue().replaceAll("-",""));
+			setInputParamData("REAL_RESV_ST_HM",parent.edt_ResvStYm.getValue());
+			setInputParamData("REAL_RESV_END_HM",parent.edt_ResvEndYm.getValue());
+			setInputParamData("IN_EXPT_DT",parent.edt_ResvInDt.getValue());
+			setInputParamData("OUT_EXPT_DT",parent.edt_ResvOutDt.getValue());
+			setInputParamData("CUST_SEQ",parent.edt_ResvCustSeq.getValue());
+			setInputParamData("CUST_NM",st_ResvCustNm.getValue());
+			setInputParamData("RESV_CUST_NM",st_ResvManCustNm.getValue());
+			setInputParamData("RESV_HP_AREA",st_ResvHpArea.getValue());
+			setInputParamData("RESV_HP_NO",st_ResvManHpNo.getValue());
+			setInputParamData("RESV_CUST_SMS_YN",parent.chk_ResvSms.getValue());
+			setInputParamData("VEHIC_NO1",st_ResvVehicNo1.getValue());
+			setInputParamData("VEHIC_NO2",st_ResvVehicNo2.getValue());
+			setInputParamData("VARIANT_CD",parent.edt_ResvVariantNm.getValue());
+			setInputParamData("VARIANT_NM",st_ResvVariantNm.getValue());
+			setInputParamData("SVC_TYPE_CD",parent.cb_ResvTypeCd.getValue());
+			setInputParamData("SVC_TYPE_FMS_CD",parent.cb_ResvFmsCd.getValue());
+			setInputParamData("MNG_SA_ID",parent.cb_ResvSaId.getValue());
+			setInputParamData("CUST_LOC_CD",parent.cb_ResvLocCd.getValue());
+			setInputParamData("CUST_RQST",st_ResvCustRqst.getValue());
+			setInputParamData("MNG_SC_ID_NAME",GV_USER_NM);
+			setInputParamData("UPDATE_TYPE","INSERT");
+			setInputParamData("VARIANT_CD",st_VariantCd.getValue());
+			setInputParamData("VIN",st_Vin.getValue());
+			setInputParamData("MENU_ID","S310502_P02");		//메뉴아이디
+  			setSubmissison("submissionSave");  		
+        }
+        /****************************************************************
+		* callback(저장)
+		* @param  : 없음
+		* @return : 없음
+		******************************************************************/ 
+        function fn_AfterSave(){
+        //	var sRecvDt = WebSquare.ModelUtil.getInstanceValue("resSave/root/params/param[@id='RESV_DT']");
+        //	var sRecvSeq = WebSquare.ModelUtil.getInstanceValue("resSave/root/params/param[@id='RESV_SEQ']");
+        	var arrResult = new Array();
+        	
+        	arrResult[0] = parent.cb_ResvShopCd.getValue();		// 서비스센터
+        	arrResult[1] = st_ResvDt.getValue();				// 실예약일자
+        	
+  			parent.fn_ResvSave(arrResult);
+        }
+        
+        fn_OnLoad();     
+        ]]></script>
+    </head>
+    <body>
+    	<w2:textbox class="se_box" id="output130" label=""
+    		style="position: absolute ;height:311px;width:814px;left:0px;border:none;top:0px;">
+    	</w2:textbox>
+    	<w2:textbox class="se_box" id="output192" label=""
+    		style="position: absolute ;height:30px;width:787px;left:13px;top:120px;">
+    	</w2:textbox>
+    	<w2:textbox class="se_box" id="output193" label=""
+    		style="position: absolute ;height:60px;width:787px;left:13px;top:233px;">
+    	</w2:textbox>
+    	<w2:textbox class="se_box" id="output202" label=""
+    		style="position: absolute ;height:30px;width:787px;left:13px;top:58px;">
+    	</w2:textbox>
+    	<w2:textbox class="se_box" id="output207" label=""
+    		style="position: absolute ;height:30px;width:787px;left:13px;top:192px;">
+    	</w2:textbox>
+    	<w2:textbox class="se_box" id="output214" label=""
+    		style="position: absolute ;height:30px;width:787px;left:13px;top:89px;">
+    	</w2:textbox>
+    	<w2:textbox class="se_box" id="output215" label=""
+    		style="position: absolute ;height:30px;width:787px;left:13px;top:161px;">
+    	</w2:textbox>
+    	<xf:image id="image45"
+    		style="position: absolute ;height:45px;width:814px;left:0px;top:0px;"
+    		src="/mp/images/pop_title_bg.png">
+    	</xf:image>
+    	<w2:textbox class="title_back" id="output137" label="예약등록확인"
+    		style="position: absolute ;height:20px;text-align:left;width:149px;left:15px;top:14px;">
+    	</w2:textbox>
+    	<w2:textbox class="title" id="output136" label="예약등록확인"
+    		style="position: absolute ;height:20px;text-align:left;width:149px;left:15px;top:13px;">
+    	</w2:textbox>
+    	<xf:trigger class="btn_po" id="btn_NewResv"
+    		style="position: absolute ;height:30px;color:#FFFFFF;width:85px;left:643px;top:10px;"
+    		type="image">
+    		<xf:label>예약등록</xf:label>
+    		<script ev:event="onclick" type="javascript"><![CDATA[ 
+    			fn_NewResv();
+    		]]></script>
+    	</xf:trigger>
+    	<xf:trigger class="btn_po" id="btn_Cancel"
+    		style="position: absolute ;height:30px;color:#FFFFFF;width:70px;left:731px;top:10px;"
+    		type="image">
+    		<xf:label>취 소</xf:label>
+    		<script ev:event="onclick" type="javascript"><![CDATA[ 
+    			parent.fn_ResvSave();
+    		]]></script>
+    	</xf:trigger>
+    	<w2:textbox class="input_edit" id="output191" label="H.P"
+    		style="position: absolute ;padding-top:3px;height:19px;text-align:center;width:34px;border-style:solid;left:222px;border-width:1px;top:196px;">
+    	</w2:textbox>
+    	<w2:textbox class="input_edit" id="output194" label="출"
+    		style="position: absolute ;padding-top:3px;height:19px;text-align:center;width:22px;border-style:solid;left:482px;border-width:1px;top:124px;">
+    	</w2:textbox>
+    	<w2:textbox class="se_lable" id="output195" label="실차주"
+    		style="position: absolute ;height:22px;width:84px;left:431px;top:161px;">
+    	</w2:textbox>
+    	<w2:textbox class="input_edit" id="output196" label="성명"
+    		style="position: absolute ;padding-top:3px;height:19px;text-align:center;width:34px;border-style:solid;left:108px;border-width:1px;top:196px;">
+    	</w2:textbox>
+    	<w2:textbox class="se_lable" id="output197" label="담당SA"
+    		style="position: absolute ;height:22px;width:84px;left:13px;top:120px;">
+    	</w2:textbox>
+    	<w2:textbox class="se_lable" id="output198" label="SMS 수신여부"
+    		style="position: absolute ;height:22px;width:84px;left:431px;top:192px;">
+    	</w2:textbox>
+    	<w2:textbox class="input_edit" id="output199" label="성명"
+    		style="position: absolute ;padding-top:3px;height:19px;text-align:center;width:34px;border-style:solid;left:526px;border-width:1px;top:165px;">
+    	</w2:textbox>
+    	<w2:textbox class="se_lable" id="output200" label="예약일시"
+    		style="position: absolute ;height:22px;width:84px;left:222px;top:89px;">
+    	</w2:textbox>
+    	<w2:textbox class="se_lable" id="output201" label="고객요구사항"
+    		style="position: absolute ;height:52px;width:84px;left:13px;top:233px;">
+    	</w2:textbox>
+    	<w2:textbox class="se_lable" id="output203" label="서비스유형"
+    		style="position: absolute ;height:22px;width:84px;left:222px;top:58px;">
+    	</w2:textbox>
+    	<w2:textbox class="se_lable" id="output204" label="서비스입고자"
+    		style="position: absolute ;height:22px;width:84px;left:13px;top:192px;">
+    	</w2:textbox>
+    	<w2:textbox class="input_edit" id="output205" label="입"
+    		style="position: absolute ;padding-top:3px;height:19px;text-align:center;width:22px;border-style:solid;left:317px;border-width:1px;top:124px;">
+    	</w2:textbox>
+    	<w2:textbox class="se_lable" id="output206" label="차량번호"
+    		style="position: absolute ;height:22px;width:84px;left:13px;top:161px;">
+    	</w2:textbox>
+    	<w2:textbox class="txt1" id="output208" label="~"
+    		style="position: absolute ;height:21px;text-align:center;width:21px;left:473px;top:93px;">
+    	</w2:textbox>
+    	<w2:textbox class="se_lable" id="output209" label="차종"
+    		style="position: absolute ;height:22px;width:84px;left:222px;top:161px;">
+    	</w2:textbox>
+    	<w2:textbox class="se_lable" id="output210" label="고객대기유형"
+    		style="position: absolute ;height:22px;width:84px;left:13px;top:89px;">
+    	</w2:textbox>
+    	<w2:textbox class="input_edit" id="output211" label="H.P"
+    		style="position: absolute ;padding-top:3px;height:19px;text-align:center;width:34px;border-style:solid;left:640px;border-width:1px;top:165px;">
+    	</w2:textbox>
+    	<w2:textbox class="se_lable" id="output212" label="예약스톨"
+    		style="position: absolute ;height:22px;width:84px;left:13px;top:58px;">
+    	</w2:textbox>
+    	<w2:textbox class="se_lable" id="output213" label="예상시간"
+    		style="position:absolute;height:22px;width:84px;left:222px;top:120px;">
+    	</w2:textbox>
+    	<w2:textbox class="se_output" id="st_ResvStallNo" label=""
+    		ref=""
+    		style="position: absolute ;height:18px;width:107px;left:108px;top:62px;">
+    	</w2:textbox>
+    	<w2:textbox class="se_output" id="st_ResvLocCd" label="" ref=""
+    		style="position: absolute ;height:18px;width:107px;left:108px;top:93px;">
+    	</w2:textbox>
+    	<w2:textbox class="se_output" id="st_ResvSaId" label="" ref=""
+    		style="position: absolute ;height:18px;width:107px;left:108px;top:124px;">
+    	</w2:textbox>
+    	<w2:textbox class="se_output" id="st_ResvTypeCd" label="" ref=""
+    		style="position: absolute ;height:18px;width:107px;left:317px;top:62px;">
+    	</w2:textbox>
+    	<w2:textbox class="se_output" id="st_ResvFmsCd" label="" ref=""
+    		style="position: absolute ;height:18px;width:107px;left:431px;top:62px;">
+    	</w2:textbox>
+    	<w2:textbox class="se_output" id="st_ResvDt" label="" ref=""
+    		style="position: absolute ;height:18px;width:107px;left:317px;top:93px;">
+    	</w2:textbox>
+    	<w2:textbox class="se_output" id="st_ResvStYm" label="" ref=""
+    		style="position: absolute ;height:18px;width:36px;left:431px;top:93px;"
+    		displayFormat="##:##">
+    	</w2:textbox>
+    	<w2:textbox class="se_output" id='st_ResvEndYm' label="" ref=""
+    		style="position: absolute ;height:18px;width:36px;left:496px;top:93px;"
+    		displayFormat="##:##">
+    	</w2:textbox>
+    	<w2:textbox class="se_output" id="st_ResvVehicNo1" label=""
+    		ref=""
+    		style="position: absolute ;height:18px;width:44px;left:108px;top:165px;">
+    	</w2:textbox>
+    	<w2:textbox class="se_output" id="st_ResvVehicNo2" label=""
+    		ref=""
+    		style="position: absolute ;height:18px;width:56px;left:159px;top:165px;">
+    	</w2:textbox>
+    	<w2:textbox class="se_output" id="st_ResvManCustNm" label=""
+    		ref=""
+    		style="position: absolute ;height:18px;width:68px;left:147px;top:196px;">
+    	</w2:textbox>
+    	<w2:textbox class="se_output" id="st_ResvCustNm" label="" ref=""
+    		style="position: absolute ;height:18px;width:68px;left:565px;top:165px;">
+    	</w2:textbox>
+    	<w2:textbox class="se_output" id="st_ResvHpArea" label="" ref=""
+    		style="position: absolute ;height:18px;width:20px;left:261px;top:196px;">
+    	</w2:textbox>
+    	<w2:textbox class="se_output" id="st_ResvManHpNo" label=""
+    		ref=""
+    		style="position: absolute ;height:18px;width:107px;left:296px;top:196px;">
+    	</w2:textbox>
+    	<w2:textbox class="se_output" id="st_ResvVariantNm" label=""
+    		ref=""
+    		style="position: absolute ;height:18px;width:107px;left:317px;top:165px;">
+    	</w2:textbox>
+    	<w2:textbox class="se_output" id="st_ResvHpNo" label="" ref=""
+    		style="position: absolute ;height:18px;width:115px;left:679px;top:165px;">
+    	</w2:textbox>
+    	<w2:textbox class="se_output" id="st_ResvCustRqst" label=""
+    		ref=""
+    		style="position: absolute ;height:48px;width:686px;left:108px;top:237px;">
+    	</w2:textbox>
+    	<w2:textbox class="se_output" id="st_ResvInDt" label="" ref=""
+    		style="position: absolute ;height:18px;width:131px;left:344px;top:124px;"
+    		displayFormat="">
+    	</w2:textbox>
+    	<w2:textbox class="se_output" id="st_ResvOutDt" label="" ref=""
+    		style="position: absolute ;height:18px;width:131px;left:509px;top:124px;"
+    		displayFormat="">
+    	</w2:textbox>
+    	<w2:textbox class="se_output" id="st_ResvSms" label="" ref=""
+    		style="position: absolute ;height:18px;width:112px;left:526px;top:196px;">
+    	</w2:textbox>
+    	<w2:textbox class="txt1" id="textbox1" label="-"
+    		style="position: absolute ;height:21px;text-align:center;width:11px;left:285px;top:196px;">
+    	</w2:textbox>
+    	<w2:textbox class="se_output" id="st_VariantCd" label="" ref=""
+    		style="position: absolute ;height:18px;width:43px;left:545px;top:62px;visibility:hidden;">
+    	</w2:textbox>
+    	<w2:textbox class="se_output" id="st_Vin" label="" ref=""
+    		style="position: absolute ;height:18px;width:43px;left:594px;top:62px;visibility:hidden;">
+    	</w2:textbox>
+    </body>
+</html>

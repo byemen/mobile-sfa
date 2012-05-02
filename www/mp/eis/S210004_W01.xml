@@ -1,0 +1,798 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?xml-stylesheet href="/mp/css/frame.css" type="text/css"?>
+<html xmlns="http://www.w3.org/1999/xhtml"
+    xmlns:ev="http://www.w3.org/2001/xml-events"
+    xmlns:w2="http://www.inswave.com/websquare" xmlns:xf="http://www.w3.org/2002/xforms">
+    <head>
+        <w2:buildDate/>
+        <xf:model>
+            <xf:instance>
+                <data xmlns="">
+               
+		        </data>
+		    </xf:instance>
+		    <xf:submission id="submissionWeek" ref="request" target="resWeek"
+        		action=""
+        		method="post" mediatype="application/xml" encoding="UTF-8" instance="" replace="instance"
+        		errorHandler="" customHandler="" mode="asynchronous"
+        		processMsg="">
+        		<script type="javascript" ev:event="xforms-submit-done"><![CDATA[
+				   	FV_sTerm_Type = fn_GetTermType();
+
+				   	SearchArea();
+            	]]></script>
+        	</xf:submission>
+		    <xf:submission id="submissionArea" ref="request" target="resArea"
+        		action=""
+        		method="post" mediatype="application/xml" encoding="UTF-8" instance="" replace="instance"
+        		errorHandler="" customHandler="" mode="asynchronous"
+        		processMsg="">
+        		<script type="javascript" ev:event="xforms-submit-done"><![CDATA[
+            		fn_Area();
+            	]]></script>
+        	</xf:submission>
+        </xf:model>
+        <script type="javascript" src="/mp/js/common.js"></script>
+		<script type="javascript" src="/mp/js/WebSquare.js"></script>
+        <script type="javascript"><![CDATA[
+        var FV_sSvcNm = parent.FV_SvcNm;
+       	var FV_sUpGroupId = GV_UP_GROUP_ID;
+    	var FV_sYyyyMm = gfn_GetDate(0,0,0).substring(0,7);
+       	var FV_sSvcNm = parent.FV_SvcNm;
+		var actionNm = "";
+		var FV_sTerm_Type="";
+		if(FV_sSvcNm == "T"){
+			actionNm = "TOYOTAAction";
+		}
+		
+		
+		setTitSendInfo("request", actionNm, "", "mdms/mp/eis:S210004_W01_S02");
+        setInputParamData("TARGET_YM", gfn_GetDate(0,0,0).replaceAll("-","").substring(0,6));
+		setSubmissison("submissionWeek");
+	
+		function SearchArea(){
+			setTitSendInfo("request", actionNm, "", "mdms/mp/eis:S210004_W01_S01");
+	       	setInputParamData("YYYYMM", gfn_GetDate(0,0,0).replaceAll("-","").substring(0,6));
+	       	setInputParamData("TARGET_DAY", gfn_GetDate(0,0,0).replaceAll("-","").substring(6));
+	       	setInputParamData("TERM_TYPE", FV_sTerm_Type);
+	   		setSubmissison("submissionArea");
+		}	
+   		
+   		
+   		function fn_Area(){
+		// To show Loading Image
+		parent.fn_SpinnerShow();
+		setTimeout("parent.fn_SpinnerHide()", 2000);
+   			var area = WebSquare.ModelUtil.findInstanceNodes("resArea/root/dataset[@id='ds_Area']/record");
+   			
+   			for(var i=0; i<area.length; i++){
+   				var sDealerId = WebSquare.xml.getValue(area[i],"DEALER_ID");
+   				var sDealerNm = WebSquare.xml.getValue(area[i],"DEALER_NM");
+				var sSCnt = WebSquare.xml.getValue(area[i],"SCNT");
+				var sCCnt = WebSquare.xml.getValue(area[i],"CCNT");
+
+				if(FV_sSvcNm == "T"){
+					img_Area.setSrc("/mp/images/eis/toyota_ssa.png");
+					img_Area.show();
+					if(sDealerId == "HS00000"){				//서초
+						sc_Hs.setValue(sDealerNm+"(C/S:"+sCCnt+"/"+sSCnt+")");
+						sc_Hs.show();
+						fn_FigureSize(img_Hs,sSCnt);
+					} else if(sDealerId == "HS10101"){		//수정중 전시장 (목동)
+						sc_Gs.setValue(sDealerNm+"(C/S:"+sCCnt+"/"+sSCnt+")");
+						sc_Gs.show();
+						fn_FigureSize_B(img_Gs,sSCnt);
+					} else if(sDealerId == "LS00000"){		//용산
+						sc_Ls.setValue(sDealerNm+"(C/S:"+sCCnt+"/"+sSCnt+")");
+						sc_Ls.show();
+						fn_FigureSize(img_Ls,sSCnt);
+					} else if(sDealerId == "LS10101"){		//수정중 전시장 (장한평)
+						sc_Jhp.setValue(sDealerNm+"(C/S:"+sCCnt+"/"+sSCnt+")");
+						sc_Jhp.show();
+						fn_FigureSize_B(img_Jhp,sSCnt);
+					} else if(sDealerId == "TD00000"){		//강남
+						sc_Td.setValue(sDealerNm+"(C/S:"+sCCnt+"/"+sSCnt+")");
+						sc_Td.show();
+						fn_FigureSize(img_Td,sSCnt);
+					} else if(sDealerId == "TD10101"){		//수정중 전시장 (강동)
+						sc_Gd.setValue(sDealerNm+"(C/S:"+sCCnt+"/"+sSCnt+")");
+						sc_Gd.show();
+						fn_FigureSize_B(img_Gd,sSCnt);
+					} else if(sDealerId == "DM00000"){		//부산
+						sc_Km.setValue(sDealerNm+"(C/S:"+sCCnt+"/"+sSCnt+")");
+						sc_Km.show();
+						fn_FigureSize(img_Km,sSCnt);
+					} else if(sDealerId == "KJ00000"){		//분당
+						sc_Ct.setValue(sDealerNm+"(C/S:"+sCCnt+"/"+sSCnt+")");
+						sc_Ct.show();
+						fn_FigureSize(img_Ct,sSCnt);
+					} else if(sDealerId == "KJ10101"){		//수정중 전시장 (수원)
+						sc_Sw.setValue(sDealerNm+"(C/S:"+sCCnt+"/"+sSCnt+")");
+						sc_Sw.show();
+						fn_FigureSize_B(img_Sw,sSCnt);
+					} else if(sDealerId == "LS10102"){		//수정중 전시장 (일산)
+						sc_Is.setValue(sDealerNm+"(C/S:"+sCCnt+"/"+sSCnt+")");
+						sc_Is.show();
+						fn_FigureSize_B(img_Is,sSCnt);
+					} else if(sDealerId == "HS10102"){		//수정중 전시장 (안양)
+						sc_Ay.setValue(sDealerNm+"(C/S:"+sCCnt+"/"+sSCnt+")");
+						sc_Ay.show();
+						fn_FigureSize_B(img_Ay,sSCnt);
+					} else if(sDealerId == "DM10101"){		//수정중 전시장 (창원)
+						sc_Cw.setValue(sDealerNm+"(C/S:"+sCCnt+"/"+sSCnt+")");
+						sc_Cw.show();
+						fn_FigureSize_B(img_Cw,sSCnt);
+					}
+				
+				} else{
+					img_Area.setSrc("/mp/images/eis/lexus_ssa.png");
+					img_Area.show();
+					
+					if(sDealerId == "PM00000"){				//서초
+						sc_Hs.setValue(sDealerNm+"(C/S:"+sCCnt+"/"+sSCnt+")");
+						sc_Hs.show();
+						fn_FigureSize(img_Hs,sSCnt);
+					} else if(sDealerId == "CW00000"){		//이태원
+						sc_Ls.setValue(sDealerNm+"(C/S:"+sCCnt+"/"+sSCnt+")");
+						sc_Ls.show();
+						fn_FigureSize(img_Ls,sSCnt);
+					} else if(sDealerId == "DT00000"){		//강남
+						sc_Td.setValue(sDealerNm+"(C/S:"+sCCnt+"/"+sSCnt+")");
+						sc_Td.show();
+						fn_FigureSize(img_Td,sSCnt);
+					} else if(sDealerId == "KM00000"){		//부산
+						sc_Km.setValue(sDealerNm+"(C/S:"+sCCnt+"/"+sSCnt+")");
+						sc_Km.show();
+						fn_FigureSize(img_Km,sSCnt);
+					} else if(sDealerId == "CT00000"){		//분당
+						sc_Ct.setValue(sDealerNm+"(C/S:"+sCCnt+"/"+sSCnt+")");
+						sc_Ct.show();
+						fn_FigureSize(img_Ct,sSCnt);
+					} else if(sDealerId == "SY00000"){		//인천
+						sc_Sy.setValue(sDealerNm+"(C/S:"+sCCnt+"/"+sSCnt+")");
+						sc_Sy.show();
+						fn_FigureSize(img_Sy,sSCnt);
+					} else if(sDealerId == "JB00000"){		//대전
+						sc_Jb.setValue(sDealerNm+"(C/S:"+sCCnt+"/"+sSCnt+")");
+						sc_Jb.show();
+						fn_FigureSize(img_Jb,sSCnt);
+					} else if(sDealerId == "YM00000"){		//대구
+						sc_Ym.setValue(sDealerNm+"(C/S:"+sCCnt+"/"+sSCnt+")");
+						sc_Ym.show();
+						fn_FigureSize(img_Ym,sSCnt);
+					} else if(sDealerId == "NY00000"){		//광주
+						sc_Ny.setValue(sDealerNm+"(C/S:"+sCCnt+"/"+sSCnt+")");
+						sc_Ny.show();
+						fn_FigureSize(img_Ny,sSCnt);
+					} else if(sDealerId == "YM10101"){		//수정중 전시장 (포항)
+						sc_Ph.setValue(sDealerNm+"(C/S:"+sCCnt+"/"+sSCnt+")");
+						sc_Ph.show();
+						fn_FigureSize_B(img_Ph,sSCnt);
+					} else if(sDealerId == "JB10101"){		//수정중 전시장 (천안)
+						sc_Ca.setValue(sDealerNm+"(C/S:"+sCCnt+"/"+sSCnt+")");
+						sc_Ca.show();
+						fn_FigureSize_B(img_Ca,sSCnt);
+					} else if(sDealerId == "CW10101"){		//수정중 전시장 (일산)
+						sc_Is.setValue(sDealerNm+"(C/S:"+sCCnt+"/"+sSCnt+")");
+						sc_Is.show();
+						fn_FigureSize_B(img_Is,sSCnt);
+					} else if(sDealerId == "KM10101"){		//수정중 전시장 (해운대)
+						sc_Hud.setValue(sDealerNm+"(C/S:"+sCCnt+"/"+sSCnt+")");
+						sc_Hud.show();
+						fn_FigureSize_B(img_Hud,sSCnt);
+					} else if(sDealerId == "PM10101"){		//수정중 전시장 (강서)
+						sc_Gs.setValue(sDealerNm+"(C/S:"+sCCnt+"/"+sSCnt+")");
+						sc_Gs.show();
+						fn_FigureSize_B(img_Gs,sSCnt);
+					}else if(sDealerId == "KM10102"){		//수정중 전시장 (창원)
+						sc_Cw.setValue(sDealerNm+"(C/S:"+sCCnt+"/"+sSCnt+")");
+						sc_Cw.show();
+						fn_FigureSize_B(img_Cw,sSCnt);
+					}else if(sDealerId == "NY10101"){		//수정중 전시장 (전주)
+						sc_Jj.setValue(sDealerNm+"(C/S:"+sCCnt+"/"+sSCnt+")");
+						sc_Jj.show();
+						fn_FigureSize_B(img_Jj,sSCnt);
+					}else if(sDealerId == "CT30104"){		//수정중 전시장 (용인광교)
+						sc_Yg.setValue(sDealerNm+"(C/S:"+sCCnt+"/"+sSCnt+")");
+						sc_Yg.show();
+						fn_FigureSize_B(img_Yg,sSCnt);
+					}
+				}
+   			}
+   		}
+   		
+   		
+   		function fn_GetTermType() {
+   			var sDay=0;
+			var Week = WebSquare.ModelUtil.findInstanceNodes("resWeek/root/dataset[@id='ds_Weekend']/record");
+			var sToday = gfn_GetDate(0,0,0).replaceAll("-","").substring(6);
+			
+			for(var i = 0; i<Week.length; i++){
+				if(sDay < parseInt(sToday, 10) && parseInt(sToday, 10) <= parseInt(WebSquare.xml.getValue(Week[i], "WEEKEND"), 10)){
+					sDay = parseInt(WebSquare.xml.getValue(Week[i], "WEEKEND"), 10);
+					return "W"+(i+1);
+				}
+			}
+		}
+   		function fn_FigureSize(obj,value) {
+			var nCompVal = -1;
+			var area = WebSquare.ModelUtil.findInstanceNodes("resArea/root/dataset[@id='ds_Area']/record");
+
+   			for(var i=0; i<area.length; i++){
+				if(nCompVal < WebSquare.xml.getValue(area[i],"SCNT")){
+					nCompVal = WebSquare.xml.getValue(area[i],"SCNT");
+				}
+			}
+/*			
+			if(value<=nCompVal && value>(nCompVal/2)){
+				obj.setSize(26,26);
+				obj.setSrc("/mp/images/eis/xl.png");
+			} else if(value<=(nCompVal/2) && value>(nCompVal/3)) {
+				obj.setSize(20,20);
+				obj.setSrc("/mp/images/eis/l.png");
+			} else if(value<=(nCompVal/3) && value>(nCompVal/4)) {
+				obj.setSize(14,14);
+				obj.setSrc("/mp/images/eis/m.png");
+			} else if(value<=(nCompVal/4)) {
+				obj.setSize(10,10);
+				obj.setSrc("/mp/images/eis/s.png");
+			}
+*/
+
+			if(value>=55){						//SP1
+				obj.setSize(28,28);
+				obj.setSrc("/mp/images/eis/SP1.png");
+			} else if(value < 55 && value >= 45) {			//SP2
+				obj.setSize(24,24);
+				obj.setSrc("/mp/images/eis/SP1.png");
+			} else if(value < 45 && value >= 35) {			//SP3
+				obj.setSize(20,20);
+				obj.setSrc("/mp/images/eis/SP1.png");
+			} else if(value < 35 && value >= 25) {			//SP4
+				obj.setSize(16,16);
+				obj.setSrc("/mp/images/eis/SP1.png");
+			} else if(value < 25 && value >= 15) {			//SP5
+				obj.setSize(12,12);
+				obj.setSrc("/mp/images/eis/SP1.png");
+			} else if(value < 15) {								//SP6
+				obj.setSize(8,8);
+				obj.setSrc("/mp/images/eis/SP1.png");
+			}
+
+			obj.show();
+		}
+
+   		function fn_FigureSize_B(obj,value) {
+			var nCompVal = -1;
+			var area = WebSquare.ModelUtil.findInstanceNodes("resArea/root/dataset[@id='ds_Area']/record");
+
+   			for(var i=0; i<area.length; i++){
+				if(nCompVal < WebSquare.xml.getValue(area[i],"SCNT")){
+					nCompVal = WebSquare.xml.getValue(area[i],"SCNT");
+				}
+			}
+
+			if(value>=55){						//SB1
+				obj.setSize(28,28);
+				obj.setSrc("/mp/images/eis/SB1.png");
+			} else if(value < 55 && value >= 45) {			//SB2
+				obj.setSize(24,24);
+				obj.setSrc("/mp/images/eis/SB2.png");
+			} else if(value < 45 && value >= 35) {			//SB3
+				obj.setSize(20,20);
+				obj.setSrc("/mp/images/eis/SB3.png");
+			} else if(value < 35 && value >= 25) {			//SB4
+				obj.setSize(16,16);
+				obj.setSrc("/mp/images/eis/SB4.png");
+			} else if(value < 25 && value >= 15) {			//SB5
+				obj.setSize(12,12);
+				obj.setSrc("/mp/images/eis/SB5.png");
+			} else if(value < 15) {								//SB6
+				obj.setSize(8,8);
+				obj.setSrc("/mp/images/eis/SB6.png");
+			}
+
+			obj.show();
+		}
+		
+		function fn_ShowDetail(DlrNm){
+
+   			var area = WebSquare.ModelUtil.findInstanceNodes("resArea/root/dataset[@id='ds_Area']/record");
+   			
+   			for(var i=0; i<area.length; i++){
+   				var sDealerId = WebSquare.xml.getValue(area[i],"DEALER_ID");
+				var sSCnt = WebSquare.xml.getValue(area[i],"SCNT");
+				var sCCnt = WebSquare.xml.getValue(area[i],"CCNT");
+				var sTSCnt = WebSquare.xml.getValue(area[i],"T_SCNT");
+				var sTCCnt = WebSquare.xml.getValue(area[i],"T_CCNT");
+				var sPSCnt = Math.round(sSCnt/sTSCnt*100, 1);
+				var sPCCnt = Math.round(sCCnt/sTCCnt*100, 1);
+				var sDealerNm = WebSquare.xml.getValue(area[i],"DEALER_FULLNAME");
+				
+
+				if(sDealerId == DlrNm){				//서초
+						fn_ShowDetailPopup(sDealerNm, sSCnt, sCCnt, sTSCnt, sTCCnt, sPSCnt, sPCCnt);
+				}	
+   			}
+   		}	
+   		
+   		function fn_ShowDetailPopup(DlrNm, sSCnt, sCCnt, sTSCnt, sTCCnt, sPSCnt, sPCCnt){
+			sc_Dealer.setValue("("+DlrNm+")");
+			sc_Tcon.setValue(sTCCnt);
+			sc_Con.setValue(sCCnt);
+			sc_Cprog.setValue(sPCCnt);
+			sc_Tsale.setValue(sTSCnt);
+			sc_Sale.setValue(sSCnt);
+			sc_Sprog.setValue(sPSCnt);
+			
+			
+			group2.show();
+			/*sc_Dealer.show();
+			sc_Tcon.show();
+			sc_Con.show();
+			sc_Cprog.show();
+			sc_Tsale.show();
+			sc_Sale.show();
+			sc_Sprog.show();
+			
+			img_P_1.show();
+			img_P_2.show();
+			
+			se_P_1.show();
+			se_P_2.show();
+			se_P_3.show();
+			se_P_4.show();
+			se_P_5.show();
+			se_P_6.show();
+			se_P_7.show();
+			se_P_8.show();
+			se_P_9.show();
+			se_P_10.show();
+			se_P_11.show();
+			se_P_12.show();
+			se_P_13.show();
+			se_P_14.show();
+			*/
+   		}	
+		
+		grid1.insertRow();
+		grid1.insertRow();
+		grid1.insertRow();
+		grid1.insertRow();
+		grid1.insertRow();
+		grid1.insertRow();
+		grid1.insertRow();
+        ]]></script>
+    </head>
+    <body>
+    	<xf:image id="image24" src="/mp/images/eis/shape_5.png"
+    		style="position: absolute ;height:591px;width:1024px;left:0px;top:24px;">
+    	</xf:image>
+    	<xf:output class="sub_title_b" id="output30" label=""
+    		style="position: absolute ;height:20px;width:204px;left:20px;top:11px;">
+    		<xf:label>Sales Status by Area</xf:label>
+    	</xf:output>
+    	<xf:output id="sub_title"
+    		style="position: absolute ;height:20px;width:204px;left:20px;top:10px;"
+    		class="sub_title" label="">
+    		<xf:label>Sales Status by Area</xf:label>
+    	</xf:output>
+    	<xf:image id="img_Area"
+    		style="position: absolute ;height:566px;width:1000px;display:none;left:12px;top:35px;"
+    		src="/mp/images/eis/toyota_ssa.png">
+    	</xf:image>
+    	<xf:output id="sc_Ls"
+    		style="padding-left:2px;position: absolute ;padding-top:4px;height:14px;color:#000099;font:normal 10px dotum;width:70px;background-color:#7FD4E6;display:none;left:204px;top:302px;"
+    		label="">
+    		<xf:label></xf:label>
+    		<script type="javascript" ev:event="onclick"><![CDATA[
+    			if(FV_sSvcNm == "T"){
+    				fn_ShowDetail("LS00000");
+    			}else{
+    				fn_ShowDetail("CW00000");
+    			}
+    		 ]]></script>
+    	</xf:output>
+    	<xf:output id="sc_Td"
+    		style="padding-left:2px;position: absolute ;padding-top:4px;height:14px;color:#000099;font:normal 10px dotum;width:70px;background-color:#7FD4E6;display:none;left:294px;top:314px;"
+    		label="">
+    		<xf:label></xf:label>
+    		<script type="javascript" ev:event="onclick"><![CDATA[
+    			if(FV_sSvcNm == "T"){
+    				fn_ShowDetail("TD00000");
+    			}else{
+    				fn_ShowDetail("DT00000");
+    			}    		
+    		 ]]></script>
+    	</xf:output>
+    	<xf:output id="sc_Hs"
+    		style="padding-left:2px;position: absolute ;padding-top:4px;height:14px;color:#000099;font:normal 10px dotum;width:70px;background-color:#7FD4E6;display:none;left:261px;top:365px;"
+    		label="">
+    		<xf:label></xf:label>
+    		<script type="javascript" ev:event="onclick"><![CDATA[ 
+    		    if(FV_sSvcNm == "T"){
+    				fn_ShowDetail("HS00000");
+    			}else{
+    				fn_ShowDetail("PM00000");
+    			}
+    		]]></script>
+    	</xf:output>
+    	<xf:image id="img_Ls" src=""
+    		style="position: absolute ;height:20px;width:20px;left:245px;display:none;top:320px;">
+    	</xf:image>
+    	<xf:image id="img_Hs" src=""
+    		style="position: absolute ;height:20px;width:20px;left:261px;display:none;top:348px;">
+    	</xf:image>
+    	<xf:image id="img_Td" src=""
+    		style="position: absolute ;height:20px;width:20px;left:294px;display:none;top:331px;">
+    	</xf:image>
+    	<xf:image id="img_Ct" src=""
+    		style="position: absolute ;height:20px;width:20px;left:650px;display:none;top:176px;">
+    	</xf:image>
+    	<xf:output id="sc_Ct" label=""
+    		style="padding-left:2px;position: absolute ;padding-top:4px;height:14px;color:#000099;font:normal 10px dotum;width:70px;background-color:#7FD4E6;display:none;left:649px;top:158px;">
+    		<xf:label></xf:label>
+    		<script type="javascript" ev:event="onclick"><![CDATA[ 
+    			if(FV_sSvcNm == "T"){
+    				fn_ShowDetail("KJ00000");
+    			}else{
+    				fn_ShowDetail("CT00000");
+    			}
+    		]]></script>
+    	</xf:output>
+    	<xf:image id="img_Sy" src=""
+    		style="position: absolute ;height:20px;width:20px;left:587px;display:none;top:145px;">
+    	</xf:image>
+    	<xf:output id="sc_Sy" label=""
+    		style="padding-left:2px;position: absolute ;padding-top:4px;height:14px;color:#000099;font:normal 10px dotum;width:70px;background-color:#7FD4E6;display:none;left:540px;top:127px;">
+    		<xf:label></xf:label>
+    		<script type="javascript" ev:event="onclick"><![CDATA[
+    			if(FV_sSvcNm != "T"){
+    				fn_ShowDetail("SY00000");
+    			}
+    		 ]]></script>
+    	</xf:output>
+    	<xf:image id="img_Jb" src=""
+    		style="position: absolute ;height:20px;width:20px;left:669px;display:none;top:303px;">
+    	</xf:image>
+    	<xf:output id="sc_Jb" label=""
+    		style="padding-left:2px;position: absolute ;padding-top:4px;height:14px;color:#000099;font:normal 10px dotum;width:70px;background-color:#7FD4E6;display:none;left:670px;top:283px;">
+    		<xf:label></xf:label>
+    		<script type="javascript" ev:event="onclick"><![CDATA[
+    			if(FV_sSvcNm != "T"){
+    				fn_ShowDetail("JB00000");
+    			}
+    		 ]]></script>
+    	</xf:output>
+    	<xf:image id="img_Ym" src=""
+    		style="position: absolute ;height:20px;width:20px;left:781px;display:none;top:358px;">
+    	</xf:image>
+    	<xf:output id="sc_Ym" label=""
+    		style="padding-left:2px;position: absolute ;padding-top:4px;height:14px;color:#000099;font:normal 10px dotum;width:70px;background-color:#7FD4E6;display:none;left:781px;top:341px;">
+    		<xf:label></xf:label>
+    		<script type="javascript" ev:event="onclick"><![CDATA[ 
+    			if(FV_sSvcNm != "T"){
+    				fn_ShowDetail("YM00000");
+    			}
+    		]]></script>
+    	</xf:output>
+    	<xf:image id="img_Ny" src=""
+    		style="position: absolute ;height:20px;width:20px;left:614px;display:none;top:439px;">
+    	</xf:image>
+    	<xf:output id="sc_Ny" label=""
+    		style="padding-left:2px;position: absolute ;padding-top:4px;height:14px;color:#000099;font:normal 10px dotum;width:70px;background-color:#7FD4E6;display:none;left:613px;top:421px;">
+    		<xf:label></xf:label>
+    		<script type="javascript" ev:event="onclick"><![CDATA[ 
+    			if(FV_sSvcNm != "T"){
+    				fn_ShowDetail("NY00000");
+    			}
+    		]]></script>
+    	</xf:output>
+    	<xf:image id="img_Km" src=""
+    		style="position: absolute ;height:20px;width:20px;left:825px;display:none;top:413px;">
+    	</xf:image>
+    	<xf:output id="sc_Km" label=""
+    		style="padding-left:2px;position: absolute ;padding-top:4px;height:14px;color:#000099;font:normal 10px dotum;width:70px;background-color:#7FD4E6;display:none;left:825px;top:396px;">
+    		<xf:label></xf:label>
+    		<script type="javascript" ev:event="onclick"><![CDATA[
+    			if(FV_sSvcNm == "T"){
+    				fn_ShowDetail("DM00000");
+    			}else{
+    				fn_ShowDetail("KM00000");
+    			}
+    		 ]]></script>
+    	</xf:output>
+    	<w2:grid baseNode="vector" class="grid" id="grid1"
+    		overflowX="hidden" overflowY="hidden" repeatNode="data/INFO"
+    		rowMouseOver="false"
+    		style="position: absolute ;left:762px;top:558px;width:230px;height:24px"
+    		rowMouseOverColor="#000000" selectedRowColor="#000000"
+    		selectedCellColor="#000000">
+    		<w2:header class="gridHeaderTable"
+    			columnClass="gridHeaderTD" id="header1" style="">
+    			<w2:row id="row1" style="">
+    				<w2:column hidden="" id="column1" inputType="text"
+    					style="background:url(/mp/images/eis/m.png);background-repeat:no-repeat;background-position:center;background-color:#1d1d1d;height:22px;"
+    					value="" valueType="binary" width="30" imageSrc="">
+    				</w2:column>
+    				<w2:column hidden="" id="column2" inputType="text"
+    					style="height:22px;" value="3S Showroom" valueType="binary"
+    					width="85">
+    				</w2:column>
+    				<w2:column hidden="" id="column3" inputType="text"
+    					style="background:url(/mp/images/eis/mb.png);background-repeat:no-repeat;background-position:center;background-color:#1d1d1d;height:22px;"
+    					value="" valueType="binary" width="30">
+    				</w2:column>
+    				<w2:column hidden="" id="column4" inputType="text"
+    					style="height:22px;" value="1S Showroom" valueType="binary"
+    					width="85">
+    				</w2:column>
+    			</w2:row>
+    		</w2:header>
+    		<w2:gBody id="gBody3" style="">
+    			<w2:row id="row5" style="">
+    				<w2:column id="column28" style="height:20px"
+    					hidden="" width="30" inputType="text" valueType="binary">
+    				</w2:column>
+    				<w2:column id="column27" style="height:20px"
+    					hidden="" width="85" inputType="text" valueType="binary">
+    				</w2:column>
+    				<w2:column id="column26" style="height:20px"
+    					hidden="" width="30" inputType="text" valueType="binary">
+    				</w2:column>
+    				<w2:column id="column25" style="height:20px"
+    					hidden="" width="85" inputType="text" valueType="binary">
+    				</w2:column>
+    			</w2:row>
+    		</w2:gBody>
+    	</w2:grid>
+    	<xf:image id="img_Gs" src=""
+    		style="position: absolute ;height:20px;width:20px;left:215px;display:none;top:359px;">
+    	</xf:image>
+    	<xf:output id="sc_Gs" label=""
+    		style="padding-left:2px;position: absolute ;padding-top:4px;height:14px;color:#000099;font:normal 10px dotum;width:70px;background-color:#7FD4E6;display:none;left:164px;top:378px;">
+    		<xf:label></xf:label>
+    		<script type="javascript" ev:event="onclick"><![CDATA[ 
+    			if(FV_sSvcNm == "T"){
+    				fn_ShowDetail("HS10101");
+    			}else{
+    				fn_ShowDetail("PM10101");
+    			}
+    		]]></script>
+    	</xf:output>
+    	<xf:image id="img_Is" src=""
+    		style="position: absolute ;height:20px;width:20px;left:620px;display:none;top:131px;">
+    	</xf:image>
+    	<xf:output id="sc_Is" label=""
+    		style="padding-left:2px;position: absolute ;padding-top:4px;height:14px;color:#000099;font:normal 10px dotum;width:70px;background-color:#7FD4E6;display:none;left:620px;top:114px;">
+    		<xf:label></xf:label>
+    		<script type="javascript" ev:event="onclick"><![CDATA[ 
+    			if(FV_sSvcNm == "T"){
+    				fn_ShowDetail("LS10102");
+    			}else{
+    				fn_ShowDetail("CW10101");
+    			}
+    		]]></script>
+    	</xf:output>
+    	<xf:image id="img_Ca" src=""
+    		style="position: absolute ;height:20px;width:20px;left:632px;display:none;top:248px;">
+    	</xf:image>
+    	<xf:output id="sc_Ca" label=""
+    		style="padding-left:2px;position: absolute ;padding-top:4px;height:14px;color:#000099;font:normal 10px dotum;width:70px;background-color:#7FD4E6;display:none;left:632px;top:230px;">
+    		<xf:label></xf:label>
+    		<script type="javascript" ev:event="onclick"><![CDATA[ 
+    			fn_ShowDetail("JB10101");
+    		]]></script>
+    	</xf:output>
+    	<xf:image id="img_Ph" src=""
+    		style="position: absolute ;height:20px;width:20px;left:840px;display:none;top:325px;">
+    	</xf:image>
+    	<xf:output id="sc_Ph" label=""
+    		style="padding-left:2px;position: absolute ;padding-top:4px;height:14px;color:#000099;font:normal 10px dotum;width:70px;background-color:#7FD4E6;display:none;left:840px;top:307px;">
+    		<xf:label></xf:label>
+    		<script type="javascript" ev:event="onclick"><![CDATA[ 
+    			fn_ShowDetail("YM10101");
+    		]]></script>
+    	</xf:output>
+    	<xf:image id="img_Hud" src=""
+    		style="position: absolute ;height:20px;width:20px;left:830px;display:none;top:434px;">
+    	</xf:image>
+    	<xf:output id="sc_Hud" label=""
+    		style="padding-left:2px;position: absolute ;padding-top:4px;height:14px;color:#000099;font:normal 10px dotum;width:70px;background-color:#7FD4E6;display:none;left:830px;top:454px;">
+    		<xf:label></xf:label>
+    		<script type="javascript" ev:event="onclick"><![CDATA[ 
+    			fn_ShowDetail("KM10101");
+    		]]></script>
+    	</xf:output>
+    	<xf:image id="img_Jhp" src=""
+    		style="position: absolute ;height:20px;width:20px;left:308px;display:none;top:289px;">
+    	</xf:image>
+    	<xf:output id="sc_Jhp" label=""
+    		style="padding-left:2px;position: absolute ;padding-top:4px;height:14px;color:#000099;font:normal 10px dotum;width:70px;background-color:#7FD4E6;display:none;left:308px;top:272px;">
+    		<xf:label></xf:label>
+    		<script type="javascript" ev:event="onclick"><![CDATA[ 
+    				fn_ShowDetail("LS10101");
+    		]]></script>
+    	</xf:output>
+    	<xf:image id="img_Gd" src=""
+    		style="position: absolute ;height:20px;width:20px;left:336px;display:none;top:338px;">
+    	</xf:image>
+    	<xf:output id="sc_Gd" label=""
+    		style="padding-left:2px;position: absolute ;padding-top:4px;height:14px;color:#000099;font:normal 10px dotum;width:70px;background-color:#7FD4E6;display:none;left:355px;top:339px;">
+    		<xf:label></xf:label>
+    		<script type="javascript" ev:event="onclick"><![CDATA[ 
+    			fn_ShowDetail("TD10101");
+    		]]></script>
+    	</xf:output>
+    	<xf:image id="img_Ay" src=""
+    		style="position: absolute ;height:20px;width:20px;left:617px;display:none;top:172px;">
+    	</xf:image>
+    	<xf:output id="sc_Ay" label=""
+    		style="padding-left:2px;position: absolute ;padding-top:4px;height:14px;color:#000099;font:normal 10px dotum;width:70px;background-color:#7FD4E6;display:none;left:546px;top:175px;">
+    		<xf:label></xf:label>
+    		<script type="javascript" ev:event="onclick"><![CDATA[ 
+    			fn_ShowDetail("HS10102");
+    		]]></script>
+    	</xf:output>
+    	<xf:image id="img_Sw" src=""
+    		style="position: absolute ;height:20px;width:20px;left:630px;display:none;top:194px;">
+    	</xf:image>
+    	<xf:output id="sc_Sw" label=""
+    		style="padding-left:2px;position: absolute ;padding-top:4px;height:14px;color:#000099;font:normal 10px dotum;width:70px;background-color:#7FD4E6;display:none;left:558px;top:194px;">
+    		<xf:label></xf:label>
+    		<script type="javascript" ev:event="onclick"><![CDATA[ 
+    			fn_ShowDetail("KJ10101");
+    		]]></script>
+    	</xf:output>
+    	<xf:output id="sc_Cw" label=""
+    		style="padding-left:2px;position: absolute ;padding-top:4px;height:14px;color:#000099;font:normal 10px dotum;width:70px;background-color:#7FD4E6;display:none;left:719px;top:457px;">
+    		<xf:label></xf:label>
+    		<script type="javascript" ev:event="onclick"><![CDATA[ 
+    			if(FV_sSvcNm == "T"){
+    				fn_ShowDetail("DM10101");
+    			}else{
+    				fn_ShowDetail("KM10102");
+    			}
+    		]]></script>
+    	</xf:output>
+    	<xf:image id="img_Cw" src=""
+    		style="position: absolute ;height:20px;width:20px;left:770px;display:none;top:439px;">
+    	</xf:image>
+    	<xf:image id="img_Jj" src=""
+    		style="position: absolute ;height:20px;width:20px;left:645px;display:none;top:364px;">
+    	</xf:image>
+    	<xf:output id="sc_Jj" label=""
+    		style="padding-left:2px;position: absolute ;padding-top:4px;height:14px;color:#000099;font:normal 10px dotum;width:70px;background-color:#7FD4E6;display:none;left:644px;top:346px;">
+    		<xf:label></xf:label>
+    		<script type="javascript" ev:event="onclick"><![CDATA[ 
+    			fn_ShowDetail("NY10101");
+    		]]></script>
+    	</xf:output>
+    	<xf:image id="img_Yg" src=""
+    		style="position: absolute ;height:20px;width:20px;left:640px;display:none;top:183px;">
+    	</xf:image>
+    	<xf:output id="sc_Yg" label=""
+    		style="padding-left:2px;position: absolute ;padding-top:4px;height:14px;color:#000099;font:normal 10px dotum;width:70px;background-color:#7FD4E6;display:none;left:640px;top:190px;">
+    		<xf:label></xf:label>
+    		<script type="javascript" ev:event="onclick"><![CDATA[ 
+    			fn_ShowDetail("CT30104");
+    		]]></script>
+    	</xf:output>
+    	<xf:group id="group2"
+    		style="position:absolute;top:215px;left:370px;width:341px;height:152px;display:none;">
+    		<xf:image id="image25"
+    			src="/mp/images/eis/m_im_pp_bg.png"
+    			style="position: absolute ;left:0px;top:0px;width:340px;height:151px;">
+    		</xf:image>
+    		<xf:image id="image26"
+    			src="/mp/images/eis/m_bt_cal_close.png"
+    			style="position: absolute ;left:305px;top:0px;width: 36px;height: 36px;">
+    			<script ev:event="onclick" type="javascript"><![CDATA[ group2.hide(); ]]></script>
+    		</xf:image>
+    		<xf:output id="output123" label=""
+    			style="position: absolute ;left:5px;top:40px;width:110px;height:33px;background-color:#dfdfdf;;border:1px solid #9f9f9f;">
+    			<xf:label></xf:label>
+    		</xf:output>
+    		<xf:output id="sc_Dealer" label=""
+    			style="position: absolute ;left:9px;top:51px;width:103px;height:16px;;text-align:center;font-weight:bold;">
+    			<xf:label>(BD)</xf:label>
+    		</xf:output>
+    		<xf:output id="output125" label=""
+    			style="position: absolute ;left:116px;top:40px;width:67px;height:33px;background-color:#dfdfdf;;border:1px solid #9f9f9f;">
+    			<xf:label></xf:label>
+    		</xf:output>
+    		<xf:output id="output126" label=""
+    			style="position: absolute ;left:119px;top:51px;width:66px;height:16px;;text-align:center;font-weight:bold;">
+    			<xf:label>Target</xf:label>
+    		</xf:output>
+    		<xf:output id="output127" label=""
+    			style="position: absolute ;left:184px;top:40px;width:67px;height:33px;background-color:#dfdfdf;;border:1px solid #9f9f9f;">
+    			<xf:label></xf:label>
+    		</xf:output>
+    		<xf:output id="output128" label=""
+    			style="position: absolute ;left:187px;top:51px;width:66px;height:16px;;text-align:center;font-weight:bold;">
+    			<xf:label>Actual</xf:label>
+    		</xf:output>
+    		<xf:output id="output129" label=""
+    			style="position: absolute ;left:252px;top:40px;width:81px;height:33px;background-color:#dfdfdf;;border:1px solid #9f9f9f;">
+    			<xf:label></xf:label>
+    		</xf:output>
+    		<xf:output id="output130" label=""
+    			style="position: absolute ;left:255px;top:51px;width:80px;height:16px;;text-align:center;font-weight:bold;">
+    			<xf:label>W.Progress</xf:label>
+    		</xf:output>
+    		<xf:output id="output131" label=""
+    			style="position: absolute ;left:5px;top:74px;width:110px;height:31px;background-color:#dfdfdf;;border:1px solid #9f9f9f;">
+    			<xf:label></xf:label>
+    		</xf:output>
+    		<xf:output id="output132" label=""
+    			style="position: absolute ;left:9px;top:84px;width:103px;height:16px;;text-align:center;font-weight:bold;">
+    			<xf:label>Contract</xf:label>
+    		</xf:output>
+    		<xf:output id="output133" label=""
+    			style="position: absolute ;left:5px;top:106px;width:110px;height:31px;background-color:#dfdfdf;;border:1px solid #9f9f9f;">
+    			<xf:label></xf:label>
+    		</xf:output>
+    		<xf:output id="output134" label=""
+    			style="position: absolute ;left:9px;top:116px;width:103px;height:16px;;text-align:center;font-weight:bold;">
+    			<xf:label>Sales</xf:label>
+    		</xf:output>
+    		<xf:output id="output135" label=""
+    			style="position: absolute ;left:116px;top:74px;width:67px;height:31px;background-color:#dfdfdf;border:1px solid #9f9f9f;">
+    			<xf:label></xf:label>
+    		</xf:output>
+    		<xf:output id="sc_Tcon" label=""
+    			style="position: absolute ;left:125px;top:84px;width:54px;height:16px;text-align:right;font-weight:bold;">
+    			<xf:label>0</xf:label>
+    		</xf:output>
+    		<xf:output id="output137" label=""
+    			style="position: absolute ;left:116px;top:106px;width:67px;height:31px;background-color:#dfdfdf;border:1px solid #9f9f9f;">
+    			<xf:label></xf:label>
+    		</xf:output>
+    		<xf:output id="output138" label=""
+    			style="position: absolute ;left:184px;top:106px;width:67px;height:31px;background-color:#dfdfdf;border:1px solid #9f9f9f;">
+    			<xf:label></xf:label>
+    		</xf:output>
+    		<xf:output id="output139" label=""
+    			style="position: absolute ;left:184px;top:74px;width:67px;height:31px;background-color:#dfdfdf;border:1px solid #9f9f9f;">
+    			<xf:label></xf:label>
+    		</xf:output>
+    		<xf:output id="output140" label=""
+    			style="position: absolute ;left:252px;top:106px;width:81px;height:31px;background-color:#dfdfdf;border:1px solid #9f9f9f;">
+    			<xf:label></xf:label>
+    		</xf:output>
+    		<xf:output id="output141" label=""
+    			style="position: absolute ;left:252px;top:74px;width:81px;height:31px;background-color:#dfdfdf;border:1px solid #9f9f9f;">
+    			<xf:label></xf:label>
+    		</xf:output>
+    		<xf:output id="sc_Tsale" label=""
+    			style="position: absolute ;left:125px;top:116px;width:54px;height:16px;text-align:right;font-weight:bold;">
+    			<xf:label>0</xf:label>
+    		</xf:output>
+    		<xf:output id="sc_Sale" label=""
+    			style="position: absolute ;left:193px;top:116px;width:54px;height:16px;text-align:right;font-weight:bold;">
+    			<xf:label>0</xf:label>
+    		</xf:output>
+    		<xf:output id="sc_Con" label=""
+    			style="position: absolute ;left:193px;top:84px;width:54px;height:16px;text-align:right;font-weight:bold;">
+    			<xf:label>0</xf:label>
+    		</xf:output>
+    		<xf:output id="sc_Cprog" label=""
+    			style="position: absolute ;left:261px;top:84px;width:55px;height:16px;text-align:right;font-weight:bold;">
+    			<xf:label>0</xf:label>
+    		</xf:output>
+    		<xf:output id="sc_Sprog" label=""
+    			style="position: absolute ;left:261px;top:116px;width:55px;height:16px;text-align:right;font-weight:bold;">
+    			<xf:label>0</xf:label>
+    		</xf:output>
+    		<xf:output id="output147" label=""
+    			style="position: absolute ;left:313px;top:84px;width:16px;height:16px;text-align:right;font-weight:bold;">
+    			<xf:label>%</xf:label>
+    		</xf:output>
+    		<xf:output id="output148" label=""
+    			style="position: absolute ;left:313px;top:116px;width:16px;height:16px;text-align:right;font-weight:bold;">
+    			<xf:label>%</xf:label>
+    		</xf:output>
+    	</xf:group>
+    </body>
+</html>

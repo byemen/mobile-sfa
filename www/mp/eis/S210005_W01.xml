@@ -1,0 +1,87 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?xml-stylesheet href="/mp/css/frame.css" type="text/css"?>
+<html xmlns="http://www.w3.org/1999/xhtml"
+    xmlns:ev="http://www.w3.org/2001/xml-events"
+    xmlns:w2="http://www.inswave.com/websquare" xmlns:xf="http://www.w3.org/2002/xforms">
+    <head>
+        <w2:buildDate/>
+        <xf:model>
+            <xf:instance>
+                <data xmlns=""/>
+            </xf:instance>
+        </xf:model>        
+        <script type="javascript" src="/mp/js/common.js"></script>
+        <script type="javascript"><![CDATA[     	
+    	var FV_sDealerId = GV_GROUP_ID.substr(0,2)+"00000";
+    	var FV_sBrandCd = parent.FV_SvcNm;
+       	var FV_sSvcNm = parent.FV_SvcNm;
+		// To show Loading Image
+		parent.fn_SpinnerShow();
+		setTimeout("parent.fn_SpinnerHide()", 3000);
+    	
+        ]]></script>
+    </head>
+    <body>
+    	<xf:image id="image24"
+    		src="/mp/images/eis/shape_4.png"
+    		style="position: absolute ;height:285px;width:1024px;left:0px;top:24px;">
+    	</xf:image>
+    	<w2:iframe id="iframe1"
+    		style="position: absolute ;left:13px;top:36px;width:998px;height:260px;"
+    		src="/mp/FusionCharts/Code/S210005_C01.jsp" scrolling="no">
+    	</w2:iframe>
+    	<xf:output class="sub_title_b" id="output30" label=""
+    		style="position: absolute ;height:20px;width:204px;left:20px;top:11px;">
+    		<xf:label>Summary</xf:label>
+    	</xf:output>
+    	<xf:output id="sub_title"
+    		style="position: absolute ;height:20px;width:204px;left:20px;top:10px;"
+    		class="sub_title" label="">
+    		<xf:label>Summary</xf:label>
+    	</xf:output>
+    	<xf:output id="output40"
+    		style="position: absolute ;height:20px;width:253px;left:20px;top:309px;"
+    		class="sub_title_b" label="">
+    		<xf:label>
+    			GR Entry Ratio [vs. UIO]&amp; Sales/Entry
+    		</xf:label>
+    	</xf:output>
+    	<xf:output id="output41"
+    		style="position: absolute ;height:20px;width:253px;left:20px;top:308px;"
+    		class="sub_title" label="">
+    		<xf:label>
+    			GR Entry Ratio [vs. UIO]&amp; Sales/Entry
+    		</xf:label>
+    	</xf:output>
+    	<xf:image id="image26"
+    		style="position: absolute ;height:285px;width:512px;left:0px;top:323px;"
+    		src="/mp/images/eis/shape_6.png">
+    	</xf:image>
+    	<w2:iframe id="iframe2"
+    		style="position: absolute ;left:13px;top:336px;width:484px;height:260px;"
+    		src="/mp/FusionCharts/Code/S210005_C02.jsp" scrolling="no">
+    	</w2:iframe>
+    	<xf:output id="output49"
+    		style="position: absolute ;height:20px;width:253px;left:531px;top:309px;"
+    		class="sub_title_b" label="">
+    		<xf:label>
+    			BP Entry Ratio [vs. UIO]&amp; Sales/Entry
+    		</xf:label>
+    	</xf:output>
+    	<xf:output id="output50"
+    		style="position: absolute ;height:20px;width:253px;left:531px;top:308px;"
+    		class="sub_title" label="">
+    		<xf:label>
+    			BP Entry Ratio [vs. UIO]&amp; Sales/Entry
+    		</xf:label>
+    	</xf:output>
+    	<xf:image id="image29"
+    		style="position: absolute ;height:285px;width:512px;left:511px;top:323px;"
+    		src="/mp/images/eis/shape_6.png">
+    	</xf:image>
+    	<w2:iframe id="iframe3"
+    		style="position: absolute ;left:524px;top:335px;width:484px;height:260px;"
+    		src="/mp/FusionCharts/Code/S210005_C03.jsp" scrolling="no">
+    	</w2:iframe>
+    </body>
+</html>

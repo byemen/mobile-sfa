@@ -1,0 +1,872 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?xml-stylesheet href="/mp/css/style.css" type="text/css"?>
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:ev="http://www.w3.org/2001/xml-events"
+    xmlns:w2="http://www.inswave.com/websquare" xmlns:xf="http://www.w3.org/2002/xforms">
+    <head>
+    	<w2:buildDate />
+    	<xf:model>
+    		<xf:instance>
+    			<data xmlns="" />
+    		</xf:instance>
+    		<xf:submission id="submissionList" ref="request" target="resList"
+        		action=""
+        		method="post" mediatype="application/xml" encoding="UTF-8" instance="" replace="instance"
+        		errorHandler="" customHandler="" mode="asynchronous"
+        		processMsg="처리중입니다.">
+        		<script type="javascript" ev:event="xforms-submit-done"><![CDATA[
+            		grd_List.setXML(WebSquare.ModelUtil.findInstanceNode("resList/root/dataset[@id='ds_List']"));
+
+            		for(var i=0; i<grd_List.getRowCount(); i++){
+		        		grd_List.setCellData(i, 0, i+1);
+		        	}
+
+		        	grp_Service1.hide();
+        			grp_Service2.hide();
+            	]]></script>
+        	</xf:submission><xf:submission id="submissionCode" ref="request"
+        		target="resCode" action="" method="post"
+        		mediatype="application/xml" encoding="UTF-8" instance=""
+        		replace="instance" errorHandler="" customHandler=""
+        		mode="asynchronous" processMsg="">
+        		<script type="javascript" ev:event="xforms-submit-done"><![CDATA[ 
+	        		parent.fn_SpinnerHide();	        			
+   					cb_ResvShopCd.setSelectedIndex(1);
+        		]]></script>
+        	</xf:submission>
+        	<xf:submission id="submissionMaster" ref="request" target="resMaster"
+        		action=""
+        		method="post" mediatype="application/xml" encoding="UTF-8" instance="" replace="instance"
+        		errorHandler="" customHandler="" mode="asynchronous"
+        		processMsg="">
+        		<script type="javascript" ev:event="xforms-submit-done"><![CDATA[ 
+					chk_ResvSms.setSelectedIndex(0);
+        		]]></script>
+        	</xf:submission>
+    	</xf:model>
+    	<script type="javascript" src="/mp/js/common.js"></script>
+		<script type="javascript" src="/mp/js/WebSquare.js"></script>
+    	<script type="javascript"><![CDATA[
+    	/****************************************************************
+		* 화면로드
+		* @param  : 없음
+		* @return : 없음
+		******************************************************************/
+        function fn_OnLoad(){
+        	// 서비스센터, 담당 SA, 공통코드
+			setTitSendInfo("request", "", "", "mdms/mp/comm::CO_GROUP_S02,mdms/mp/resvt::S310502_W01_S02,mdms/mp/comm::CO_CODE_S01");
+			if(GV_UP_GROUP_ID != "TM00000")
+				setInputParamData("UP_GROUP_ID",GV_UP_GROUP_ID);
+			setInputParamData("CD_KND", "'SV01010','SV01011'");	// 서비스코드, 서비스상품코드
+        	setSubmissison("submissionCode");        	
+
+       		grp_Service1.hide();
+       		grp_Service2.hide();
+       		cb_ResvTypeCd.setDisabled(true); 
+        }        
+        /****************************************************************
+		* 조회
+		* @param  : 페이지번호
+		* @return : 없음
+		******************************************************************/ 
+        function fn_Search(pageNo){
+        	if(gfn_IsNullVal(edt_VehicNo1.getValue()) && gfn_IsNullVal(edt_VehicNo2.getValue())
+        		&& gfn_IsNullVal(edt_CustNm.getValue())){
+        		alert("한개 이상의 조건을 입력해 주세요.");
+        		return;
+        	}
+
+        	if(edt_VehicNo2.getValue().length > 0 && edt_VehicNo2.getValue().length != 4){
+        		alert("차량번호는 4 자리로 입력되어야 합니다.\n확인하여 주십시오.");
+        		edt_SVehicNo2.focus();
+        		return;
+        	}
+
+        	if(edt_CustNm.getValue().length > 0 && edt_CustNm.getValue().length == 1){
+        		alert("고객명은 두자 이상 입력되어야 합니다.\n확인하여 주십시오.");
+        		edt_SCustNm.focus();
+        		return;
+        	}
+
+        	var sSqlid = "mdms/mp/resvt:S310502_W01_S01";
+
+        	setTitSendInfo("request", "", "", sSqlid);
+        	setInputParamData("VEHIC_NO1", edt_VehicNo1.getValue());
+        	setInputParamData("VEHIC_NO2", edt_VehicNo2.getValue());
+        	setInputParamData("CUST_NM", edt_CustNm.getValue());
+
+    		setSubmissison("submissionList");
+
+    		//fn_AfterSearch();
+        }
+        /****************************************************************
+		* callback (조회)
+		* @param  : 없음
+		* @return : 없음
+		******************************************************************/
+        function fn_AfterSearch(){
+        	grp_Service1.hide();
+        	grp_Service2.hide();
+
+        	var nRownum = (FV_nCurrPage-1) * FV_SEARCH_CNT;
+
+        	if(FV_nCurrPage == -1 && grd_List.getRowCount() > 0){
+				FV_nMAXCNT = grd_List.getCellData(0,0);
+				fn_SetPageInfo(1,FV_nMAXCNT,FV_SEARCH_CNT);
+				nRownum = 0;
+			}
+
+			for(var i=0; i<grd_List.getRowCount(); i++){
+        		grd_List.setCellData(i, 1, (i+1)+nRownum);
+        	}
+
+        }
+        /****************************************************************
+		* 서비스코드 변경시 처리
+		* @param  : 없음
+		* @return : 없음
+		******************************************************************/
+        function fn_ResvTypeChange(){
+        	// 서비스코드가 정기정검일 경우만 서비스상품코드선택 가능
+        	if(cb_ResvTypeCd.getValue() == "20"){
+        		cb_ResvFmsCd.setDisabled(false);
+        	} else{
+        		cb_ResvFmsCd.setValue("");
+        		cb_ResvFmsCd.setDisabled(true);
+        	}
+        }
+        var FV_sShopCd = "";
+        var FV_sShopNm = "";
+        var FV_sSvcTypeFmsCd = "";
+        /****************************************************************
+		* 스톨선택
+		* @param  : 없음
+		* @return : 없음
+		******************************************************************/
+        function fn_SelectStall(){
+        	if(gfn_IsNullVal(cb_ResvFmsCd.getValue())){
+				alert("상세 서비스유형 항목에 값이 누락되었습니다.\n확인하여 주십시오.");
+				cb_ResvFmsCd.focus();
+				return;
+			}
+
+			if(gfn_IsNullVal(cb_ResvShopCd.getValue())){
+				alert("예약서비스센터 항목에 값이 누락되었습니다.\n확인하여 주십시오.");
+				cb_ResvShopCd.focus();
+				return;
+			}
+
+        	FV_sShopCd = cb_ResvShopCd.getValue();
+        	FV_sShopNm = cb_ResvShopCd.getText();
+        	FV_sSvcTypeFmsCd = cb_ResvFmsCd.getValue();
+
+        	gfn_OpenPopup("/mp/resvt/S310502_P01.xml","예약가능스톨선택",994,555,0,40);
+        }
+        /****************************************************************
+		* 스톨선택
+		* @param  : 스톨정보
+		* @return : 없음
+		******************************************************************/
+        function fn_StallParams(arrRtn){ 
+        	gfn_PopupClose();
+
+        	if(arrRtn != null){
+        		grp_Service2.show();        		
+        		edt_ResvDt.setValue(arrRtn[1]);
+        		edt_ResvStYm.setValue(arrRtn[2]);
+        		edt_ResvEndYm.setValue(arrRtn[3]);
+        		edt_ResvStallNo.setValue(arrRtn[4]);
+        		edt_ResvStallNm.setValue(arrRtn[5]);
+
+        		edt_ResvInDt.setValue(arrRtn[1] + " " + fn_GetHourMin(arrRtn[2],"S"));
+        		edt_ResvOutDt.setValue(arrRtn[1] + " " + fn_GetHourMin(arrRtn[3],"E"));
+
+        		edt_ResvTypeCd.setValue(cb_ResvTypeCd.getText());
+        		edt_ResvFmsCd.setValue(cb_ResvFmsCd.getText());
+
+        		var nRow = grd_List.getFocusedRowIndex();
+
+        		edt_ResvVehicNo1.setValue(grd_List.getCellData(nRow, 1));
+        		edt_ResvVehicNo2.setValue(grd_List.getCellData(nRow, 2));
+        		edt_ResvVariantCd.setValue(grd_List.getCellData(nRow, 9));
+        		edt_ResvVariantNm.setValue(grd_List.getCellData(nRow, 10));
+        		edt_ResvCustSeq.setValue(grd_List.getCellData(nRow, 4));
+        		edt_ResvCustNm.setValue(grd_List.getCellData(nRow, 5));
+        		edt_ResvHpNo.setValue(grd_List.getCellData(nRow, 8));
+        		edt_ResvManCustNm.setValue(grd_List.getCellData(nRow, 5));
+        		cb_ResvHpArea.setValue(grd_List.getCellData(nRow, 6));
+        		edt_ResvManHpNo.setValue(grd_List.getCellData(nRow, 7));        		
+        		edt_Vin.setValue(grd_List.getCellData(nRow, 13));        		
+        	} else{
+        		grp_Service2.hide();        
+        	}
+        }
+        /****************************************************************
+		* 시간계산
+		* @param  : vTime 계산할 시간	gb 시작/끝 구분(S/E)
+		* @return : 계산된 시간
+		******************************************************************/
+        function fn_GetHourMin(vTime,gb){
+	   	  	// 시간과 분으로 분리
+		   	var vHour   = eval(vTime.substring(0, 2));
+		   	var vMinute = eval(vTime.substring(2, 4));	   
+		    var vHourMin = vHour * 60 + vMinute;
+
+		   	if(gb == "S")
+		   		vHourMin = vHourMin - 20;
+		   	else if(gb == "E")
+		   		vHourMin = vHourMin + 20;
+
+			vHour = Math.floor(vHourMin / 60);
+			vMinute = vHourMin % 60;
+
+			return vHour+":"+vMinute;
+		}
+        /****************************************************************
+		* 예약등록
+		* @param  : 없음
+		* @return : 없음
+		******************************************************************/
+        function fn_NewResv(){
+        	if(gfn_IsNullVal(edt_ResvStallNo.getValue())){
+        		alert("예약스톨 항목에 값이 누락되었습니다.\n확인하여 주십시오.");
+				edt_ResvStallNo.focus();
+				return;
+        	}
+        	if(gfn_IsNullVal(cb_ResvLocCd.getValue())){
+        		alert("고객 대기 유형 항목에 값이 누락되었습니다.\n확인하여 주십시오.");
+				cb_ResvLocCd.focus();
+				return;
+        	}
+/*        	if(gfn_IsNullVal(cal_ResvInDt.getValue())){
+        		alert("예상시간 입력 항목에 값이 누락되었습니다.\n확인하여 주십시오.");
+				cal_ResvInDt.focus();
+				return;
+        	}
+        	if(gfn_IsNullVal(cal_ResvOutDt.getValue())){
+        		alert("예상시간 출력 항목에 값이 누락되었습니다.\n확인하여 주십시오.");
+				cal_ResvOutDt.focus();
+				return;
+        	}
+        	var sResvInDt = cal_ResvInDt.getValue().substring(10);
+        	var sResvOutDt = cal_ResvOutDt.getValue().substring(10);
+        	if(sResvInDt%5 != 0){
+        		alert("입고 시간은 5분 단위로 입력 가능합니다.");
+        		return;
+        	}
+        	if(sResvOutDt%5 != 0){
+        		alert("입고 시간은 5분 단위로 입력 가능합니다.");
+        		return;
+        	}
+*/
+
+        	if(chk_ResvSms.getValue() == "Y"){
+        		if(gfn_IsNullVal(cb_ResvHpArea.getValue())){
+	        		alert("서비스 입고자 핸드폰 항목에 값이 누락되었습니다.\n확인하여 주십시오.");
+					cb_ResvHpArea.focus();
+					return;
+	        	}
+	        	if(gfn_IsNullVal(edt_ResvManHpNo.getValue())){
+	        		alert("서비스 입고자 핸드폰 항목에 값이 누락되었습니다.\n확인하여 주십시오.");
+					edt_ResvManHpNo.focus();
+					return;
+	        	}
+        	}
+        	gfn_OpenPopup("/mp/resvt/S310502_P02.xml","예약등록",828,346,86,50);
+        }
+        /****************************************************************
+		* 예약등록
+		* @param  : 예약정보
+		* @return : 없음
+		******************************************************************/
+        function fn_ResvSave(arrRtn){ 
+        	gfn_PopupClose();
+
+        	if(arrRtn != null){          		     		
+        		parent.FV_bResv = true;
+        		parent.FV_sResvShopCd = arrRtn[0];
+    			parent.FV_sRealResvDt = arrRtn[1];
+  				parent.ifrm_Main.setSrc("/mp/resvt/S310501_W01.xml");
+	        }
+        }
+        /****************************************************************
+		* 예약서비스센터 변경시 담당SA filter
+		* @param  : 없음
+		* @return : 없음
+		******************************************************************/ 
+    	function fn_ShopCdChange(){
+    		var sShopCd = cb_ResvShopCd.getValue();        			
+	     	var sFilter = WebSquare.ModelUtil.findInstanceNodes("resCode/root/dataset[@id='ds_Sa']/record[SHOP_CD='"+sShopCd+"']");
+
+			cb_ResvSaId.removeAll();	
+			cb_ResvSaId.addItem("","선택",0);
+
+			for(var i=1; i<sFilter.length+1; i++){
+				cb_ResvSaId.addItem(WebSquare.xml.getValue(sFilter[i-1],"CODE"),WebSquare.xml.getValue(sFilter[i-1],"NAME"), i );
+			}
+			cb_ResvSaId.setSelectedIndex(0);
+		}
+
+        fn_OnLoad();
+        ]]></script>
+    </head>
+    <body>
+    	<w2:grid baseNode="dataset" autoFit="" class="grid" resize=""
+    		id="grd_List" focusMode="row"
+    		style="position:absolute;height:93px;width:991px;left:1px;top:124px;"
+    		evenRowBackgroundColor="#e1ebf5" overflowX="hidden"
+    		overflowY="hidden" oddEvenColorDisplay="true"
+    		oddRowBackgroundColor="#ffffff" repeatNode="record"
+    		sortEvent="onclick" readOnly="true">
+    		<w2:header id="header7" style="" width="472"
+    			columnClass="gridHeaderTD1" class="gridHeaderTable">
+    			<w2:row id="row16" style="">
+    				<w2:column id="column222" style="height:26px;"
+    					hidden="" width="30" inputType="text" value="No" rowSpan=""
+    					valueType="binary" colSpan="">
+    				</w2:column>
+    				<w2:column id="column349" style="height:26px"
+    					hidden="" inputType="text" width="70" valueType="binary">
+    				</w2:column>
+    				<w2:column id="column351" style="height:26px"
+    					hidden="" inputType="text" width="70" valueType="binary">
+    				</w2:column>
+    				<w2:column id="column223" style="height:26px;"
+    					hidden="" width="80" inputType="text" value="차량번호"
+    					valueType="binary" colSpan="" rowSpan="">
+    				</w2:column>
+    				<w2:column id="column224" style="height:26px;"
+    					hidden="" width="74" inputType="text" value="고객번호"
+    					valueType="binary" colSpan="" rowSpan="">
+    				</w2:column>
+    				<w2:column id="column225" style="height:26px;"
+    					hidden="" width="130" inputType="text" value="실차주명"
+    					valueType="binary" colSpan="" rowSpan="">
+    				</w2:column>
+    				<w2:column id="column356" style="height:26px"
+    					hidden="" inputType="text" width="70" valueType="binary">
+    				</w2:column>
+    				<w2:column id="column354" style="height:26px"
+    					hidden="" inputType="text" width="70" valueType="binary">
+    				</w2:column>
+    				<w2:column id="column226" style="height:26px;"
+    					hidden="" width="90" inputType="text" value="휴대폰번호"
+    					valueType="binary" colSpan="" rowSpan="">
+    				</w2:column>
+    				<w2:column id="column353" style="height:26px"
+    					hidden="" inputType="text" width="70" valueType="binary">
+    				</w2:column>
+    				<w2:column id="column278" style="height:26px"
+    					hidden="" inputType="text" width="90" valueType="binary"
+    					value="차종" colSpan="" rowSpan="">
+    				</w2:column>
+    				<w2:column id="column284" style="height:26px"
+    					hidden="" inputType="text" width="48" valueType="binary"
+    					value="년식" colSpan="" rowSpan="">
+    				</w2:column>
+    				<w2:column id="column343" style="height:26px"
+    					hidden="" width="70" inputType="text" valueType="binary"
+    					value="주행거리">
+    				</w2:column>
+    				<w2:column id="column344" style="height:26px"
+    					hidden="" width="120" inputType="text" valueType="binary"
+    					value="차대번호">
+    				</w2:column>
+    				<w2:column id="column345" style="height:26px"
+    					hidden="" width="80" inputType="text" valueType="binary"
+    					value="인도일자">
+    				</w2:column>
+    				<w2:column id="column346" style="height:26px"
+    					hidden="" inputType="text" width="98" valueType="binary"
+    					value="판매딜러">
+    				</w2:column>
+    				<w2:column id="column348" style="height:26px"
+    					hidden="" inputType="text" width="80" valueType="binary"
+    					value="등록일자">
+    				</w2:column>
+    			</w2:row>
+    		</w2:header>
+    		<w2:gBody id="gBody7" style="" columnClass="gridBodyTD"
+    			class="gridBodyTable">
+    			<w2:row id="row17" style="">
+    				<w2:column id="column227" style="height:22px;"
+    					hidden="" width="48" inputType="text" value=""
+    					valueType="binary">
+    				</w2:column>
+    				<w2:column id="VEHIC_NO1" style="height:22px"
+    					hidden="true" inputType="text" width="70" valueType="binary">
+    				</w2:column>
+    				<w2:column id="VEHIC_NO2" style="height:22px"
+    					hidden="true" inputType="text" width="70" valueType="binary">
+    				</w2:column>
+    				<w2:column id="VEHIC_NO" style="height:22px;"
+    					hidden="" width="154" inputType="text" value=""
+    					valueType="binary">
+    				</w2:column>
+    				<w2:column id="CUST_SEQ" style="height:22px;"
+    					hidden="" width="102" inputType="text" value=""
+    					valueType="binary">
+    				</w2:column>
+    				<w2:column id="CUST_NM" style="height:22px;"
+    					hidden="" width="80" inputType="text" value=""
+    					valueType="binary" textAlign="left">
+    				</w2:column>
+    				<w2:column id="HP_AREA" style="height:22px"
+    					hidden="true" inputType="text" width="70" valueType="binary">
+    				</w2:column>
+    				<w2:column id="HP_NO" style="height:22px"
+    					hidden="true" inputType="text" width="70" valueType="binary">
+    				</w2:column>
+    				<w2:column id="HP" style="height:22px;" hidden=""
+    					width="113" inputType="text" value="" valueType="binary"
+    					textAlign="left">
+    				</w2:column>
+    				<w2:column id="VARIANT_CD" style="height:22px"
+    					hidden="true" inputType="text" width="70" valueType="binary">
+    				</w2:column>
+    				<w2:column id="VARIANT_NM" style="height:22px"
+    					hidden="" inputType="text" width="128" valueType="binary"
+    					textAlign="left">
+    				</w2:column>
+    				<w2:column id="MODEL_YEAR" style="height:22px"
+    					hidden="" inputType="text" width="86" valueType="binary">
+    				</w2:column>
+    				<w2:column id="ODOMETER" style="height:22px"
+    					hidden="" inputType="text" width="96" valueType="binary"
+    					textAlign="right" displayFormat="#,###">
+    				</w2:column>
+    				<w2:column id="VIN" style="height:22px" hidden=""
+    					inputType="text" width="160" valueType="binary"
+    					textAlign="left">
+    				</w2:column>
+    				<w2:column id="DELIVERY_DT" style="height:22px"
+    					hidden="" inputType="text" width="128" valueType="binary">
+    				</w2:column>
+    				<w2:column id="SALES_DEALER_NM" style="height:22px"
+    					hidden="" inputType="text" width="98" valueType="binary"
+    					textAlign="left">
+    				</w2:column>
+    				<w2:column id="REG_DT" style="height:22px" hidden=""
+    					inputType="text" width="80" valueType="binary">
+    				</w2:column>
+    			</w2:row>
+    		</w2:gBody>
+    		<script ev:event="onCellClick( row , col )"
+    			type="javascript"><![CDATA[ 
+    			grp_Service1.show();
+    			grp_Service2.hide();	
+   				setTitSendInfo("request", "", "", "mdms/mp/resvt::S310502_W01_S03");
+				setInputParamData("SHOP_CD","");
+				setInputParamData("RESV_DT","");
+				setInputParamData("RESV_SEQ","");
+        		setSubmissison("submissionMaster");
+
+        		cb_ResvTypeCd.setValue("20");     			
+    		]]></script>
+    	</w2:grid>
+    	<xf:image id="image42" src="/mp/images/smenu_bg.png"
+    		style="position: absolute ;height:36px;width:991px;left:0px;top:0px;">
+    	</xf:image>
+
+    	<xf:image id="image43" src="/mp/images/stitle_bg.png"
+    		style="position: absolute ;height:36px;width:172px;left:1px;top:0px;">
+    	</xf:image>
+    	<w2:textbox class="title" id="title" label="서비스 예약"
+    		style="position: absolute ;height:20px;width:149px;left:3px;top:11px;;text-align:center">
+    	</w2:textbox>
+    	<xf:group id="roundRectangle2"
+    		style="position: absolute ;height:42px;width:991px;left:1px;top:72px;"
+    		class="if_group">
+    	</xf:group>
+    	<xf:trigger class="btn_s1" id="trigger1"
+    		style="position: absolute ;height:25px;width:130px;left:726px;top:6px;"
+    		type="image">
+    		<xf:label>담당고객 예약조회</xf:label>
+    		<script ev:event="onclick" type="javascript"><![CDATA[ 
+    			parent.fn_SpinnerShow();
+    			parent.ifrm_Main.setSrc("/mp/resvt/S310501_W01.xml");
+    		]]></script>
+    	</xf:trigger>
+    	<xf:trigger class="btn_on3" id="trigger3"
+    		style="position: absolute ;height:25px;width:130px;left:855px;top:6px;"
+    		type="image">
+    		<xf:label>서비스 예약</xf:label>
+    		<script ev:event="onclick" type="javascript"><![CDATA[ 
+    			parent.fn_SpinnerShow();
+    			parent.ifrm_Main.setSrc("/mp/resvt/S310502_W01.xml");
+    		]]></script>
+    	</xf:trigger>
+    	<w2:textbox class="if_lable" id="output72" label="차량번호"
+    		style="position: absolute ;height:22px;width:64px;left:11px;top:82px;">
+    	</w2:textbox>
+    	<w2:textbox id="output79"
+    		style="position: absolute ;height:22px;width:56px;left:188px;top:82px;"
+    		class="if_lable" label="고객명">
+    	</w2:textbox>
+    	<xf:input id="edt_CustNm"
+    		style="position: absolute ;height:22px;width:106px;left:246px;top:82px;"
+    		class="input_edit">
+    	</xf:input>
+    	<xf:input id="edt_VehicNo1"
+    		style="position: absolute ;height:22px;width:60px;left:77px;top:82px;"
+    		class="input_edit">
+    	</xf:input>
+    	<xf:input id="edt_VehicNo2"
+    		style="position: absolute ;height:22px;width:45px;left:146px;top:82px;"
+    		class="input_edit" maxlength="4">
+    	</xf:input>
+    	<w2:textbox class="sub_title" id="output81" label="1. 고객/차량번호"
+    		style="position: absolute ;height:20px;color:#000000;width:204px;left:1px;top:51px;">
+    	</w2:textbox>
+    	<xf:group id="grp_Service1" class=""
+    		style="position: absolute ;left:0px;top:226px;width: 1000px;height: 40px;background-color:#e9e9e9;">
+    		<w2:textbox id="output82"
+    			style="position: absolute ;height:20px;color:#000000;width:204px;left:1px;top:19px;"
+    			class="sub_title" label="2. 스톨선택/예약정보">
+    		</w2:textbox>
+    		<w2:textbox class="se_box" id="output84" label=""
+    			style="position: absolute ;height:30px;width:538px;left:342px;top:4px;">
+    		</w2:textbox>
+    		<w2:textbox class="se_lable" id="output83" label="예약서비스센터"
+    			style="position: absolute ;height:22px;width:88px;left:637px;top:4px;">
+    		</w2:textbox>
+    		<w2:textbox class="se_lable" id="output85" label="서비스유형"
+    			style="position: absolute ;height:22px;width:84px;left:342px;top:4px;">
+    		</w2:textbox>
+    		<xf:select1 allOption="" appearance="minimal"
+    			chooseOption="" class="input_edit" direction="auto"
+    			disabled="false" displayMode="label" id="cb_ResvTypeCd"
+    			style="position: absolute ;height:22px;width:80px;left:437px;top:8px;"
+    			submenuSize="auto" visibleRowNum="10" chooseOptionLabel="">
+    			<xf:choices>
+    				<xf:itemset
+    					nodeset="resCode/root/dataset[@id='ds_Code']/record[CD_KND='SV01010']">
+    					<xf:label ref="NAME"></xf:label>
+    					<xf:value ref="CODE"></xf:value>
+    				</xf:itemset>
+    			</xf:choices>
+    			<script ev:event="onchange" type="javascript"><![CDATA[ 
+    				fn_ResvTypeChange();
+    			]]></script>
+    		</xf:select1>
+    		<xf:select1 allOption="" appearance="minimal"
+    			chooseOption="true" class="input_edit" direction="auto"
+    			disabled="false" displayMode="label" id="cb_ResvShopCd"
+    			style="position: absolute ;height:22px;width:140px;left:736px;top:8px;"
+    			submenuSize="auto" chooseOptionLabel="선택" visibleRowNum="10">
+    			<xf:choices>
+    				<xf:itemset
+    					nodeset="resCode/root/dataset[@id='ds_ShopCd']">
+    					<xf:label ref="record/NAME"></xf:label>
+    					<xf:value ref="record/CODE"></xf:value>
+    				</xf:itemset>
+    			</xf:choices>
+    			<script ev:event="onchange" type="javascript"><![CDATA[ 
+    				fn_ShopCdChange();
+    			]]></script>
+    		</xf:select1>
+    		<xf:select1 id="cb_ResvFmsCd" appearance="minimal"
+    			style="position: absolute ;height:22px;width:110px;left:522px;top:8px;"
+    			direction="auto" chooseOption="true" displayMode="label"
+    			class="input_edit" allOption="" submenuSize="auto"
+    			disabled="false" visibleRowNum="13" chooseOptionLabel="선택">
+    			<xf:choices>
+    				<xf:itemset
+    					nodeset="resCode/root/dataset[@id='ds_Code']/record[CD_KND='SV01011']">
+    					<xf:label ref="NAME"></xf:label>
+    					<xf:value ref="CODE"></xf:value>
+    				</xf:itemset>
+    			</xf:choices>
+    		</xf:select1>
+    		<xf:trigger id="trigger5"
+    			style="position: absolute ;height:25px;width:100px;left:886px;top:8px;"
+    			class="btn_se" type="image">
+    			<xf:label>2. 스톨선택</xf:label>
+    			<script ev:event="onclick" type="javascript"><![CDATA[ 
+    			fn_SelectStall();
+    		]]></script>
+    		</xf:trigger>
+    	</xf:group>
+    	<xf:group id="grp_Service2" class=""
+    		style="position: absolute ;height: 250px;width: 1000px;background-color:#e9e9e9;left:0px;top:265px;">
+    		<w2:textbox class="se_box" id="output92" label=""
+    			style="position: absolute ;height:30px;width:991px;left:0px;top:66px;">
+    		</w2:textbox>
+    		<w2:textbox class="se_box" id="output93" label=""
+    			style="position: absolute ;height:30px;width:991px;left:0px;top:4px;">
+    		</w2:textbox>
+    		<w2:textbox class="se_box" id="output95" label=""
+    			style="position: absolute ;height:30px;width:991px;left:0px;top:35px;">
+    		</w2:textbox>
+    		<w2:textbox class="se_box" id="output100" label=""
+    			style="position: absolute ;height:36px;width:991px;left:0px;top:159px;">
+    		</w2:textbox>
+    		<w2:textbox class="se_lable" id="output87" label="예약일시"
+    			style="position: absolute ;height:22px;width:84px;left:209px;top:35px;">
+    		</w2:textbox>
+    		<w2:textbox class="se_lable" id="output88" label="고객대기유형"
+    			style="position: absolute ;height:22px;width:84px;left:0px;top:35px;color:#ff0000;">
+    		</w2:textbox>
+    		<xf:textarea class="input_edit" id="ta_ResvCustRqst"
+    			style="position: absolute ;height:24px;width:890px;left:95px;top:163px;"
+    			ref="resMaster/root/dataset[@id='ds_Master']/record/CUST_RQST">
+    		</xf:textarea>
+    		<w2:textbox class="se_lable" id="output91" label="서비스유형"
+    			style="position: absolute ;height:22px;width:84px;left:209px;top:4px;">
+    		</w2:textbox>
+    		<xf:select1 allOption="" appearance="minimal"
+    			chooseOption="" class="input_edit" direction="auto"
+    			disabled="false" displayMode="label" id="cb_ResvSaId"
+    			style="position: absolute ;height:22px;width:109px;left:95px;top:70px;"
+    			submenuSize="auto" visibleRowNum="10" chooseOptionLabel=""
+    			ref="resMaster/root/dataset[@id='ds_Master']/record/MNG_SA_ID">
+    		</xf:select1>
+    		<w2:textbox class="se_lable" id="output94" label="고객요구사항"
+    			style="position: absolute ;height:28px;width:84px;left:0px;top:159px;">
+    		</w2:textbox>
+    		<w2:textbox class="se_lable" id="output96" label="담당SA"
+    			style="position: absolute ;height:22px;width:84px;left:0px;top:66px;">
+    		</w2:textbox>
+    		<xf:input class="input_edit" id="edt_ResvDt"
+    			style="position: absolute ;height:22px;width:105px;left:304px;top:39px;"
+    			readOnlyClass="input_readonly" readOnly="true"
+    			ref="resMaster/root/dataset[@id='ds_Master']/record/REAL_RESV_DATE">
+    		</xf:input>
+    		<w2:textbox class="se_lable" id="output98" label="예약스톨"
+    			style="position: absolute ;height:22px;width:84px;left:0px;top:4px;">
+    		</w2:textbox>
+    		<w2:textbox class="se_lable" id="output99" label="예상시간"
+    			style="position: absolute ;height:22px;width:84px;left:209px;top:66px;">
+    		</w2:textbox>
+    		<xf:input class="input_edit" id="edt_ResvStallNm"
+    			style="position: absolute ;height:22px;width:105px;left:95px;top:8px;"
+    			readOnlyClass="input_readonly" readOnly="true"
+    			ref="resMaster/root/dataset[@id='ds_Master']/record/RESV_STALL_NM">
+    		</xf:input>
+    		<w2:textbox id="output101"
+    			style="position: absolute ;height:30px;width:991px;left:0px;top:128px;"
+    			class="se_box" label="">
+    		</w2:textbox>
+    		<w2:textbox id="output102"
+    			style="position: absolute ;height:30px;width:991px;left:0px;top:97px;"
+    			class="se_box" label="">
+    		</w2:textbox>
+    		<w2:textbox id="output103"
+    			style="position: absolute ;height:22px;width:84px;left:418px;top:97px;"
+    			class="se_lable" label="실차주">
+    		</w2:textbox>
+    		<w2:textbox id="output104"
+    			style="position: absolute ;height:22px;width:84px;left:209px;top:97px;"
+    			class="se_lable" label="차종">
+    		</w2:textbox>
+    		<w2:textbox id="output105"
+    			style="position: absolute ;height:22px;width:84px;left:0px;top:97px;"
+    			class="se_lable" label="차량번호">
+    		</w2:textbox>
+    		<xf:select1 id="cb_ResvHpArea" appearance="minimal"
+    			style="position: absolute ;height:22px;width:57px;left:248px;top:132px;"
+    			direction="auto" chooseOption="true" displayMode="label"
+    			class="input_edit" allOption="" submenuSize="auto"
+    			disabled="false" visibleRowNum="10" chooseOptionLabel="선택"
+    			ref="resMaster/root/dataset[@id='ds_Master']/record/RESV_HP_AREA">
+    			<xf:choices>
+    				<xf:item>
+    					<xf:label>010</xf:label>
+    					<xf:value>010</xf:value>
+    				</xf:item>
+    				<xf:item>
+    					<xf:label>011</xf:label>
+    					<xf:value>011</xf:value>
+    				</xf:item>
+    				<xf:item>
+    					<xf:label>016</xf:label>
+    					<xf:value>016</xf:value>
+    				</xf:item>
+    				<xf:item>
+    					<xf:label>017</xf:label>
+    					<xf:value>017</xf:value>
+    				</xf:item>
+    				<xf:item>
+    					<xf:label>018</xf:label>
+    					<xf:value>018</xf:value>
+    				</xf:item>
+    				<xf:item>
+    					<xf:label>019</xf:label>
+    					<xf:value>019</xf:value>
+    				</xf:item>
+    			</xf:choices>
+    		</xf:select1>
+    		<w2:textbox id="output106"
+    			style="position: absolute ;height:22px;width:84px;left:0px;top:128px;"
+    			class="se_lable" label="서비스입고자">
+    		</w2:textbox>
+    		<xf:input id="edt_ResvVariantNm"
+    			style="position: absolute ;height:22px;width:105px;left:304px;top:101px;"
+    			class="input_edit" readOnly="true" readOnlyClass="input_readonly"
+    			ref="resMaster/root/dataset[@id='ds_Master']/record/VARIANT_NM">
+    		</xf:input>
+    		<w2:textbox id="output107"
+    			style="position: absolute ;height:22px;width:84px;left:418px;top:128px;color:#ff0000;"
+    			class="se_lable" label="SMS 수신여부">
+    		</w2:textbox>
+    		<xf:select1 id="cb_ResvLocCd" appearance="minimal"
+    			style="position: absolute ;height:22px;width:109px;left:95px;top:39px;"
+    			direction="auto" chooseOption="true" displayMode="label"
+    			class="input_edit" allOption="" submenuSize="auto"
+    			disabled="false" chooseOptionLabel="선택" visibleRowNum="10"
+    			ref="resMaster/root/dataset[@id='ds_Master']/record/CUST_LOC_CD">
+    			<xf:choices>
+    				<xf:item>
+    					<xf:label>Waiting</xf:label>
+    					<xf:value>01</xf:value>
+    				</xf:item>
+    				<xf:item>
+    					<xf:label>Call</xf:label>
+    					<xf:value>02</xf:value>
+    				</xf:item>
+    			</xf:choices>
+    		</xf:select1>
+    		<w2:textbox id="output109"
+    			style="position: absolute ;padding-top:3px;height:19px;text-align:center;width:22px;border-style:solid;left:304px;border-width:1px;top:70px;"
+    			class="input_edit" label="입">
+    		</w2:textbox>
+    		<w2:textbox id="output110"
+    			style="position: absolute ;padding-top:3px;height:19px;text-align:center;width:22px;border-style:solid;left:469px;border-width:1px;top:70px;"
+    			class="input_edit" label="출">
+    		</w2:textbox>
+    		<xf:input id="edt_ResvStYm"
+    			style="position: absolute ;height:22px;width:46px;left:418px;top:39px;"
+    			class="input_edit" readOnlyClass="input_readonly" readOnly="true"
+    			displayFormat="##:##"
+    			ref="resMaster/root/dataset[@id='ds_Master']/record/REAL_RESV_ST_HM">
+    		</xf:input>
+    		<xf:input class="input_edit" id="edt_ResvEndYm"
+    			style="position: absolute ;height:22px;width:46px;left:495px;top:39px;"
+    			readOnlyClass="input_readonly" readOnly="true"
+    			displayFormat="##:##"
+    			ref="resMaster/root/dataset[@id='ds_Master']/record/REAL_RESV_END_HM">
+    		</xf:input>
+    		<w2:textbox class="txt1" id="output111" label="~"
+    			style="position: absolute ;height:21px;text-align:center;width:21px;left:472px;top:39px;">
+    		</w2:textbox>
+    		<xf:input id="edt_ResvVehicNo1"
+    			style="position: absolute ;height:22px;width:54px;left:95px;top:101px;"
+    			class="input_edit" readOnly="true" readOnlyClass="input_readonly"
+    			ref="resMaster/root/dataset[@id='ds_Master']/record/VEHIC_NO1">
+    		</xf:input>
+    		<xf:input id="edt_ResvVehicNo2"
+    			style="position: absolute ;height:22px;width:42px;left:158px;top:101px;"
+    			class="input_edit" readOnlyClass="input_readonly" readOnly="true"
+    			ref="resMaster/root/dataset[@id='ds_Master']/record/VEHIC_NO2">
+    		</xf:input>
+    		<w2:textbox id="output112"
+    			style="position: absolute ;padding-top:3px;height:19px;text-align:center;width:34px;border-style:solid;left:95px;border-width:1px;top:132px;"
+    			class="input_edit" label="성명">
+    		</w2:textbox>
+    		<xf:input id="edt_ResvManCustNm"
+    			style="position: absolute ;height:22px;width:66px;left:134px;top:132px;"
+    			class="input_edit"
+    			ref="resMaster/root/dataset[@id='ds_Master']/record/RESV_CUST_NM">
+    		</xf:input>
+    		<w2:textbox id="output113"
+    			style="position: absolute ;padding-top:3px;height:19px;text-align:center;width:34px;border-style:solid;left:209px;border-width:1px;top:132px;"
+    			class="input_edit" label="H.P">
+    		</w2:textbox>
+    		<xf:input id="edt_ResvManHpNo"
+    			style="position: absolute ;height:22px;width:99px;left:310px;top:132px;"
+    			class="input_edit"
+    			ref="resMaster/root/dataset[@id='ds_Master']/record/RESV_HP_NO">
+    		</xf:input>
+    		<w2:textbox id="output114"
+    			style="position: absolute ;padding-top:3px;height:19px;text-align:center;width:34px;border-style:solid;left:514px;border-width:1px;top:101px;"
+    			class="input_edit" label="성명">
+    		</w2:textbox>
+    		<xf:input id="edt_ResvCustNm"
+    			style="position: absolute ;height:22px;width:66px;left:552px;top:101px;"
+    			class="input_edit" readOnlyClass="input_readonly" readOnly="true"
+    			ref="resMaster/root/dataset[@id='ds_Master']/record/CUST_NM">
+    		</xf:input>
+    		<w2:textbox id="output115"
+    			style="position: absolute ;padding-top:3px;height:19px;text-align:center;width:34px;border-style:solid;left:627px;border-width:1px;top:101px;"
+    			class="input_edit" label="H.P">
+    		</w2:textbox>
+    		<xf:input id="edt_ResvHpNo"
+    			style="position: absolute ;height:22px;width:111px;left:666px;top:101px;"
+    			class="input_edit" readOnly="true" readOnlyClass="input_readonly"
+    			ref="resMaster/root/dataset[@id='ds_Master']/record/HP_NO">
+    		</xf:input>
+    		<xf:select appearance="full" id="chk_ResvSms"
+    			style="position: absolute ;height:22px;width: 120px;left:513px;top:133px;"
+    			selectedindex="0" cols="1" rows=""
+    			ref="resMaster/root/dataset[@id='ds_Master']/record/RESV_CUST_SMS_YN">
+    			<xf:choices>
+    				<xf:item>
+    					<xf:label>수신원함</xf:label>
+    					<xf:value>Y</xf:value>
+    				</xf:item>
+    			</xf:choices>
+    		</xf:select>
+    		<w2:textbox class="sub_title" id="st_Service"
+    			label="서비스예약시 주의사항 &lt;br&gt;1. 예약정보의 수정 및 취소는 SA를 통해서만
+    				가능합니다. &lt;br&gt;2. 정기점검의 경우 고객에게 반드시 추가 점검 내용이 있는지
+    				확인 후 고객요구사항에 기입하시기 바랍니다."
+    			style="position: absolute ;height:38px;color:#000000;width:684px;left:0px;top:206px;">
+    		</w2:textbox>
+    		<xf:input class="input_edit" id="edt_ResvTypeCd"
+    			style="position: absolute ;height:22px;width:105px;left:304px;top:8px;"
+    			readOnly="true" readOnlyClass="input_readonly"
+    			ref="resMaster/root/dataset[@id='ds_Master']/record/SVC_TYPE_NM">
+    		</xf:input>
+    		<xf:input class="input_edit" id="edt_ResvFmsCd"
+    			style="position: absolute ;height:22px;width:105px;left:418px;top:8px;"
+    			readOnlyClass="input_readonly" readOnly="true"
+    			ref="resMaster/root/dataset[@id='ds_Master']/record/SVC_TYPE_FMS_NM">
+    		</xf:input>
+    		<xf:input class="input_edit" id="edt_ResvStallNo"
+    			readOnly="true" readOnlyClass="input_readonly"
+    			style="position: absolute ;height:22px;visibility:hidden;width:50px;left:535px;top:9px;"
+    			ref="resMaster/root/dataset[@id='ds_Master']/record/RESV_STALL_NO">
+    		</xf:input>
+    		<xf:input class="input_edit" id="edt_ResvCustSeq"
+    			readOnly="true" readOnlyClass="input_readonly"
+    			style="position: absolute ;height:22px;visibility:hidden;width:50px;left:594px;top:9px;"
+    			ref="resMaster/root/dataset[@id='ds_Master']/record/CUST_SEQ">
+    		</xf:input>
+    		<xf:input class="input_edit" id="edt_ResvVariantCd"
+    			readOnly="true" readOnlyClass="input_readonly"
+    			style="position: absolute ;height:22px;visibility:hidden;width:50px;left:655px;top:9px;"
+    			ref="resMaster/root/dataset[@id='ds_Master']/record/VARIANT_CD">
+    		</xf:input>
+    		<xf:input class="input_edit" id="edt_Vin"
+    			readOnly="true" readOnlyClass="input_readonly"
+    			style="position: absolute ;height:22px;visibility:hidden;width:50px;left:655px;top:9px;">
+    		</xf:input>
+    		<xf:input class="input_edit" id="edt_ResvInDt"
+    			readOnly="true" readOnlyClass="input_readonly"
+    			ref="resMaster/root/dataset[@id='ds_Master']/record/IN_EXPT_DT"
+    			style="position: absolute ;height:22px;width:131px;left:330px;top:70px;">
+    		</xf:input>
+    		<xf:input class="input_edit" id="edt_ResvOutDt"
+    			readOnly="true" readOnlyClass="input_readonly"
+    			ref="resMaster/root/dataset[@id='ds_Master']/record/OUT_EXPT_DT"
+    			style="position: absolute ;height:22px;width:131px;left:495px;top:70px;">
+    		</xf:input>
+    		<xf:trigger id="trigger6"
+    			style="position: absolute ;height:25px;width:100px;left:886px;top:210px;"
+    			class="btn_se" type="image">
+    			<xf:label>3. 예약등록</xf:label>
+    			<script ev:event="onclick" type="javascript"><![CDATA[ 
+    			fn_NewResv();
+    		]]></script>
+    		</xf:trigger>
+    	</xf:group>
+
+    	<xf:trigger class="btn_se" id="btn_Search"
+    		style="position: absolute ;height:25px;width:100px;left:886px;top:82px;"
+    		type="image">
+    		<xf:label>1. 고객조회</xf:label>
+    		<script ev:event="onclick" type="javascript"><![CDATA[ 
+    			fn_Search();
+    		]]></script>
+    	</xf:trigger>
+    </body>
+</html>

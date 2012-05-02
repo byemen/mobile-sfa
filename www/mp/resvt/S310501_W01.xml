@@ -1,0 +1,351 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?xml-stylesheet href="/mp/css/style.css" type="text/css"?>
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:ev="http://www.w3.org/2001/xml-events"
+    xmlns:w2="http://www.inswave.com/websquare" xmlns:xf="http://www.w3.org/2002/xforms">
+    <head>
+    	<w2:buildDate />
+    	<xf:model>
+    		<xf:instance>
+    			<data xmlns="" />
+    		</xf:instance>
+    		<xf:submission id="submissionList" ref="request" target="resList"
+        		action=""
+        		method="post" mediatype="application/xml" encoding="UTF-8" instance="" replace="instance"
+        		errorHandler="" customHandler="" mode="asynchronous"
+        		processMsg="처리중입니다.">
+        		<script type="javascript" ev:event="xforms-submit-done"><![CDATA[
+            		grd_List.setXML(WebSquare.ModelUtil.findInstanceNode("resList/root/dataset[@id='ds_List']"));
+    		
+    				fn_AfterSearch();
+            	]]></script>
+        	</xf:submission>
+    		<xf:submission id="submissionShopCd" ref="request"
+    			target="resShopCd" action="" method="post"
+    			mediatype="application/xml" encoding="UTF-8" instance=""
+    			replace="instance" errorHandler="" customHandler=""
+    			mode="asynchronous" processMsg="">
+    			<script type="javascript" ev:event="xforms-submit-done"><![CDATA[ 
+    				parent.fn_SpinnerHide();
+    				
+    				if(parent.FV_bResv == true){
+    					cb_ShopCd.setValue(parent.FV_sResvShopCd);    					
+    					from_dt.setValue(parent.FV_sRealResvDt);
+        				to_dt.setValue(parent.FV_sRealResvDt); 
+        				
+        				fn_Search();
+        			} else{
+    					cb_ShopCd.setSelectedIndex(1);    					
+        				from_dt.setValue(fn_GetDate(0,0,-1));
+        				to_dt.setValue(fn_GetDate(0,0,0)); 
+        			}
+    			]]></script>
+    		</xf:submission>
+    	</xf:model>
+    	<script type="javascript" src="/mp/js/common.js"></script>
+		<script type="javascript" src="/mp/js/WebSquare.js"></script>
+    	<script type="javascript"><![CDATA[
+     	var FV_SEARCH_CNT = 19;		// 조회 건수
+		var FV_nMAXCNT = -1;		// 전체 데이터 수
+		/****************************************************************
+		* 화면로드
+		* @param  : 없음
+		* @return : 없음
+		******************************************************************/
+        function fn_OnLoad(){
+        	wfrm_Page.visible(false);
+        	// 서비스센터      	
+			setTitSendInfo("request", "", "", "mdms/mp/comm::CO_GROUP_S02");
+			if(GV_UP_GROUP_ID != "TM00000")
+				setInputParamData("UP_GROUP_ID",GV_UP_GROUP_ID);
+        	setSubmissison("submissionShopCd");	
+        }        
+        /****************************************************************
+		* 조회
+		* @param  : 페이지번호
+		* @return : 없음
+		******************************************************************/ 
+        function fn_Search(pageNo){
+        	if(gfn_IsNullVal(cb_ShopCd.getValue())){
+        		alert("서비스센터를 선택하여 주십시오.");
+        		return;
+        	}
+        	
+        	var fromDt = from_dt.getValue().replaceAll('-','');
+      		var toDt = to_dt.getValue().replaceAll('-','');
+			
+		  	if(fromDt > toDt) {
+	        	alert("실예약일자 종료일자를 시작일자 이후로 선택해주세요.");
+	        	to_dt.focus();  
+	        	return;
+		  	}
+		  	
+        	if(pageNo == null){
+				FV_nMAXCNT = -1;
+				pageNo = 1;
+				fn_InitPage();
+			}        	
+        	
+        	var sSqlid = "mdms/mp/resvt:S310501_W01_S01@" + pageNo + "/" + FV_SEARCH_CNT;
+        	
+        	setTitSendInfo("request", "", "", sSqlid);
+        	setInputParamData("SHOP_CD", cb_ShopCd.getValue());
+        	setInputParamData("REAL_ST_DATE", fromDt);
+        	setInputParamData("REAL_END_DATE", toDt);
+        	setInputParamData("VEHIC_NO1", edt_VehicNo1.getValue());
+        	setInputParamData("VEHIC_NO2",edt_VehicNo2.getValue());
+        	setInputParamData("CUST_NM", edt_CustNm.getValue());
+        	setInputParamData("RESV_CUST_NM", edt_ResvCustNm.getValue()); 	
+    		setSubmissison("submissionList");
+        }
+        /****************************************************************
+		* callback (조회)
+		* @param  : 없음
+		* @return : 없음
+		******************************************************************/
+        function fn_AfterSearch(){
+        	var nRownum = (FV_nCurrPage-1) * FV_SEARCH_CNT;
+        	
+        	if(FV_nCurrPage == -1 && grd_List.getRowCount() > 0){
+				FV_nMAXCNT = grd_List.getCellData(0,0);
+				fn_SetPageInfo(1,FV_nMAXCNT,FV_SEARCH_CNT);
+				nRownum = 0;
+			}
+			
+			for(var i=0; i<grd_List.getRowCount(); i++){
+        		grd_List.setCellData(i, 1, (i+1)+nRownum);
+        	}
+        }
+        
+        fn_OnLoad();     
+        ]]></script>
+    </head>
+    <body>
+
+    	<w2:grid baseNode="dataset" autoFit="" class="grid" resize=""
+    		id="grd_List" focusMode="row"
+    		style="position:absolute;height:433px;width:991px;left:1px;top:127px;"
+    		evenRowBackgroundColor="#e1ebf5" overflowX="hidden"
+    		overflowY="hidden" oddEvenColorDisplay="true"
+    		oddRowBackgroundColor="#ffffff" repeatNode="record"
+    		sortEvent="onclick" readOnly="true">
+    		<w2:header id="header7" style="" width="472"
+    			columnClass="gridHeaderTD1" class="gridHeaderTable">
+    			<w2:row id="row16" style="">
+    				<w2:column id="" style="height:26px" hidden=""
+    					inputType="text" width="70" valueType="binary">
+    				</w2:column>
+    				<w2:column id="column222" style="height:26px;"
+    					hidden="" width="30" inputType="text" value="No" rowSpan=""
+    					valueType="binary" colSpan="">
+    				</w2:column>
+    				<w2:column id="column223" style="height:26px;"
+    					hidden="" width="164" inputType="text" value="실예약일시"
+    					valueType="binary" colSpan="" rowSpan="">
+    				</w2:column>
+    				<w2:column id="column224" style="height:26px;"
+    					hidden="" width="108" inputType="text" value="예약고객명"
+    					valueType="binary" colSpan="" rowSpan="">
+    				</w2:column>
+    				<w2:column id="column225" style="height:26px;"
+    					hidden="" width="100" inputType="text" value="핸드폰번호"
+    					valueType="binary" colSpan="" rowSpan="">
+    				</w2:column>
+    				<w2:column id="column226" style="height:26px;"
+    					hidden="" width="88" inputType="text" value="차량번호"
+    					valueType="binary" colSpan="" rowSpan="">
+    				</w2:column>
+    				<w2:column id="column278" style="height:26px"
+    					hidden="" inputType="text" width="108" valueType="binary"
+    					value="차종" colSpan="" rowSpan="">
+    				</w2:column>
+    				<w2:column id="column284" style="height:26px"
+    					hidden="" inputType="text" width="98" valueType="binary"
+    					value="서비스유형" colSpan="" rowSpan="">
+    				</w2:column>
+    				<w2:column id="column343" style="height:26px"
+    					hidden="" width="98" inputType="text" valueType="binary"
+    					value="예약번호">
+    				</w2:column>
+    				<w2:column id="column344" style="height:26px"
+    					hidden="" width="98" inputType="text" valueType="binary"
+    					value="예약스톨">
+    				</w2:column>
+    				<w2:column id="column345" style="height:26px"
+    					hidden="" width="98" inputType="text" valueType="binary"
+    					value="상태">
+    				</w2:column>
+    				<w2:column id="_CUST_SEQ" style="height:26px"
+    					hidden="true" width="1" inputType="text" valueType="binary"
+    					value="">
+    				</w2:column>
+    			</w2:row>
+    		</w2:header>
+    		<w2:gBody id="gBody7" style="" columnClass="gridBodyTD"
+    			class="gridBodyTable">
+    			<w2:row id="row17" style="">
+    				<w2:column id="_T_CNT" style="height:22px"
+    					hidden="true" inputType="text" width="70" valueType="binary">
+    				</w2:column>
+    				<w2:column id="column227" style="height:22px;"
+    					hidden="" width="50" inputType="text" value=""
+    					valueType="binary" textAlign="left">
+    				</w2:column>
+    				<w2:column id="REAL_RESV_DATE" style="height:22px;"
+    					hidden="" width="144" inputType="text" value=""
+    					valueType="binary" displayFormat="####-##-## ##:##~##:##">
+    				</w2:column>
+    				<w2:column id="RESV_CUST_NM" style="height:22px;"
+    					hidden="" width="98" inputType="text" value=""
+    					valueType="binary" textAlign="left">
+    				</w2:column>
+    				<w2:column id="HP_NO" style="color:#519eec;height:22px;" hidden=""
+    					width="80" inputType="text" value="" valueType="binary"
+    					textAlign="left">
+    				</w2:column>
+    				<w2:column id="VEHIC_NO" style="height:22px;"
+    					hidden="" width="93" inputType="text" value=""
+    					valueType="binary" textAlign="">
+    				</w2:column>
+    				<w2:column id="VARIANT_NM" style="height:22px"
+    					hidden="" inputType="text" width="108" valueType="binary"
+    					textAlign="left">
+    				</w2:column>
+    				<w2:column id="SVC_TYPE_NM" style="height:22px"
+    					hidden="" inputType="text" width="108" valueType="binary"
+    					textAlign="left">
+    				</w2:column>
+    				<w2:column id="RESV_NO" style="height:22px"
+    					hidden="" inputType="text" width="96" valueType="binary"
+    					textAlign="left">
+    				</w2:column>
+    				<w2:column id="RESV_STALL_NM" style="height:22px"
+    					hidden="" inputType="text" width="68" valueType="binary"
+    					textAlign="left">
+    				</w2:column>
+    				<w2:column id="STAT_NM" style="height:22px"
+    					hidden="" inputType="text" width="118" valueType="binary"
+    					textAlign="left">
+    				</w2:column>
+    				<w2:column id="CUST_SEQ" style="height:22px"
+    					hidden="true" inputType="text" width="1" valueType="binary"
+    					textAlign="left">
+    				</w2:column>
+    			</w2:row>
+    		</w2:gBody>
+    		<script ev:event="onCellClick( row , col )"
+    			type="javascript"><![CDATA[
+    			if(col == 4){
+					var arr = new Array();
+					arr[0] = grd_List.getCellData(row,11);
+					arr[1] = grd_List.getCellData(row,3);
+					arr[2] = grd_List.getCellData(row,4);
+					parent.fn_SmsPopup(arr);
+				}
+    		 ]]></script>
+    	</w2:grid>
+    	<xf:image id="image42"
+    		src="/mp/images/smenu_bg.png"
+    		style="position: absolute ;height:36px;width:991px;left:0px;top:0px;">
+    	</xf:image>
+
+    	<xf:image id="image43"
+    		src="/mp/images/stitle_bg.png"
+    		style="position: absolute ;height:36px;width:172px;left:1px;top:0px;">
+    	</xf:image>
+    	<w2:textbox class="title" id="title" label="담당고객 예약조회"
+    		style="position: absolute ;height:20px;width:149px;left:3px;top:11px;;text-align:center">
+    	</w2:textbox>
+    	<xf:group 
+    		id="roundRectangle2"
+    		style="position: absolute ;height:70px;width:991px;left:1px;top:45px;" class="if_group">
+    	</xf:group>
+    	<xf:select1 id="cb_ShopCd" appearance="minimal"
+    		style="position: absolute ;height:22px;width:153px;left:77px;top:55px;"
+    		direction="auto" chooseOption="true" displayMode="label"
+    		allOption="" class="input_edit" disabled="false"
+    		submenuSize="auto" visibleRowNum="10"
+    		chooseOptionLabel="select">
+    		<xf:choices>
+    			<xf:itemset
+    				nodeset="resShopCd/root/dataset[@id='ds_ShopCd']">
+    				<xf:label ref="record/NAME"></xf:label>
+    				<xf:value ref="record/CODE"></xf:value>
+    			</xf:itemset>
+    		</xf:choices>
+    	</xf:select1>
+    	<xf:image id="btn_Search"
+    		src="/mp/images/if_btn_seach.png"
+    		style="position: absolute ;cursor:pointer;height:25px;width:77px;left:892px;top:82px;">
+    		<script ev:event="onclick" type="javascript"><![CDATA[ 
+    			fn_Search();
+    		]]></script>
+    	</xf:image>
+    	<xf:trigger class="btn_on1" id="trigger1"
+    		style="position: absolute ;height:25px;width:130px;left:726px;top:6px;"
+    		type="image">
+    		<xf:label>담당고객 예약조회</xf:label>
+    		<script ev:event="onclick" type="javascript"><![CDATA[ 
+    			parent.fn_SpinnerShow();
+    			parent.ifrm_Main.setSrc("/mp/resvt/S310501_W01.xml");
+    		]]></script>
+    	</xf:trigger>
+    	<xf:trigger class="btn_s3" id="trigger3"
+    		style="position: absolute ;height:25px;width:130px;left:855px;top:6px;"
+    		type="image">
+    		<xf:label>서비스 예약</xf:label>
+    		<script ev:event="onclick" type="javascript"><![CDATA[ 
+    			parent.fn_SpinnerShow();
+    			parent.ifrm_Main.setSrc("/mp/resvt/S310502_W01.xml");
+    		]]></script>
+    	</xf:trigger>
+    	<w2:textbox class="if_lable" id="output72" label="서비스센터"
+    		style="position: absolute ;height:22px;width:64px;left:11px;top:55px;">
+    	</w2:textbox>
+    	<w2:textbox id="output73"
+    		style="position: absolute ;height:22px;width:67px;left:236px;top:55px;"
+    		class="if_lable" label="실예약일자">
+    	</w2:textbox>
+    	<w2:textbox class="if_lable" id="output74" label="실차주명"
+    		style="position: absolute ;height:22px;width:64px;left:11px;top:83px;">
+    	</w2:textbox>
+    	<xf:input class="input_edit" id="edt_CustNm"
+    		style="position: absolute ;height:22px;width:106px;left:77px;top:83px;">
+    	</xf:input>
+    	<w2:textbox id="output79"
+    		style="position: absolute ;height:22px;width:64px;left:239px;top:83px;"
+    		class="if_lable" label="예약자명">
+    	</w2:textbox>
+    	<xf:input id="edt_ResvCustNm"
+    		style="position: absolute ;height:22px;width:106px;left:305px;top:83px;"
+    		class="input_edit">
+    	</xf:input>
+    	<w2:textbox id="output80"
+    		style="position: absolute ;height:22px;width:64px;left:474px;top:83px;"
+    		class="if_lable" label="차량번호">
+    	</w2:textbox>
+    	<xf:input id="edt_VehicNo1"
+    		style="position: absolute ;height:22px;width:60px;left:540px;top:83px;"
+    		class="input_edit">
+    	</xf:input>
+    	<xf:input id="edt_VehicNo2"
+    		style="position: absolute ;height:22px;width:45px;left:609px;top:83px;"
+    		class="input_edit">
+    	</xf:input>
+    	<xf:image id="btn_DateClear"
+    		style="position: absolute ;height:24px;width:31px;left:707px;top:55px;"
+    		src="/mp/images/btn_eraser.png">
+    		<script ev:event="onclick" type="javascript"><![CDATA[ 
+    			from_dt.setValue("");
+    			to_dt.setValue("");
+    		]]></script>
+    	</xf:image>
+    	<w2:wframe id="wfrm_Page" mode="async"
+    		src="/mp/comm/Paging.xml"
+    		style="position: absolute ;left:291px;top:569px;width:443px;height:28px;">
+    	</w2:wframe>
+    	<w2:wframe id="wfrm_Date" mode="sync"
+    		src="/mp/comm/PeriodSetUp.xml"
+    		style="position: absolute ;left:305px;top:54px;width: 400px;height: 26px;">
+    	</w2:wframe>
+    </body>
+</html>

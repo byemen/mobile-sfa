@@ -1,0 +1,391 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?xml-stylesheet href="/mp/css/frame.css" type="text/css"?>
+<html xmlns="http://www.w3.org/1999/xhtml"
+    xmlns:ev="http://www.w3.org/2001/xml-events"
+    xmlns:w2="http://www.inswave.com/websquare" xmlns:xf="http://www.w3.org/2002/xforms">
+    <head>
+        <w2:buildDate/>
+        <xf:model>
+            <xf:instance>
+                <data xmlns=""/>
+            </xf:instance>
+        </xf:model>
+        <script type="javascript" src="/mp/js/common.js"></script>
+        <script type="javascript"><![CDATA[
+     	var FV_sUpGroupId = GV_UP_GROUP_ID;
+        var FV_sYyyy = parent.cb_Year.getValue()+"-"+parent.cb_Month.getValue();
+        var FV_sToday = gfn_GetDate(0,0,0);        
+       	var FV_sSvcNm = parent.FV_SvcNm;
+        var FV_sDealerId1 = "";
+        var FV_sDealerId2 = "";
+        var FV_sDealerId3 = "";
+        var FV_sDealerId4 = "";
+        var FV_sDealerId5 = "";
+        var FV_sDealerId6 = "";
+        var FV_sDealerId7 = "";
+        var FV_sDealerId8 = "";
+        var FV_sDealerId9 = "";
+        var FV_nWidth = 315;
+        var FV_nHeight = 139;
+        cb_Year.setValue(parent.cb_Year.getValue());
+        cb_Month.setValue(parent.cb_Month.getValue());
+
+       	
+       	function fn_Search(){
+		// To show Loading Image
+		parent.parent.fn_SpinnerShow();
+		setTimeout("parent.parent.fn_SpinnerHide()", 3000);
+	        var arrGroup = new Array();
+	        
+//	        if(parent.parent.FV_SvcNm == "L")
+	        	arrGroup = parent.parent.FV_Lexus;
+//	        else if(parent.parent.FV_SvcNm == "T")
+//	        	arrGroup = parent.parent.FV_Toyota;
+	        		
+	       	for(var i=0; i<arrGroup.length; i++){
+	       		fn_SetData(i,arrGroup[i]);       		
+			}
+		}
+       	function fn_SetData(nIdx,grpId){
+       		var sDealerNm = grpId.substring(0,2);
+
+			if(sDealerNm=="DT"){
+				sDealerNm="GN";
+			}else if(sDealerNm=="PM"){
+				sDealerNm="SC";
+			}else if(sDealerNm=="CW"){
+				sDealerNm="YS";
+			}else if(sDealerNm=="CT"){
+				sDealerNm="BD";
+			}else if(sDealerNm=="SY"){
+				sDealerNm="IC";
+			}else if(sDealerNm=="KM"){
+				sDealerNm="BS";
+			}else if(sDealerNm=="NY"){
+				sDealerNm="GJ";
+			}else if(sDealerNm=="YM"){
+				sDealerNm="DG";
+			}else if(sDealerNm=="JB"){
+				sDealerNm="DJ";
+			}
+
+       		switch(nIdx) {
+				case 0:
+					FV_sDealerId1 = grpId;
+					stF_1.setValue(sDealerNm);
+					stB_1.setValue(sDealerNm);
+					ifrm_1.setSrc("/mp/FusionCharts/Code/S210007_C01.jsp?ACTION=L");				
+					break;
+				case 1:
+					FV_sDealerId2 = grpId;
+					stF_2.setValue(sDealerNm);
+					stB_2.setValue(sDealerNm);
+					ifrm_2.setSrc("/mp/FusionCharts/Code/S210007_C02.jsp?ACTION=L");				
+					break;
+				case 2:
+					FV_sDealerId3 = grpId;
+					stF_3.setValue(sDealerNm);
+					stB_3.setValue(sDealerNm);
+					ifrm_3.setSrc("/mp/FusionCharts/Code/S210007_C03.jsp?ACTION=L");				
+					break;
+				case 3:
+					FV_sDealerId4 = grpId;
+					stF_4.setValue(sDealerNm);
+					stB_4.setValue(sDealerNm);
+					ifrm_4.setSrc("/mp/FusionCharts/Code/S210007_C04.jsp?ACTION=L");				
+					break;
+				case 4:
+					FV_sDealerId5 = grpId;
+					stF_5.setValue(sDealerNm);
+					stB_5.setValue(sDealerNm);
+					ifrm_5.setSrc("/mp/FusionCharts/Code/S210007_C05.jsp?ACTION=L");				
+					break;
+				case 5:
+					FV_sDealerId6 = grpId;
+					stF_6.setValue(sDealerNm);
+					stB_6.setValue(sDealerNm);
+					ifrm_6.setSrc("/mp/FusionCharts/Code/S210007_C06.jsp?ACTION=L");				
+					break;
+				case 6:
+					FV_sDealerId7 = grpId;
+					stF_7.setValue(sDealerNm);
+					stB_7.setValue(sDealerNm);
+					ifrm_7.setSrc("/mp/FusionCharts/Code/S210007_C07.jsp?ACTION=L");				
+					break;
+				case 7:
+					FV_sDealerId8 = grpId;
+					stF_8.setValue(sDealerNm);
+					stB_8.setValue(sDealerNm);
+					ifrm_8.setSrc("/mp/FusionCharts/Code/S210007_C08.jsp?ACTION=L");				
+					break;
+				case 8:
+					FV_sDealerId9 = grpId;
+					stF_9.setValue(sDealerNm);
+					stB_9.setValue(sDealerNm);
+					ifrm_9.setSrc("/mp/FusionCharts/Code/S210007_C09.jsp?ACTION=L");				
+					break;
+			}
+       		
+       	}
+		fn_Search();
+        ]]></script>
+    </head>
+    <body>
+    	<xf:output class="sub_title_b" id="stB_1" label=""
+    		style="position: absolute ;height:20px;width:204px;left:20px;top:11px;">
+    		<xf:label></xf:label>
+    	</xf:output>
+    	<xf:output id="stF_1"
+    		style="position: absolute ;height:20px;width:204px;left:20px;top:10px;"
+    		class="sub_title" label="">
+    		<xf:label></xf:label>
+    	</xf:output>
+    	<xf:output class="sub_title_b" id="stB_2" label=""
+    		style="position: absolute ;height:20px;width:204px;left:359px;top:11px;">
+    		<xf:label></xf:label>
+    	</xf:output>
+    	<xf:output class="sub_title" id="stF_2" label=""
+    		style="position: absolute ;height:20px;width:204px;left:359px;top:11px;">
+    		<xf:label></xf:label>
+    	</xf:output>
+    	<xf:image id="image29"
+    		src="/mp/images/eis/shape_8.png"
+    		style="position: absolute ;height:164px;width:341px;left:0px;top:26px;">
+    	</xf:image>
+    	<w2:iframe id="ifrm_1" scrolling="no"
+    		style="position: absolute ;height:139px;width:315px;background-color:#4d4d4d;left:13px;top:38px;">
+    	</w2:iframe>
+
+    	<xf:image id="image30"
+    		style="position: absolute ;height:165px;width:341px;left:341px;top:26px;"
+    		src="/mp/images/eis/shape_8.png">
+    	</xf:image>
+    	<w2:iframe id="ifrm_2"
+    		style="position: absolute ;height:139px;width:315px;background-color:#4d4d4d;left:354px;top:38px;"
+    		scrolling="no">
+    	</w2:iframe>
+
+    	<xf:output id="stB_4"
+    		style="position: absolute ;height:20px;width:243px;left:20px;top:191px;"
+    		class="sub_title_b" label="">
+    		<xf:label></xf:label>
+    	</xf:output>
+    	<xf:output id="stF_4"
+    		style="position: absolute ;height:20px;width:289px;left:20px;top:190px;"
+    		class="sub_title" label="">
+    		<xf:label></xf:label>
+    	</xf:output>
+    	<xf:output id="stB_5"
+    		style="position: absolute ;height:20px;width:243px;left:359px;top:190px;"
+    		class="sub_title_b" label="">
+    		<xf:label></xf:label>
+    	</xf:output>
+    	<xf:output id="stF_5"
+    		style="position: absolute ;height:20px;width:289px;left:359px;top:190px;"
+    		class="sub_title" label="">
+    		<xf:label></xf:label>
+    	</xf:output>
+    	<xf:image id="image31"
+    		style="position: absolute ;height:164px;width:341px;left:0px;top:204px;"
+    		src="/mp/images/eis/shape_8.png">
+    	</xf:image>
+    	<w2:iframe id="ifrm_4"
+    		style="position: absolute ;height:139px;width:315px;background-color:#4d4d4d;left:13px;top:217px;"
+    		scrolling="no">
+    	</w2:iframe>
+    	<xf:image id="image32"
+    		style="position: absolute ;height:165px;width:341px;left:341px;top:204px;"
+    		src="/mp/images/eis/shape_8.png">
+    	</xf:image>
+    	<w2:iframe id="ifrm_5"
+    		style="position: absolute ;height:139px;width:315px;background-color:#4d4d4d;left:354px;top:217px;"
+    		scrolling="no">
+    	</w2:iframe>
+    	<xf:output id="stB_7"
+    		style="position: absolute ;height:20px;width:204px;left:20px;top:369px;"
+    		class="sub_title_b" label="">
+    		<xf:label></xf:label>
+    	</xf:output>
+    	<xf:output id="stF_7"
+    		style="position: absolute ;height:20px;width:204px;left:20px;top:368px;"
+    		class="sub_title" label="">
+    		<xf:label></xf:label>
+    	</xf:output>
+    	<xf:output id="stB_8"
+    		style="position: absolute ;height:20px;width:204px;left:359px;top:368px;"
+    		class="sub_title_b" label="">
+    		<xf:label></xf:label>
+    	</xf:output>
+    	<xf:output id="stF_8"
+    		style="position: absolute ;height:20px;width:204px;left:359px;top:368px;"
+    		class="sub_title" label="">
+    		<xf:label></xf:label>
+    	</xf:output>
+    	<xf:image id="image33"
+    		style="position: absolute ;height:164px;width:341px;left:0px;top:383px;"
+    		src="/mp/images/eis/shape_8.png">
+    	</xf:image>
+    	<w2:iframe id="ifrm_7"
+    		style="position: absolute ;height:139px;width:315px;left:13px;top:396px;"
+    		scrolling="no">
+    	</w2:iframe>
+    	<xf:image id="image34"
+    		style="position: absolute ;height:165px;width:341px;left:342px;top:383px;"
+    		src="/mp/images/eis/shape_8.png">
+    	</xf:image>
+    	<w2:iframe id="ifrm_8"
+    		style="position: absolute ;height:139px;width:315px;background-color:#4d4d4d;left:354px;top:396px;"
+    		scrolling="no">
+    	</w2:iframe>
+    	<xf:output id="stB_3"
+    		style="position: absolute ;height:20px;width:204px;left:700px;top:11px;"
+    		class="sub_title_b" label="">
+    		<xf:label></xf:label>
+    	</xf:output>
+    	<xf:output id="stF_3"
+    		style="position: absolute ;height:20px;width:204px;left:700px;top:11px;"
+    		class="sub_title" label="">
+    		<xf:label></xf:label>
+    	</xf:output>
+    	<xf:image id="image39"
+    		style="position: absolute ;height:165px;width:341px;left:682px;top:26px;"
+    		src="/mp/images/eis/shape_8.png">
+    	</xf:image>
+    	<w2:iframe id="ifrm_3"
+    		style="position: absolute ;height:139px;width:315px;background-color:#4d4d4d;left:695px;top:38px;"
+    		scrolling="no">
+    	</w2:iframe>
+    	<xf:output id="stB_6"
+    		style="position: absolute ;height:20px;width:243px;left:700px;top:190px;"
+    		class="sub_title_b" label="">
+    		<xf:label></xf:label>
+    	</xf:output>
+    	<xf:output id="stF_6"
+    		style="position: absolute ;height:20px;width:289px;left:700px;top:190px;"
+    		class="sub_title" label="">
+    		<xf:label></xf:label>
+    	</xf:output>
+    	<xf:image id="image40"
+    		style="position: absolute ;height:165px;width:341px;left:682px;top:204px;"
+    		src="/mp/images/eis/shape_8.png">
+    	</xf:image>
+    	<w2:iframe id="ifrm_6"
+    		style="position: absolute ;height:139px;width:315px;background-color:#4d4d4d;left:695px;top:217px;"
+    		scrolling="no">
+    	</w2:iframe>
+    	<xf:output id="stB_9"
+    		style="position: absolute ;height:20px;width:204px;left:700px;top:368px;"
+    		class="sub_title_b" label="">
+    		<xf:label></xf:label>
+    	</xf:output>
+    	<xf:output id="stF_9"
+    		style="position: absolute ;height:20px;width:204px;left:700px;top:368px;"
+    		class="sub_title" label="">
+    		<xf:label></xf:label>
+    	</xf:output>
+    	<xf:image id="image41"
+    		style="position: absolute ;height:165px;width:341px;left:683px;top:383px;"
+    		src="/mp/images/eis/shape_8.png">
+    	</xf:image>
+    	<w2:iframe id="ifrm_9"
+    		style="position: absolute ;height:139px;width:315px;background-color:#4d4d4d;left:695px;top:396px;"
+    		scrolling="no">
+    	</w2:iframe>
+    	<xf:select1 allOption="" appearance="minimal" chooseOption=""
+    		direction="auto" disabled="false" displayMode="label" id="cb_Year"
+    		style="position: absolute ;cursor:pointer;height:22px;color:#ffffff;font-size:11px;width:80px;background-color:#222223;left:831px;border:1px solid #494949;top:5px;"
+    		submenuSize="auto" visibleRowNum="10">
+    		<xf:choices>
+    			<xf:item>
+    				<xf:label>2008</xf:label>
+    				<xf:value>2008</xf:value>
+    			</xf:item>
+    			<xf:item>
+    				<xf:label>2009</xf:label>
+    				<xf:value>2009</xf:value>
+    			</xf:item>
+    			<xf:item>
+    				<xf:label>2010</xf:label>
+    				<xf:value>2010</xf:value>
+    			</xf:item>
+    			<xf:item>
+    				<xf:label>2011</xf:label>
+    				<xf:value>2011</xf:value>
+    			</xf:item>
+    			<xf:item>
+    				<xf:label>2012</xf:label>
+    				<xf:value>2012</xf:value>
+    			</xf:item>
+    			<xf:item>
+    				<xf:label>2013</xf:label>
+    				<xf:value>2013</xf:value>
+    			</xf:item>
+    		</xf:choices>
+    	</xf:select1>
+    	<xf:select1 allOption="" appearance="minimal" chooseOption=""
+    		direction="auto" disabled="false" displayMode="label"
+    		id="cb_Month"
+    		style="position: absolute ;height:22px;cursor:pointer;color:#ffffff;width:50px;font-size:11px;background-color:#222223;left:917px;border:1px solid #494949;top:5px;"
+    		submenuSize="auto" visibleRowNum="12">
+    		<xf:choices>
+    			<xf:item>
+    				<xf:label>01</xf:label>
+    				<xf:value>01</xf:value>
+    			</xf:item>
+    			<xf:item>
+    				<xf:label>02</xf:label>
+    				<xf:value>02</xf:value>
+    			</xf:item>
+    			<xf:item>
+    				<xf:label>03</xf:label>
+    				<xf:value>03</xf:value>
+    			</xf:item>
+    			<xf:item>
+    				<xf:label>04</xf:label>
+    				<xf:value>04</xf:value>
+    			</xf:item>
+    			<xf:item>
+    				<xf:label>05</xf:label>
+    				<xf:value>05</xf:value>
+    			</xf:item>
+    			<xf:item>
+    				<xf:label>06</xf:label>
+    				<xf:value>06</xf:value>
+    			</xf:item>
+    			<xf:item>
+    				<xf:label>07</xf:label>
+    				<xf:value>07</xf:value>
+    			</xf:item>
+    			<xf:item>
+    				<xf:label>08</xf:label>
+    				<xf:value>08</xf:value>
+    			</xf:item>
+    			<xf:item>
+    				<xf:label>09</xf:label>
+    				<xf:value>09</xf:value>
+    			</xf:item>
+    			<xf:item>
+    				<xf:label>10</xf:label>
+    				<xf:value>10</xf:value>
+    			</xf:item>
+    			<xf:item>
+    				<xf:label>11</xf:label>
+    				<xf:value>11</xf:value>
+    			</xf:item>
+    			<xf:item>
+    				<xf:label>12</xf:label>
+    				<xf:value>12</xf:value>
+    			</xf:item>
+    		</xf:choices>
+    	</xf:select1>
+    	<xf:image id="image35"
+    		style="position: absolute ;height: 22px;width:30px;left:975px;top:6px;"
+    		src="/mp/images/eis/m_bt_cal_pop.png">
+    		<script ev:event="onclick" type="javascript"><![CDATA[ 
+    			FV_sYyyy = cb_Year.getValue()+"-"+cb_Month.getValue();
+    			fn_Search();
+    		]]></script>
+    	</xf:image>
+    </body>
+</html>
+

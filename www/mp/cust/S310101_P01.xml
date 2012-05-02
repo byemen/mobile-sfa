@@ -1,0 +1,559 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?xml-stylesheet href="/mp/css/style.css" type="text/css"?>
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:ev="http://www.w3.org/2001/xml-events"
+    xmlns:w2="http://www.inswave.com/websquare" xmlns:xf="http://www.w3.org/2002/xforms">
+    <head>
+    	<w2:buildDate />
+    	<xf:model>
+    		<xf:instance>
+    			<data xmlns="" />
+    		</xf:instance>
+        	<xf:submission id="submissionScGroup" ref="request" target="resScGroup"
+        		action=""
+        		method="post" mediatype="application/xml" encoding="UTF-8" instance="" replace="instance"
+        		errorHandler="" customHandler="" mode="synchronous"
+        		processMsg="">
+        	</xf:submission>
+        	<xf:submission id="submissionCode" ref="request"
+        		target="resCode" action="" method="post"
+        		mediatype="application/xml" encoding="UTF-8" instance=""
+        		replace="instance" errorHandler="" customHandler=""
+        		mode="asynchronous" processMsg="">
+        		<script type="javascript" ev:event="xforms-submit-done"><![CDATA[ 
+        			var sDisUse = parent.edt_DisUse.getValue();
+					if(!gfn_IsNullVal(sDisUse))
+		        		sDisUse = sDisUse.replaceAll(","," ");
+		        					
+		        	chk_DisUse.setValue(sDisUse);
+					cb_ScGroup.setValue(parent.cb_ScGroup.getValue())
+					edt_CustNm.setValue(parent.edt_CustNm.getValue());
+					cb_HpArea.setValue(parent.cb_HpArea.getValue());
+					edt_HpNo.setValue(parent.edt_HpNo.getValue());   
+        		]]></script>
+        	</xf:submission>
+    	</xf:model>
+    	<script type="javascript" src="/mp/js/common.js"></script>
+		<script type="javascript" src="/mp/js/WebSquare.js"></script>
+    	<script type="javascript"><![CDATA[
+       	/****************************************************************
+		* 화면로드
+		* @param  : 없음
+		* @return : 없음
+		******************************************************************/
+       	function fn_OnLoad(){
+       		// 고객그룹(SC), 고객그룹(회사), 타사차종, 자사차종, 공통코드
+       		setTitSendInfo("request", "", "", "mdms/mp/cust::S310101_W01_S02,mdms/mp/cust::S310101_W01_S03,mdms/mp/comm::CO_OTHER_BRAND_S01,mdms/mp/comm::VS_VARIANT_S02,mdms/mp/comm::CO_CODE_S01");
+       		setInputParamData("COND1", GV_UP_GROUP_ID);
+        	if(GV_USER_TYPE == "23")
+        		setInputParamData("COND2", GV_USER_ID);  
+       		// 고객상세분류, 확보유형, 취미, 소개자
+			setInputParamData("CD_KND", "'CO0101','CO0017','CO0011','CO0028'");	
+			setSubmissison("submissionCode");			    	
+       	}
+     	/****************************************************************
+		* 조회
+		* @param  : 없음
+		* @return : 조회조건 값
+		******************************************************************/
+       	function fn_Search(){
+       		var arrResult = new Array();
+    		var arrCond = new Array();
+    		var sCond = "";
+    		
+    		arrCond[0] = " AND PURCH_TYPE_DELIVERY2 = '출고'";
+		    arrCond[1] = " AND PURCH_TYPE_SVC1 = '서비스(자사)'";
+		    arrCond[2] = " AND PURCH_TYPE_SVC2 = '서비스(타사)'";
+		    arrCond[3] = " AND PURCH_TYPE_SVC3 = '서비스(기타)'";
+		    
+		    var sPurchType = chk_PurchType.getSelectedIndex(",");
+		    if(sPurchType.length > 0){
+		   		var arrPurch = sPurchType.split(",");
+		   		
+		   		for(var i=0; i<arrPurch.length; i++){
+		    		sCond += arrCond[arrPurch[i]];
+		    	} 
+			}
+		   
+//    		arrResult[0] = cb_Dealer.getValue();		// 딜러
+//        	arrResult[1] = cb_Sc.getValue();			// SC
+//        	arrResult[2] = cb_SaleSC.getValue();		// 판매SC        	
+        	arrResult[3] = edt_CustNm.getValue();		// 고객명
+        	arrResult[4] = chk_DisUse.getValue(",");	// 관리상태
+        	arrResult[5] = sCond;						// 보유형태
+        	arrResult[6] = cb_HpArea.getValue();		// 핸드폰번호
+        	arrResult[7] = edt_HpNo.getValue();			// 핸드폰번호
+        	arrResult[8] = cb_TelArea.getValue();		// 전화번호
+        	arrResult[9] = edt_TelNO.getValue();		// 전화번호	
+        	arrResult[10] = cal_RegDT.getValue();		// 등록일자
+        	arrResult[11] = edt_OfficeNM.getValue();	// 직장명
+        	arrResult[12] = edt_Addr.getValue();		// 주소        	
+        	arrResult[13] = cb_ScGroup.getValue();		// 고객그룹(SC)
+        	arrResult[14] = cb_DealerGroup.getValue();	// 고객그룹(딜러)
+        	arrResult[15] = cb_CrType.getValue();		// 고객분류
+        	arrResult[16] = cb_MngType.getValue();		// 고객상세분류
+        	arrResult[17] = cb_HoldType.getValue();		// 고객확보유형
+        	arrResult[18] = cb_ConcernMDL.getValue();	// 관심차중(자사)
+        	arrResult[19] = cb_OtherMDL.getValue();		// 관심차종(타사)
+        	arrResult[20] = cb_Hobby.getValue();		// 취미	
+    		arrResult[21] = cb_IntroType.getValue();	// 소개자
+    		
+    		parent.fn_DetailClose(arrResult);
+       	}
+		
+       	fn_OnLoad();
+        ]]></script>
+    </head>
+    <body>
+    	<w2:textbox class="se_box" id="output130" label=""
+    		style="position: absolute ;height:440px;width:730px;left:0px;top:0px;;border:none">
+    	</w2:textbox>
+    	<w2:textbox class="se_box" id="output75" label=""
+    		style="position: absolute ;height:30px;width:701px;left:13px;top:81px;">
+    	</w2:textbox>
+		<w2:textbox class="se_lable" id="output77" label="고객명"
+    		style="position: absolute ;height:22px;width:100px;left:13px;top:81px;">
+    	</w2:textbox>
+    	<w2:textbox class="se_box" id="output78" label=""
+    		style="position: absolute ;height:30px;width:701px;left:13px;top:112px;">
+    	</w2:textbox>
+    	<w2:textbox class="se_box" id="output79" label=""
+    		style="position: absolute ;height:30px;width:701px;left:13px;top:143px;">
+    	</w2:textbox>
+    	<w2:textbox class="se_box" id="output80" label=""
+    		style="position: absolute ;height:30px;width:701px;left:13px;top:236px;">
+    	</w2:textbox>
+    	<w2:textbox class="se_box" id="output81" label=""
+    		style="position: absolute ;height:30px;width:701px;left:13px;top:205px;">
+    	</w2:textbox>
+    	<w2:textbox class="se_box" id="output82" label=""
+    		style="position: absolute ;height:30px;width:701px;left:13px;top:174px;">
+    	</w2:textbox>
+    	<w2:textbox class="se_lable" id="output83" label="관리상태"
+    		style="position: absolute ;height:22px;width:100px;left:13px;top:112px;">
+    	</w2:textbox>
+    	<w2:textbox class="se_lable" id="output76" label="전화번호"
+    		style="position: absolute ;height:22px;width:100px;left:363px;top:174px;">
+    	</w2:textbox>
+    	<w2:textbox class="se_lable" id="output84" label="보유형태"
+    		style="position: absolute ;height:22px;width:100px;left:13px;top:143px;">
+    	</w2:textbox>
+    	<w2:textbox class="se_lable" id="output85" label="핸드폰"
+    		style="position: absolute ;height:22px;width:100px;left:13px;top:174px;">
+    	</w2:textbox>
+    	<w2:textbox class="se_lable" id="output86" label="등록일자"
+    		style="position: absolute ;height:22px;width:100px;left:13px;top:205px;">
+    	</w2:textbox>
+    	<w2:textbox class="se_lable" id="output87" label="주소"
+    		style="position: absolute ;height:22px;width:100px;left:13px;top:236px;">
+    	</w2:textbox>
+    	<w2:textbox class="se_lable" id="output89" label="직장명"
+    		style="position: absolute ;height:22px;width:100px;left:363px;top:205px;">
+    	</w2:textbox>
+    	<xf:input class="input_edit" id="edt_CustNm"
+    		style="position: absolute ;height:22px;width:104px;left:123px;top:85px;">
+    	</xf:input>
+    	<xf:select appearance="full" id="chk_DisUse"
+    		style="position: absolute ;height:22px;width:540px;left:123px;top:117px;"
+    		selectedindex="-1" cols="7" rows="">
+    		<xf:choices>
+    			<xf:item>
+    				<xf:label>관리중</xf:label>
+    				<xf:value>01</xf:value>
+    			</xf:item>
+    			<xf:item>
+    				<xf:label>관리불가</xf:label>
+    				<xf:value>03</xf:value>
+    			</xf:item>
+    			<xf:item>
+    				<xf:label>타사출고</xf:label>
+    				<xf:value>11</xf:value>
+    			</xf:item>
+    			<xf:item>
+    				<xf:label>타딜러출고</xf:label>
+    				<xf:value>12</xf:value>
+    			</xf:item>
+    			<xf:item>
+    				<xf:label>관리이전</xf:label>
+    				<xf:value>21</xf:value>
+    			</xf:item>
+    			<xf:item>
+    				<xf:label>폐기</xf:label>
+    				<xf:value>22</xf:value>
+    			</xf:item>
+    			<xf:item>
+    				<xf:label>재관리</xf:label>
+    				<xf:value>02</xf:value>
+    			</xf:item>
+    		</xf:choices>
+    	</xf:select>
+    	<xf:select appearance="full" cols="4" id="chk_PurchType" rows=""
+    		selectedindex="-1"
+    		style="position: absolute ;height:22px;width:480px;left:123px;top:147px;">
+    		<xf:choices>
+    			<xf:item>
+    				<xf:label>출고&amp;nbsp&amp;nbsp&amp;nbsp</xf:label>
+    				<xf:value></xf:value>
+    			</xf:item>
+    			<xf:item>
+    				<xf:label>서비스(자사)</xf:label>
+    				<xf:value></xf:value>
+    			</xf:item>
+    			<xf:item>
+    				<xf:label>서비스(타사)</xf:label>
+    				<xf:value></xf:value>
+    			</xf:item>
+    			<xf:item>
+    				<xf:label>서비스(기타)</xf:label>
+    				<xf:value></xf:value>
+    			</xf:item>
+    		</xf:choices>
+    	</xf:select>
+    	<w2:textbox class="sub_title1" id="output91" label="기본사항"
+    		style="position: absolute ;height:20px;width:204px;left:13px;top:60px;">
+    	</w2:textbox>
+    	<xf:select1 allOption="" appearance="minimal"
+    		chooseOption="true" class="input_edit" direction="auto"
+    		disabled="false" displayMode="label" id="cb_HpArea"
+    		style="position: absolute ;height:22px;width:60px;left:123px;top:178px;"
+    		submenuSize="auto" chooseOptionLabel="ALL">
+    		<xf:choices>
+    			<xf:item>
+    				<xf:label>010</xf:label>
+    				<xf:value>010</xf:value>
+    			</xf:item>
+    			<xf:item>
+    				<xf:label>011</xf:label>
+    				<xf:value>011</xf:value>
+    			</xf:item>
+    			<xf:item>
+    				<xf:label>016</xf:label>
+    				<xf:value>016</xf:value>
+    			</xf:item>
+    			<xf:item>
+    				<xf:label>017</xf:label>
+    				<xf:value>017</xf:value>
+    			</xf:item>
+    			<xf:item>
+    				<xf:label>018</xf:label>
+    				<xf:value>018</xf:value>
+    			</xf:item>
+    			<xf:item>
+    				<xf:label>019</xf:label>
+    				<xf:value>019</xf:value>
+    			</xf:item>
+    		</xf:choices>
+    	</xf:select1>
+    	<xf:input class="input_edit" id="edt_HpNo"
+    		style="position: absolute ;height:22px;width:80px;left:188px;top:178px;">
+    	</xf:input>
+    	<w2:inputCalendar id="cal_RegDT"
+    		calendarValueType="yearMonthDate"
+    		style="position: absolute ;height:22px;width: 149px;left:123px;top:209px;"
+    		class=" input_edit" readOnly="">
+    	</w2:inputCalendar>
+    	<xf:input class="input_edit" id="edt_Addr"
+    		style="position: absolute ;height:22px;width:581px;left:123px;top:240px;">
+    	</xf:input>
+    	<xf:input class="input_edit" id="edt_TelNO"
+    		style="position: absolute ;height:22px;width:80px;left:538px;top:178px;">
+    	</xf:input>
+    	<xf:select1 allOption="" appearance="minimal"
+    		chooseOption="true" class="input_edit" direction="auto"
+    		disabled="false" displayMode="label" id="cb_TelArea"
+    		style="position: absolute ;height:22px;width:60px;left:473px;top:178px;"
+    		submenuSize="auto" chooseOptionLabel="ALL">
+    		<xf:choices>
+    			<xf:item>
+    				<xf:label>02</xf:label>
+    				<xf:value>02</xf:value>
+    			</xf:item>
+    			<xf:item>
+    				<xf:label>031</xf:label>
+    				<xf:value>031</xf:value>
+    			</xf:item>
+    			<xf:item>
+    				<xf:label>032</xf:label>
+    				<xf:value>032</xf:value>
+    			</xf:item>
+    			<xf:item>
+    				<xf:label>033</xf:label>
+    				<xf:value>033</xf:value>
+    			</xf:item>
+    			<xf:item>
+    				<xf:label>041</xf:label>
+    				<xf:value>041</xf:value>
+    			</xf:item>
+    			<xf:item>
+    				<xf:label>042</xf:label>
+    				<xf:value>042</xf:value>
+    			</xf:item>
+    			<xf:item>
+    				<xf:label>043</xf:label>
+    				<xf:value>043</xf:value>
+    			</xf:item>
+    			<xf:item>
+    				<xf:label>051</xf:label>
+    				<xf:value>051</xf:value>
+    			</xf:item>
+    			<xf:item>
+    				<xf:label>052</xf:label>
+    				<xf:value>052</xf:value>
+    			</xf:item>
+    			<xf:item>
+    				<xf:label>053</xf:label>
+    				<xf:value>053</xf:value>
+    			</xf:item>
+    			<xf:item>
+    				<xf:label>054</xf:label>
+    				<xf:value>054</xf:value>
+    			</xf:item>
+    			<xf:item>
+    				<xf:label>055</xf:label>
+    				<xf:value>055</xf:value>
+    			</xf:item>
+    			<xf:item>
+    				<xf:label>061</xf:label>
+    				<xf:value>061</xf:value>
+    			</xf:item>
+    			<xf:item>
+    				<xf:label>062</xf:label>
+    				<xf:value>062</xf:value>
+    			</xf:item>
+    			<xf:item>
+    				<xf:label>063</xf:label>
+    				<xf:value>063</xf:value>
+    			</xf:item>
+    			<xf:item>
+    				<xf:label>064</xf:label>
+    				<xf:value>064</xf:value>
+    			</xf:item>
+    			<xf:item>
+    				<xf:label>070</xf:label>
+    				<xf:value>070</xf:value>
+    			</xf:item>
+    			<xf:item>
+    				<xf:label>080</xf:label>
+    				<xf:value>080</xf:value>
+    			</xf:item>
+    		</xf:choices>
+    	</xf:select1>
+    	<xf:input class="input_edit" id="edt_OfficeNM"
+    		style="position: absolute ;height:22px;width:145px;left:473px;top:209px;">
+    	</xf:input>
+    	<w2:textbox id="output114"
+    		style="position: absolute ;height:30px;width:701px;left:13px;top:299px;"
+    		class="se_box" label="">
+    	</w2:textbox>
+    	<w2:textbox id="output115"
+    		style="position: absolute ;height:22px;width:100px;left:13px;top:299px;"
+    		class="se_lable" label="고객그룹(SC)">
+    	</w2:textbox>
+    	<w2:textbox id="output116"
+    		style="position: absolute ;height:22px;width:100px;left:363px;top:299px;"
+    		class="se_lable" label="고객그룹(딜러)">
+    	</w2:textbox>
+    	<w2:textbox id="output117"
+    		style="position: absolute ;height:30px;width:701px;left:13px;top:330px;"
+    		class="se_box" label="">
+    	</w2:textbox>
+    	<w2:textbox id="output118"
+    		style="position: absolute ;height:22px;width:100px;left:13px;top:330px;"
+    		class="se_lable" label="고객분류">
+    	</w2:textbox>
+    	<w2:textbox id="output119"
+    		style="position: absolute ;height:30px;width:701px;left:13px;top:361px;"
+    		class="se_box" label="">
+    	</w2:textbox>
+    	<w2:textbox id="output120"
+    		style="position: absolute ;height:30px;width:701px;left:13px;top:392px;"
+    		class="se_box" label="">
+    	</w2:textbox>
+    	<w2:textbox id="output121"
+    		style="position: absolute ;height:22px;width:100px;left:13px;top:361px;"
+    		class="se_lable" label="관심차종(자사)">
+    	</w2:textbox>
+    	<w2:textbox id="output122"
+    		style="position: absolute ;height:22px;width:100px;left:13px;top:392px;"
+    		class="se_lable" label="취미">
+    	</w2:textbox>
+    	<xf:select1 id="cb_ScGroup" appearance="minimal"
+    		style="position: absolute ;height:22px;width:235px;left:123px;top:303px;"
+    		direction="auto" chooseOption="true" displayMode="label"
+    		class="input_edit" allOption="" submenuSize="auto"
+    		disabled="false" chooseOptionLabel="ALL">
+    		<xf:choices>
+    			<xf:itemset
+    				nodeset="resCode/root/dataset[@id='ds_ScGroup']">
+    				<xf:label ref="record/NAME"></xf:label>
+    				<xf:value ref="record/CODE"></xf:value>
+    			</xf:itemset>
+    		</xf:choices>
+    	</xf:select1>
+    	<xf:select1 id="cb_DealerGroup" appearance="minimal"
+    		style="position: absolute ;height:22px;width:235px;left:473px;top:303px;"
+    		direction="auto" chooseOption="true" displayMode="label"
+    		class="input_edit" allOption="" submenuSize="auto"
+    		disabled="false" chooseOptionLabel="ALL">
+    		<xf:choices>
+    			<xf:itemset
+    				nodeset="resCode/root/dataset[@id='ds_DealerGroup']">
+    				<xf:label ref="record/NAME"></xf:label>
+    				<xf:value ref="record/CODE"></xf:value>
+    			</xf:itemset>
+    		</xf:choices>
+    	</xf:select1>
+    	<w2:textbox id="output123"
+    		style="position: absolute ;height:20px;width:204px;left:13px;top:278px;"
+    		class="sub_title1" label="CR정보">
+    	</w2:textbox>
+    	<w2:textbox id="output125"
+    		style="position: absolute ;height:22px;width:100px;left:363px;top:330px;"
+    		class="se_lable" label="고객확보유형">
+    	</w2:textbox>
+    	<xf:select1 id="cb_CrType" appearance="minimal"
+    		style="position: absolute ;height:22px;width:73px;left:123px;top:334px;"
+    		direction="auto" chooseOption="true" allOption=""
+    		class="input_edit" displayMode="label" disabled="false"
+    		submenuSize="auto" chooseOptionLabel="ALL">
+    		<xf:choices>
+    			<xf:item>
+    				<xf:label>가망고객</xf:label>
+    				<xf:value>90</xf:value>
+    			</xf:item>
+    			<xf:item>
+    				<xf:label>잠재고객</xf:label>
+    				<xf:value>91</xf:value>
+    			</xf:item>
+    			<xf:item>
+    				<xf:label>출고고객</xf:label>
+    				<xf:value>10</xf:value>
+    			</xf:item>
+    			<xf:item>
+    				<xf:label>중고양수</xf:label>
+    				<xf:value>30</xf:value>
+    			</xf:item>
+    			<xf:item>
+    				<xf:label>계약고객</xf:label>
+    				<xf:value>20</xf:value>
+    			</xf:item>
+    			<xf:item>
+    				<xf:label>서비스고객</xf:label>
+    				<xf:value>70</xf:value>
+    			</xf:item>
+    			<xf:item>
+    				<xf:label>기타</xf:label>
+    				<xf:value>99</xf:value>
+    			</xf:item>
+    		</xf:choices>
+    	</xf:select1>
+    	<xf:select1 id="cb_OtherMDL" appearance="minimal"
+    		style="position: absolute ;height:22px;width:180px;left:473px;top:365px;"
+    		direction="auto" chooseOption="true" allOption=""
+    		class="input_edit" displayMode="label" disabled="false"
+    		submenuSize="auto" chooseOptionLabel="ALL">
+    		<xf:choices>
+    			<xf:itemset
+    				nodeset="resCode/root/dataset[@id='ds_OtherModel']">
+    				<xf:label ref="record/NAME"></xf:label>
+    				<xf:value ref="record/CODE"></xf:value>
+    			</xf:itemset>
+    		</xf:choices>
+    	</xf:select1>
+    	<xf:select1 id="cb_IntroType" appearance="minimal"
+    		style="position: absolute ;height:22px;width:108px;left:473px;top:396px;"
+    		direction="auto" chooseOption="true" displayMode="label"
+    		class="input_edit" allOption="" submenuSize="auto"
+    		disabled="false" chooseOptionLabel="ALL">
+    		<xf:choices>
+    			<xf:itemset
+    				nodeset="resCode/root/dataset[@id='ds_Code']/record[CD_KND='CO0028']">
+    				<xf:label ref="NAME"></xf:label>
+    				<xf:value ref="CODE"></xf:value>
+    			</xf:itemset>
+    		</xf:choices>
+    	</xf:select1>
+    	<xf:select1 id="cb_Hobby" appearance="minimal"
+    		style="position: absolute ;height:22px;width:108px;left:123px;top:396px;"
+    		direction="auto" chooseOption="true" displayMode="label"
+    		class="input_edit" allOption="" submenuSize="auto"
+    		disabled="false" chooseOptionLabel="ALL">
+    		<xf:choices>
+    			<xf:itemset
+    				nodeset="resCode/root/dataset[@id='ds_Code']/record[CD_KND='CO0011']">
+    				<xf:label ref="NAME"></xf:label>
+    				<xf:value ref="CODE"></xf:value>
+    			</xf:itemset>
+    		</xf:choices>
+    	</xf:select1>
+    	<xf:select1 id="cb_ConcernMDL" appearance="minimal"
+    		style="position: absolute ;height:22px;width:180px;left:123px;top:365px;"
+    		direction="auto" chooseOption="true" allOption=""
+    		class="input_edit" displayMode="label" disabled="false"
+    		submenuSize="auto" chooseOptionLabel="ALL">
+    		<xf:choices>
+    			<xf:itemset
+    				nodeset="resCode/root/dataset[@id='ds_ConcernMDL']">
+    				<xf:label ref="record/NAME"></xf:label>
+    				<xf:value ref="record/CODE"></xf:value>
+    			</xf:itemset>
+    		</xf:choices>
+    	</xf:select1>
+    	<w2:textbox id="output126"
+    		style="position: absolute ;height:22px;width:100px;left:363px;top:392px;"
+    		class="se_lable" label="소개자">
+    	</w2:textbox>
+    	<w2:textbox id="output127"
+    		style="position: absolute ;height:22px;width:100px;left:363px;top:361px;"
+    		class="se_lable" label="관심차종(타사)">
+    	</w2:textbox>
+    	<xf:select1 allOption="" appearance="minimal"
+    		chooseOption="true" class="input_edit" direction="auto"
+    		disabled="false" displayMode="label" id="cb_MngType"
+    		style="position: absolute ;height:22px;width:157px;left:201px;top:334px;"
+    		submenuSize="auto" chooseOptionLabel="ALL">
+    		<xf:choices>
+    			<xf:itemset
+    				nodeset="resCode/root/dataset[@id='ds_Code']/record[CD_KND='CO0101']">
+    				<xf:label ref="NAME"></xf:label>
+    				<xf:value ref="CODE"></xf:value>
+    			</xf:itemset>
+    		</xf:choices>
+    	</xf:select1>
+    	<xf:select1 allOption="" appearance="minimal"
+    		chooseOption="true" class="input_edit" direction="auto"
+    		disabled="false" displayMode="label" id="cb_HoldType"
+    		style="position: absolute ;height:22px;width:180px;left:473px;top:334px;"
+    		submenuSize="auto" chooseOptionLabel="ALL">
+    		<xf:choices>
+    			<xf:itemset
+    				nodeset="resCode/root/dataset[@id='ds_Code']/record[CD_KND='CO0017']">
+    				<xf:label ref="NAME"></xf:label>
+    				<xf:value ref="CODE"></xf:value>
+    			</xf:itemset>
+    		</xf:choices>
+    	</xf:select1>
+    	<xf:image id="image45"
+    		style="position: absolute ;height:45px;width:730px;left:0px;top:0px;"
+    		src="/mp/images/pop_title_bg.png">
+    	</xf:image>
+    	<w2:textbox class="title" id="output136" label="상세검색"
+    		style="position: absolute ;height:20px;text-align:left;width:149px;left:14px;top:13px;">
+    	</w2:textbox>
+    	<xf:trigger class="btn_po" id="trigger1"
+    		style="position: absolute ;height:30px;color:#FFFFFF;width:70px;left:574px;top:5px;"
+    		type="image">
+    		<xf:label>조 회</xf:label>
+    		<script ev:event="onclick" type="javascript"><![CDATA[ 
+    			fn_Search();
+    		]]></script>
+    	</xf:trigger>
+    	<xf:trigger class="btn_po" id="trigger2"
+    		style="position: absolute ;height:30px;color:#FFFFFF;width:70px;left:647px;top:5px;"
+    		type="image">
+    		<xf:label>닫 기</xf:label>
+    		<script ev:event="onclick" type="javascript"><![CDATA[ 
+    			parent.fn_DetailClose();
+    		]]></script>
+    	</xf:trigger>
+    </body>
+</html>

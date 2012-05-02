@@ -1,0 +1,37 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<title>loading</title>
+<script type="text/javascript">
+function init(){
+	try {
+		var prsMsg = parent.WebSquare.layer.processMsg;
+		document.getElementById("processMsgLayer").innerHTML = prsMsg;
+	} catch(e) {}
+}
+
+window.onload = init;
+
+var colorArr = [ "#013D41","#EEEEEE" ];
+function setColor(){
+	var color = colorArr.shift();
+	colorArr.push(color);
+	document.getElementById("processMsgLayer").style.color = color;
+}
+setInterval( function(){ setColor() } , 500 );
+</script>
+</head>
+<body style="margin : 0px 0px 0px 0px; background:#ffffff">
+<table style="width:180px; height:80px;" class="progress" border="0" cellspacing="0" cellpadding="0">
+  <tr>
+    <td style="text-align:center">
+    	<img src="images/progress_name.gif" style="padding-bottom:7px" /><br />
+      	<img src="images/progressingbar.gif" /><br />
+      	<div style="font-size:12px; font-weight:bold; font-family:dotum; color:#013D41;padding-top:10px" id="processMsgLayer">processing...
+      	</div>
+    </td>
+  </tr>
+</table>
+</body>
+</html>

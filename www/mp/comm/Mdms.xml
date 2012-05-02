@@ -1,0 +1,527 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?xml-stylesheet href="/mp/css/style.css" type="text/css"?>
+<html xmlns="http://www.w3.org/1999/xhtml"
+    xmlns:ev="http://www.w3.org/2001/xml-events"
+    xmlns:w2="http://www.inswave.com/websquare" xmlns:xf="http://www.w3.org/2002/xforms">
+    <head>
+        <w2:buildDate/>
+        <xf:model>
+            <xf:instance>
+                <data xmlns=""/>
+            </xf:instance>
+            <xf:submission id="submissionLogin" ref="request"
+    			target="resUser" action="" method="post"
+    			mediatype="application/xml" encoding="UTF-8" instance=""
+    			replace="instance" errorHandler="" customHandler=""
+    			mode="asynchronous" processMsg="">
+    			<script type="javascript" ev:event="xforms-submit-done"><![CDATA[ 
+    				fn_AfterLogin();
+    			]]></script>
+    		</xf:submission>
+    		<xf:submission id="submissionSave" ref="request" target="resSave"
+	    		action=""
+        		method="post" mediatype="application/xml" encoding="UTF-8" instance="" replace="instance"
+        		errorHandler="" customHandler="" mode="asynchronous"
+        		processMsg="">
+        	</xf:submission>
+        </xf:model>
+        <script type="text/javascript" src="/mp/js/common.js"></script>
+		<script type="text/javascript" src="/mp/js/WebSquare.js"></script>		
+		<script type="text/javascript" src="/mp/js/jquery/jquery.min.js"></script>
+		<script type="text/javascript" src="/mp/js/jquery/jquery.bpopup-0.4.1.min.js"></script>
+    	<script type="javascript"><![CDATA[
+		if(parent.location.href.lastIndexOf("toyota") > -1){
+			image3.setSrc("/mp/images/login_t_bg.png");
+		}else{
+			image3.setSrc("/mp/images/login_bg.png");
+		}
+    	// 서비스예약 후 담당고객예약조회화면에서 조회하기위한 변수
+    	var FV_bResv = false;
+    	var FV_sResvShopCd = "";
+    	var FV_sRealResvDt = "";
+    	var FV_CustSeq = "";	// 고객카드 팝업창 고객번호
+		var isFirst = true;
+     	/****************************************************************
+		* Login
+		* @param  : 없음
+		* @return : 없음
+		******************************************************************/
+     	function fn_Login(){
+     		if(edt_UserId.getValue().length <= 0) {
+     			alert("사용자 아이디를 넣어주세요.");
+				edt_UserId.focus();
+				return;
+     		}
+     		if(edt_Passwd.getValue().length <= 0) {
+     			alert("비밀번호를 넣어주세요.");
+				edt_Passwd.focus();
+				return;
+     		}
+     		fn_SpinnerShow();
+        	var sSqlid = "mdms/mp/comm:LOGIN_S01";        	
+        	setTitSendInfo("request", "", "", sSqlid);
+			setInputParamData("USER_ID", edt_UserId.getValue());
+			setInputParamData("PASSWORD", edt_Passwd.getValue());
+			
+			setSubmissison("submissionLogin");
+        }
+        /****************************************************************
+		* callback (Login)
+		* @param  : 없음
+		* @return : 없음
+		******************************************************************/
+     	function fn_AfterLogin(){
+     		var userinfo = WebSquare.ModelUtil.findInstanceNodes("resUser/root/dataset[@id='ds_UserInfo']/record");
+        	// 사용자 있는지
+        	if(userinfo.length <= 0){
+				if(isFirst){
+					var sSqlid = "mdms/mp/comm:LOGIN_S01";        	
+					setTitSendInfo("request", "TOYOTAAction", "", sSqlid);
+					setInputParamData("USER_ID", edt_UserId.getValue());
+					setInputParamData("PASSWORD", edt_Passwd.getValue());
+					setSubmissison("submissionLogin");
+					isFirst = false;
+					fn_SpinnerHide();
+					return;
+				}
+        		alert("사용자 아이디가 존재하지 않습니다.");
+				fn_SpinnerHide();
+				return;
+        	}
+        	// 비밀번호 체크
+        	if(WebSquare.xml.getValue(userinfo[0],"ISEQUAL") != "Y") {
+        		//alert("비밀번호가 다릅니다.");
+				//fn_SpinnerHide();
+				//return;
+        	}
+        	// 비밀번호 잠겨있는지
+        	if(WebSquare.xml.getValue(userinfo[0],"PASSWORD_LOCK") == "Y") {
+        		alert("로그인 하실수 없는 아이디 입니다. 운영자에게 문의해주십시요.");
+				fn_SpinnerHide();
+				return;
+        	}
+        	// 권한체크
+        	var sUserGroup = WebSquare.xml.getValue(userinfo[0],"USER_GROUP");        	
+        	var arrAuth = sUserGroup.split("|");
+        	var bFlag = false;
+        	for(var i=0; i<arrAuth.length; i++){
+        		if(arrAuth[i]=="*" || arrAuth[i]=="DS1" || arrAuth[i]=="DS6" || arrAuth[i]=="DE" || arrAuth[i]=="DE2" || arrAuth[i]=="TE2" || arrAuth[i]=="D"|| arrAuth[i]=="T"){
+        			bFlag = true;
+        			break;
+        		}
+        	}
+        	if(!bFlag){
+        		alert("로그인 권한이 없는 사용자입니다.");
+				fn_SpinnerHide();
+        		return;
+        	}
+        	
+        	if(chk_IdSave.getValue() == "Y"){
+        		fn_SetCookie("id",edt_UserId.getValue(),7);
+        	}
+        	
+        	// 로그인  로그
+        	GV_USER_ID = WebSquare.xml.getValue(userinfo[0],"USER_ID");
+        	setTitSendInfo("request", "MdmsCommon", "loginLog", "");
+  			setSubmissison("submissionSave");
+        	
+        	WebSquare.session.setAttribute("USER_ID",WebSquare.xml.getValue(userinfo[0],"USER_ID"));
+			WebSquare.session.setAttribute("NAME",WebSquare.xml.getValue(userinfo[0],"NAME"));
+			WebSquare.session.setAttribute("GROUP_ID",WebSquare.xml.getValue(userinfo[0],"GROUP_ID"));
+			WebSquare.session.setAttribute("UP_GROUP_ID",WebSquare.xml.getValue(userinfo[0],"UP_GROUP_ID"));
+			WebSquare.session.setAttribute("UP_GROUP_NAME",WebSquare.xml.getValue(userinfo[0],"UP_GROUP_NAME"));
+			WebSquare.session.setAttribute("USER_GROUP",sUserGroup);
+			WebSquare.session.setAttribute("USER_TYPE",WebSquare.xml.getValue(userinfo[0],"USER_TYPE"));
+			WebSquare.session.setAttribute("DEPT_NM",WebSquare.xml.getValue(userinfo[0],"DEPT_NM"));
+			WebSquare.session.setAttribute("DEPT_CD",WebSquare.xml.getValue(userinfo[0],"DEPT_CD"));
+			WebSquare.session.setAttribute("TEL_NO",WebSquare.xml.getValue(userinfo[0],"TEL_NO"));
+			WebSquare.session.setAttribute("BRAND_CD",WebSquare.xml.getValue(userinfo[0],"BRAND_CD"));	
+			WebSquare.session.setAttribute("SPM_USE_YN",WebSquare.xml.getValue(userinfo[0],"SPM_USE_YN"));		
+/*			
+			// 권한
+			if(sUserGroup.indexOf("DS1") >= 0 || sUserGroup.indexOf("DS6") >= 0){
+				FV_HomeUrl = "/mp/main/S310001_W01.xml";
+				ifrm_Main.setSrc(FV_HomeUrl);
+       			//메인화면으로 이동
+       			switch_Main.setSelectedIndex(1);
+			} else{
+				//	FV_HomeUrl = "/mp/main/S310002_W01.xml";
+       			WebSquare.cookie.setCookie("DLR_TYPE", "L");
+       				
+       			WebSquare.cookie.setCookie( "USER_ID", WebSquare.xml.getValue(userinfo[0],"USER_ID") );										    
+        		document.location.href = path+"/mp/eis/Main.xml";			
+			}	
+*/
+			// 권한
+			
+			var gotoEIS = false;
+
+			for(var i=0; i<arrAuth.length; i++){
+        		if(arrAuth[i]=="*" || arrAuth[i]=="DE2" || arrAuth[i]=="DE" || arrAuth[i]=="TE2" || arrAuth[i]=="D"|| arrAuth[i]=="T"){
+        			gotoEIS = true;
+        			break;
+        		}
+        	}
+
+			if(document.location.href.indexOf("mobile_sfa.html")>=0){
+				gotoEIS = false;
+			}
+
+			if(gotoEIS){
+				WebSquare.cookie.setCookie("DLR_TYPE", WebSquare.xml.getValue(userinfo[0],"BRAND_CD"));
+				WebSquare.cookie.setCookie( "USER_ID", WebSquare.xml.getValue(userinfo[0],"USER_ID") );										    
+				document.location.href = path+"/mp/eis/Main.xml";			
+			} else{
+				if(WebSquare.xml.getValue(userinfo[0],"SPM_USE_YN") == "N"){
+					FV_HomeUrl = "/mp/main/S310001_W01.xml";
+				}else{
+					FV_HomeUrl = "/mp/main/S310001_W01_SPM.xml";
+				}
+				ifrm_Main.setSrc(FV_HomeUrl);
+				//메인화면으로 이동
+				switch_Main.setSelectedIndex(1);
+			}
+			fn_SpinnerHide();
+     	}
+     	var FV_HomeUrl = "";
+     	var FV_MenuId = "";
+     	/****************************************************************
+		* 메뉴 이동
+		* @param  : id	메뉴 구분
+		* @return : 없음
+		******************************************************************/
+        function fn_MenuChange(id){
+        	fn_SpinnerShow();
+        	FV_sQuickSearch = "";
+        	var urls = "";
+        	fn_MenuImgOff(FV_MenuId);
+
+			switch(id) {
+				case "btn_Cust":
+					urls = "/mp/cust/S310101_W01.xml";
+					//urls = "/mp/main/Uc.xml";
+					btn_Cust.setSrc("/mp/images/mbtn_01_on.png");
+					break;
+				case "btn_Retn":
+					urls = "/mp/retn/S310201_W01.xml";
+					//urls = "/mp/main/Uc.xml";
+					btn_Retn.setSrc("/mp/images/mbtn_02_on.png");
+					break;
+				case "btn_Act":
+					urls = "/mp/act/S310301_W01.xml";
+					btn_Act.setSrc("/mp/images/mbtn_03_on.png");
+					break;
+				case "btn_Tride":
+					urls = "/mp/tride/S310401_W01.xml";
+					btn_Tride.setSrc("/mp/images/mbtn_04_on.png");
+					break;
+				case "btn_Resvt":					
+        			FV_bResv = false;
+        			FV_sResvShopCd = "";
+    				FV_sRealResvDt = "";
+					urls = "/mp/resvt/S310501_W01.xml";
+					btn_Resvt.setSrc("/mp/images/mbtn_05_on.png");
+					break;
+				case "btn_Home":
+					urls = FV_HomeUrl;
+					break;
+				case "btn_Main":
+					urls = FV_HomeUrl;
+					break;
+			}
+
+        	ifrm_Main.setSrc(urls);
+        	FV_MenuId = id;
+        }
+        /****************************************************************
+		* 메뉴 이미지 변경
+		* @param  : id	메뉴 구분
+		* @return : 없음
+		******************************************************************/
+        function fn_MenuImgOff(id){
+        	switch(id) {
+				case "btn_Cust":
+					btn_Cust.setSrc("/mp/images/mbtn_01_de.png");
+					break;
+				case "btn_Retn":
+					btn_Retn.setSrc("/mp/images/mbtn_02_de.png");
+					break;
+				case "btn_Act":
+					btn_Act.setSrc("/mp/images/mbtn_03_de.png");
+					break;
+				case "btn_Tride":
+					btn_Tride.setSrc("/mp/images/mbtn_04_de.png");
+					break;
+				case "btn_Resvt":
+					btn_Resvt.setSrc("/mp/images/mbtn_05_de.png");
+					break;
+			}
+        }
+        /****************************************************************
+		* 로그아웃
+		* @param  : 없음
+		* @return : 없음
+		******************************************************************/
+       	function fn_Logout(){
+       		var result = confirm("로그아웃 하시겠습니까?");
+    	  
+	    	if(result == true) {
+	      		document.location.reload();
+	      	} else {
+	      		return;
+	      	}
+       	}
+       	var FV_sQuickSearch = "";
+       	/****************************************************************
+		* 퀵서치
+		* @param  : 없음
+		* @return : 없음
+		******************************************************************/
+       	function fn_QuickSearch(){
+       		if(gfn_IsNullVal(edt_QuickSearch.getValue())){
+       			alert("조회 조건을 입력하세요.");
+       			edt_QuickSearch.focus();
+       			return;
+       		}
+       		
+       		FV_sQuickSearch = edt_QuickSearch.getValue();
+       		
+       		ifrm_Main.setSrc("/mp/cust/S310101_W01.xml");
+       	}
+       	/****************************************************************
+		* spinner show
+		* @param  : 없음
+		* @return : 없음
+		******************************************************************/
+       	function fn_SpinnerShow(){
+        	$("#spinner").bPopup({modalClose:false});  
+        }
+       	/****************************************************************
+		* spinner hide
+		* @param  : 없음
+		* @return : 없음
+		******************************************************************/
+        function fn_SpinnerHide(){
+        	$("#spinner").bPopup().close();  
+        }
+        /****************************************************************
+		* 아이디 쿠키 저장
+		* @param  : 없음
+		* @return : 없음
+		******************************************************************/
+        function fn_SetCookie(name, value, expiredays){
+        	var todayDate = new Date();
+        	todayDate.setDate(todayDate.getDate() + expiredays);
+        	document.cookie = name + "=" + escape(value) + "; path=/; expires=" + todayDate.toGMTString()+";";
+        }
+        /****************************************************************
+		* 아이디 쿠키 가져오기
+		* @param  : 없음
+		* @return : 없음
+		******************************************************************/
+        function fn_GetCookie(Name){
+        	var search = Name + "=";
+        	if(document.cookie.length > 0){
+        		offset = document.cookie.indexOf(search);
+        		if(offset != -1){
+        			offset += search.length;
+        			end = document.cookie.indexOf(";",offset);
+        			
+        			if(end == -1)
+        				end = document.cookie.length;
+        				
+        			return unescape(document.cookie.substring(offset, end));
+        		}
+        	}
+        }
+        /****************************************************************
+		* 팝업
+		* @param  : width 가로길이, height 세로길이, src 경로
+		* @return : 없음
+		******************************************************************/  
+		function fn_MainPopup(src,title,width,height,left,top,popId){
+			gfn_OpenPopup(src,title,width,height,left,top,popId);
+		}
+		var FV_smsCustSeq = "";
+		var FV_smsCustNm = "";
+		var FV_smsCustHpNo = "";
+		/****************************************************************
+		* SMS발송 팝업
+		* @param  : 없음
+		* @return : 없음
+		******************************************************************/
+        function fn_SmsPopup(arrSms, activeMode){
+        	if(arrSms != null){
+        		FV_smsCustSeq = arrSms[0];
+        		FV_smsCustNm = arrSms[1];
+        		FV_smsCustHpNo = arrSms[2];
+        	} else{
+        		FV_smsCustSeq = "";
+        		FV_smsCustNm = "";
+        		FV_smsCustHpNo = "";
+        	}
+        	
+        	fn_MainPopup("/mp/main/S310003_W01.xml","SMS 발송",1015,608,2,10,"");
+        }
+        /****************************************************************
+		* 팝업 닫기
+		* @param  : 없음
+		* @return : 없음
+		******************************************************************/
+        function fn_MainPopupClose(popId){ 
+        	gfn_PopupClose(popId);
+        }
+        
+        if(fn_GetCookie("id")){
+        	edt_UserId.setValue(fn_GetCookie("id"));
+        	chk_IdSave.setValue("Y");
+        }
+        ]]></script>
+    </head>
+    <body>
+    	<xf:switch id="switch_Main" class="" caseClass=""
+    		style="position: absolute ;left: 0px;top: 0px;width: 1024px;height: 690px;">
+    		<xf:case id="case1" class=""
+    			style="position:absolute;top:0px;left:0px;width:1024px;height:690px;">
+    			<xf:output id="output1"
+    				style="position: absolute ;height:100%;width:100%;background-color:#000000;left:0px;top:0px;"
+    				label="">
+    				<xf:label></xf:label>
+    			</xf:output>
+    			<xf:image id="image3"
+    				style="position: absolute ;height:690px;width:1024px;left:0px;top:0px;"
+    				src="">
+    			</xf:image>
+    			<xf:input id="edt_UserId"
+    				style="position: absolute ;height:20px;font-size:12px;width:157px;background-color:#e4e4e4;font-family:Dotum,Helvetica,AppleGothic;left:394px;border:1px solid #e4e4e4;top:176px;">
+    			</xf:input>
+    			<xf:secret id="edt_Passwd"
+    				style="position: absolute ;height:20px;font-size:12px;width:157px;background-color:#e4e4e4;font-family:Dotum,Helvetica,AppleGothic;left:394px;border:1px solid #e4e4e4;top:233px;">
+    				<script ev:event="onkeydown" type="javascript"><![CDATA[ 
+						if(event.keyCode==13){
+			    			fn_Login();
+						}
+					]]></script>
+    			</xf:secret>
+    			<xf:image id="img_Login"
+    				style="position: absolute ;height:87px;width:91px;left:624px;top:172px;cursor:pointer"
+    				src="/mp/images/login_btn.png">
+    				<script ev:event="onclick" type="javascript"><![CDATA[ 
+		    			fn_Login();
+		    		]]></script>
+    			</xf:image>
+    			<xf:select appearance="full" id="chk_IdSave"
+    				style="position: absolute ;height:29px;color:#ffffff;width:108px;left:326px;top:270px;"
+    				selectedindex="-1" cols="" rows="">
+    				<xf:choices>
+    					<xf:item>
+    						<xf:label>아이디 저장</xf:label>
+    						<xf:value>Y</xf:value>
+    					</xf:item>
+    				</xf:choices>
+    			</xf:select>
+    		</xf:case>
+    		<xf:case id="case2"
+    			style="position:absolute;height:690px;width:1024px;background-color:#e9e9e9;left:0px;top:0px;"
+    			class="">
+    			<xf:image id="image42"
+    				src="/mp/images/top_bg.png"
+    				style="position: absolute ;height:60px;width:1024px;left:0px;top:0px;">
+    			</xf:image>
+    			<xf:image id="image20"
+    				src="/mp/images/top_bg.png"
+    				style="position: absolute ;height:60px;width:100px;right:0px;top:0px;">
+    			</xf:image>
+    			<xf:image id="btn_Main"
+    				style="position: absolute ;height:36px;width:154px;left:11px;top:12px;"
+    				src="/mp/images/ci_lexus.png">
+    				<script ev:event="onclick" type="javascript"><![CDATA[ 
+		    			fn_MenuChange(this.id);
+		    		]]></script>
+    			</xf:image>
+    			<xf:input id="edt_QuickSearch"
+    				style="position: absolute ;height:18px;color:#ffffff;width:98px;background-color:#222223;left:864px;border:1px solid #494949;top:33px;">
+    			</xf:input>
+    			<xf:image id="btn_Cust"
+    				style="position: absolute ;height:51px;width:99px;left:206px;top:4px;;cursor:pointer"
+    				src="/mp/images/mbtn_01_de.png">
+    				<script ev:event="onclick" type="javascript"><![CDATA[ 
+		    			fn_MenuChange(this.id);
+		    		]]></script>
+    			</xf:image>
+    			<xf:image id="btn_Retn"
+    				src="/mp/images/mbtn_02_de.png"
+    				style="position: absolute ;height:51px;width:99px;left:314px;top:4px;;cursor:pointer">
+    				<script ev:event="onclick" type="javascript"><![CDATA[ 
+		    			fn_MenuChange(this.id);
+		    		]]></script>
+    			</xf:image>
+    			<xf:image id="btn_Act"
+    				style="position: absolute ;height:51px;width:99px;left:422px;top:4px;;cursor:pointer"
+    				src="/mp/images/mbtn_03_de.png">
+    				<script ev:event="onclick" type="javascript"><![CDATA[ 
+		    			fn_MenuChange(this.id);
+		    		]]></script>
+    			</xf:image>
+    			<xf:image id="btn_Tride"
+    				style="position: absolute ;height:51px;width:99px;left:530px;top:4px;;cursor:pointer"
+    				src="/mp/images/mbtn_04_de.png">
+    				<script ev:event="onclick" type="javascript"><![CDATA[ 
+		    			fn_MenuChange(this.id);
+		    		]]></script>
+    			</xf:image>
+    			<xf:image id="btn_Resvt"
+    				style="position: absolute ;height:51px;width:99px;left:638px;top:4px;;cursor:pointer"
+    				src="/mp/images/mbtn_05_de.png">
+    				<script ev:event="onclick" type="javascript"><![CDATA[ 
+		    			fn_MenuChange(this.id);
+		    		]]></script>
+    			</xf:image>
+    			<xf:image id="btn_QuickSearch"
+    				src="/mp/images/btn_quicksearch.png"
+    				style="position: absolute ;height:20px;width:35px;left:967px;top:33px;">
+    				<script ev:event="onclick" type="javascript"><![CDATA[ 
+		    			fn_QuickSearch();
+		    		]]></script>
+    			</xf:image>
+    			<xf:image id="btn_Home"
+    				src="/mp/images/btn_home.png"
+    				style="position: absolute ;height:20px;width:70px;left:788px;top:5px;">
+    				<script ev:event="onclick" type="javascript"><![CDATA[ 
+		    			fn_MenuChange(this.id);
+		    		]]></script>
+    			</xf:image>
+    			<xf:image id="btn_Sms"
+    				src="/mp/images/btn_sms.png"
+    				style="position: absolute ;height:20px;width:59px;left:866px;top:5px;">
+    				<script ev:event="onclick" type="javascript"><![CDATA[ 
+		    			fn_SmsPopup();
+		    		]]></script>
+    			</xf:image>
+    			<xf:image id="btn_Logout"
+    				src="/mp/images/btn_logout.png"
+    				style="position: absolute ;height:20px;width:74px;left:933px;top:5px;">
+    				<script ev:event="onclick" type="javascript"><![CDATA[ 
+		    			fn_Logout();
+		    		]]></script>
+    			</xf:image>
+    			<xf:output class="txt1" id="output45" label=""
+    				style="position: absolute ;height:13px;width:1px;background-color:#000000;left:928px;top:9px;">
+    				<xf:label></xf:label>
+    			</xf:output>
+    			<xf:output class="txt1" id="output46" label=""
+    				style="position: absolute ;height:13px;width:1px;background-color:#000000;left:860px;top:9px;">
+    				<xf:label></xf:label>
+    			</xf:output>
+    			<w2:iframe id="ifrm_Main"
+    				style="position: absolute ;height:619px;width:994px;left:14px;top:71px;"
+    				src="" scrolling="no">
+    			</w2:iframe>
+    		</xf:case>
+    	</xf:switch>
+    	<xf:image id="spinner"
+ 			style="position: absolute ;height:100px;width:100px;margin-top:260px;display:none;"
+ 			src="/mp/images/loading-black.gif">
+ 		</xf:image>
+    </body>
+</html>

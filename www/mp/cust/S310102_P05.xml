@@ -1,0 +1,425 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?xml-stylesheet href="/mp/css/style.css" type="text/css"?>
+<html xmlns="http://www.w3.org/1999/xhtml"
+    xmlns:ev="http://www.w3.org/2001/xml-events"
+    xmlns:w2="http://www.inswave.com/websquare" xmlns:xf="http://www.w3.org/2002/xforms">
+    <head>
+        <w2:buildDate/>
+        <xf:model>
+        	<xf:instance>
+        		<data xmlns="" />
+        	</xf:instance>
+        	<xf:submission id="submissionVar" ref="request"
+        		target="resVar" action="" method="post"
+        		mediatype="application/xml" encoding="UTF-8" instance=""
+        		replace="instance" errorHandler="" customHandler=""
+        		mode="asynchronous" processMsg="">
+        		<script type="javascript"
+        			ev:event="xforms-submit-done"><![CDATA[
+        				var VarSet = "";
+        				fn_Sfx(VarSet);
+        				
+        				fn_Search();
+        			 ]]></script>
+        	</xf:submission>
+        	<xf:submission id="submissionSfx" ref="request"
+        		target="resSfx" action="" method="post"
+        		mediatype="application/xml" encoding="UTF-8" instance=""
+        		replace="instance" errorHandler="" customHandler=""
+        		mode="asynchronous" processMsg="">
+        		<script type="javascript"
+        			ev:event="xforms-submit-done"><![CDATA[
+        				grd_Variant.setXML(WebSquare.ModelUtil.findInstanceNode( "resSfx/root/dataset[@id='ds_Sfx']"));
+        				
+        			 ]]></script>
+        	</xf:submission>
+        	<xf:submission id="submissionPur" ref="request"
+        		target="resPur" action="" method="post"
+        		mediatype="application/xml" encoding="UTF-8" instance=""
+        		replace="instance" errorHandler="" customHandler=""
+        		mode="asynchronous" processMsg="">
+        		<script type="javascript"
+        			ev:event="xforms-submit-done"><![CDATA[
+        				fn_Variant();
+        			 ]]></script>
+        	</xf:submission>
+        </xf:model>
+        <script type="javascript" src="/mp/js/common.js"></script>
+		<script type="javascript" src="/mp/js/WebSquare.js"></script>
+        <script type="javascript"><![CDATA[
+        
+			var SelRow = "";
+			var sfxXml = "";
+			var VS_Delete = "";
+        	/****************************************************************
+			* Load
+			* @param  : 없음
+			* @return : 없음
+			******************************************************************/
+        	function fn_OnLoad(){
+        		fn_ComboSet();
+        		
+        		
+        	}
+        	function fn_ComboSet(){
+        		
+        		
+          		
+        		fn_PurchaseInsion();
+        	}
+        	
+        	/****************************************************************
+			* 콤보
+			* @param  : 없음
+			* @return : 없음
+			******************************************************************/
+        	function fn_Variant(){
+        		var sSqlid = "mdms/mp/act:CO_VARLIST_S01";
+        		setTitSendInfo("request", "", "", sSqlid);
+        		setInputParamData("GV_BRAND_CD", parent.GV_BRAND_CD);
+        		setInputParamData("GV_GROUP_ID", parent.GV_GROUP_ID);
+        		setSubmissison("submissionVar");		
+        	}
+
+        	function fn_Sfx(VarSet){
+        		var sSqlid = "mdms/mp/act:CO_SFXLIST_S01";
+        		setTitSendInfo("request", "", "", sSqlid);
+        		setInputParamData("MDL_CD", VarSet);
+        		setSubmissison("submissionSfx");
+        		
+        		
+        	}
+        	
+        	function fn_PurchaseInsion(){
+        		var sSqlid = "mdms/mp/act:CO_CODE_S02";
+        		setTitSendInfo("request", "", "", sSqlid);
+        		setInputParamData("CD_KND", "SF0303");
+        		setSubmissison("submissionPur");
+        	}
+        	
+        	/****************************************************************
+			* 조회
+			* @param  : 없음
+			* @return : 없음
+			******************************************************************/
+        	function fn_Search(){
+        		grd_List.setXML( parent.varXml );
+        	}
+        	/****************************************************************
+			* sfx 선택
+			* @param  : 선택된 variant 값
+			* @return : 없음
+			******************************************************************/
+        	function fn_SfxCheck(row, col){
+        	
+        		var VarSet = grd_List.getCellData( row , 1 );
+        			
+        		if(gfn_IsNullVal(VarSet))	VarSet = -1;
+    			
+    			fn_Sfx(VarSet);
+    			
+    			//var top = grd_List.getCellPosition( row , col , 'top' );
+    			var top = window.event.clientY + document.body.scrollTop + 'px';
+    			var left = window.event.clientX + document.body.scrollLeft + 'px';
+    			 
+    			grd_Variant.setPosition(left, top);
+    			grd_Variant.visible( true );		
+        	}
+        	
+        	
+        	/****************************************************************
+			* 행 추가
+			* @param  : 없음
+			* @return : 없음
+			******************************************************************/
+        	function fn_InsertRow(){
+        		var row = grd_List.insertRow();
+  
+        		grd_List.setCellData( row , "CUST_SEQ" , parent.edt_CustSeq.getValue() );
+        		
+        	}
+        	
+        	/****************************************************************
+			* 행 삭제
+			* @param  : 없음
+			* @return : 없음
+			******************************************************************/
+        	function fn_RemoveRow(){
+        		if(!grd_List.getCellData( SelRow , 8 ))	grd_List.removeRow( SelRow );
+        		else alert("존재하던 관심차종은 삭제할 수 없습니다");
+        		
+        	}
+        	
+        	/****************************************************************
+			* 확인
+			* @param  : 없음
+			* @return : 없음
+			******************************************************************/
+        	function fn_Validate(){
+        		var varName = "";
+        		var now = new Date();
+        		var year = now.getFullYear();
+        
+        		var mon = (now.getMonth()+1)>9 ? ''+(now.getMonth()+1) : '0'+(now.getMonth()+1);
+    			var day = now.getDate()>9 ? ''+now.getDate() : '0'+now.getDate();
+        		var today = year+mon+day;
+        		
+        		for(var i = 0 ; i < grd_List.getRowCount() ; i++){
+        			if(gfn_IsNullVal(grd_List.getCellData( i , 1 ))){
+						alert("관심차종 값이 누락되었습니다.\n확인하여 주십시오.");
+						grd_List.setFocusedCell( i , 1 , false );
+						return;
+					}
+					if(gfn_IsNullVal(grd_List.getCellData( i , 2 ))){
+						alert("Suffix 값이 누락되었습니다.\n확인하여 주십시오.");
+						grd_List.setFocusedCell( i , 2 , false );
+						return;
+					}
+					if(grd_List.getCellData( i , 4 ) == ""){
+						alert("구매의향 값이 누락되었습니다.\n확인하여 주십시오.");
+						grd_List.setFocusedCell( i , 4 , false );
+						return;
+					}
+					if(!gfn_IsNullVal(grd_List.getCellData( i , 1 ))){
+						if(grd_List.getCellData( i , 5 )<today){
+							alert("구매예정일이 오늘보다 작을 수는 없습니다.\n확인하여 주십시오.");
+							grd_List.setFocusedCell( i , 5 , false );
+							return;
+						}
+					}
+        		}
+        		parent.fn_SetEdt(grd_List, 1);
+            	parent.FV_SaveVarXml = grd_List.getModifiedXML();
+            	parent.varXml = grd_List.getAllXML();
+            
+            	fn_Close();
+        	}
+        	
+        	/****************************************************************
+			* 닫기
+			* @param  : 없음
+			* @return : 없음
+			******************************************************************/
+        	function fn_Close(){
+        		parent.fn_PopupClose();
+        	}
+        	
+        	function fn_SfxClick(row){
+        		var data = grd_Variant.getCellData( row , 1 );
+        		grd_List.setCellData( SelRow , 2 , data);
+        		
+        	}
+        		
+        	
+        	fn_OnLoad();
+        ]]></script>
+    </head>
+    <body>
+    	<w2:textbox class="se_box" id="textbox17" label=""
+    		style="position: absolute ;height:340px;width:590px;left:0px;border:none;top:0px;">
+    		<script type="javascript" ev:event="onclick"><![CDATA[
+    			grd_Variant.visible( false );
+    		 ]]></script>
+    	</w2:textbox>
+    	<xf:image id="image2" src="/mp/images/pop_title_bg.png"
+    		style="position: absolute ;height:45px;width:590px;left:0px;top:0px;">
+    	</xf:image>
+    	<w2:textbox class="title" id="textbox14" label="관심차종"
+    		style="position: absolute ;height:20px;text-align:left;width:149px;left:15px;top:14px;">
+    	</w2:textbox>
+    	<xf:trigger class="btn_po" id="trigger6"
+    		style="position: absolute ;height:30px;color:#FFFFFF;width:70px;left:436px;top:10px;"
+    		type="image">
+    		<xf:label>확 인</xf:label>
+    		<script ev:event="onclick" type="javascript"><![CDATA[
+    			fn_Validate();
+    		 ]]></script>
+    	</xf:trigger>
+    	<xf:trigger class="btn_po" id="trigger7"
+    		style="position: absolute ;height:30px;color:#FFFFFF;width:70px;left:509px;top:10px;"
+    		type="image">
+    		<xf:label>닫 기</xf:label>
+    		<script ev:event="onclick" type="javascript"><![CDATA[
+    			fn_Close();
+    		 ]]></script>
+    	</xf:trigger>
+    	<xf:trigger class="btn_n" id="trigger8"
+    		style="position: absolute ;height:30px;width:81px;left:422px;top:55px;"
+    		type="image">
+    		<xf:label>행추가</xf:label>
+    		<script ev:event="onclick" type="javascript"><![CDATA[
+    			grd_Variant.visible(false);
+    			fn_InsertRow();
+    		 ]]></script>
+    	</xf:trigger>
+    	<xf:trigger class="btn_n" id="trigger9"
+    		style="position: absolute ;height:30px;width:81px;left:500px;top:55px;"
+    		type="image">
+    		<xf:label>행삭제</xf:label>
+    		<script ev:event="onclick" type="javascript"><![CDATA[
+    			grd_Variant.visible(false);
+    			fn_RemoveRow();
+    		 ]]></script>
+    	</xf:trigger>
+    	<w2:grid autoFit="" baseNode="dataset" class="grid"
+    		evenRowBackgroundColor="#e1ebf5" focusMode="row" id="grd_List"
+    		oddEvenColorDisplay="true" oddRowBackgroundColor="#ffffff"
+    		overflowX="hidden" overflowY="scroll" readOnly="true"
+    		repeatNode="record" resize="" sortEvent="onclick"
+    		style="position:absolute;height:237px;width:567px;left:10px;top:85px;">
+    		<w2:header class="gridHeaderTable"
+    			columnClass="gridHeaderTD1" id="header3" style="" width="472">
+    			<w2:row id="row5" style="">
+    				<w2:column colSpan="" hidden="" id="column28"
+    					imageHeight="19" imageSrc="/TOYOTA_WEB/icon_grid_sel.png"
+    					imageWidth="20" inputType="image" rowSpan=""
+    					style="height:20px;" value="" valueType="binary" width="34">
+    				</w2:column>
+    				<w2:column colSpan="" hidden="" id="column29"
+    					inputType="text" rowSpan="" style="height:20px;" value="관심차종"
+    					valueType="binary" width="120">
+    				</w2:column>
+    				<w2:column colSpan="" hidden="" id="column30"
+    					inputType="text" rowSpan="" style="height:20px;" value="Suffix"
+    					valueType="binary" width="120">
+    				</w2:column>
+    				<w2:column hidden="" id="column31" inputType="text"
+    					style="height:25px" valueType="binary" width="70">
+    				</w2:column>
+    				<w2:column colSpan="" hidden="" id="column32"
+    					inputType="text" rowSpan="" style="height:20px;" value="구매의향"
+    					valueType="binary" width="80">
+    				</w2:column>
+    				<w2:column colSpan="" hidden="" id="column33"
+    					inputType="text" rowSpan="" style="height:20px;" value="구매예정일"
+    					valueType="binary" width="120">
+    				</w2:column>
+    				<w2:column colSpan="" hidden="" id="column34"
+    					inputType="text" rowSpan="" style="height:20px" value="견적금액"
+    					valueType="binary" width="130">
+    				</w2:column>
+    				<w2:column id="column46" style="height:25px"
+    					inputType="text" width="70">
+    				</w2:column>
+    				<w2:column id="column48" style="height:25px"
+    					inputType="text" width="70">
+    				</w2:column>
+    			</w2:row>
+    		</w2:header>
+    		<w2:gBody class="gridBodyTable" columnClass="gridBodyTD"
+    			id="gBody3" style="">
+    			<w2:row id="row6" style="">
+    				<w2:column hidden="true" id="column38"
+    					inputType="text" style="height:21px;" value=""
+    					valueType="binary" width="34">
+    				</w2:column>
+    				<w2:column hidden="false" id="MDL_CD"
+    					inputType="select" style="height:21px;" textAlign="left"
+    					value="" valueType="binary" width="120" dataType=""
+    					applyFormat="" allOption="" chooseOption="true" colMerge=""
+    					readOnly="false" chooseOptionLabel="-- Variant --">
+    					<w2:choices>
+    						<w2:itemset
+    							nodeset="resVar/root/dataset[@id='ds_Var']">
+    							<w2:label ref="record/NAME"></w2:label>
+    							<w2:value ref="record/CODE"></w2:value>
+    						</w2:itemset>
+    					</w2:choices>
+    				</w2:column>
+    				<w2:column hidden="false" id="SFX_CD"
+    					inputType="text" style="height:21px;" value=""
+    					valueType="binary" width="120" allOption="" chooseOption=""
+    					chooseOptionLabel="" readOnly="true" expression="" defaultValue="-- Suffix --">
+    					<w2:choices>
+    						<w2:itemset
+    							nodeset="resSfx/root/dataset[@id='ds_Sfx']">
+    							<w2:label ref="record/SFX_NM">
+    							</w2:label>
+    							<w2:value ref="record/SFX_CD">
+    							</w2:value>
+    						</w2:itemset>
+    					</w2:choices>
+    				</w2:column>
+    				<w2:column hidden="true" id="GRADE_CD"
+    					inputType="text" style="height:21px" valueType="binary"
+    					width="70">
+    				</w2:column>
+    				<w2:column hidden="false" id="PURCHASE_INTENSION"
+    					inputType="select" style="color:#519eec;" textAlign="left"
+    					value="" valueType="binary" width="80" readOnly="false"
+    					allOption="" chooseOption="">
+    					<w2:choices>
+    						<w2:itemset
+    							nodeset="resPur/root/dataset[@id='ds_Code']">
+    							<w2:label ref="record/NAME"></w2:label>
+    							<w2:value ref="record/CODE"></w2:value>
+    						</w2:itemset>
+    					</w2:choices>
+    				</w2:column>
+    				<w2:column hidden="false" id="PLAN_DT"
+    					inputType="calendar" style="color:#519eec;height:21px;"
+    					textAlign="left" value="" valueType="binary" width="120"
+    					dataType="" readOnly="false">
+    				</w2:column>
+    				<w2:column hidden="false" id="QUOTATION_PRICE"
+    					inputType="text" style="height:21px" textAlign="left"
+    					valueType="binary" width="130" readOnly="false"
+    					dataType="number" displayFormatter="#,###"
+    					applyFormat="display">
+    				</w2:column>
+    				<w2:column id="CUST_SEQ" style="height:21px"
+    					inputType="text" width="70" hidden="true">
+    				</w2:column>
+    				<w2:column id="SERIES_SEQ" style="height:21px"
+    					inputType="text" width="70" hidden="true">
+    				</w2:column>
+    			</w2:row>
+    		</w2:gBody>
+    		<script type="javascript" ev:event="oncellclick(row,col)"><![CDATA[
+    			if(col == 2){
+    				fn_SfxCheck(row, col);
+    			}
+    			else	grd_Variant.visible(false);
+    			SelRow = row;
+    			
+    		 ]]></script>
+    		<script type="javascript"
+    			ev:event="onchange(row,col,newData,oldData)"><![CDATA[
+    				if(col == 1){
+    					grd_List.setCellData( row , 2 , "" );
+    				}
+    			 ]]></script>
+    	</w2:grid>
+    	<w2:textbox class="txt1" id="textbox18" label="(견적금액 :만원)"
+    		style="position: absolute;left:325px;top:60px;width:95px;height:20px;color:#ff0000;">
+    	</w2:textbox>
+    	<w2:grid baseNode="dataset" repeatNode="record" id="grd_Variant"
+    		style="position: absolute ;left:634px;top:98px;width:120px;height:110px;visibility:hidden;"
+    		class="grid" hideHeader="true" autoFit="allColumn" noResultMessageVisible="" noResultMessage="" overflowY="scroll">
+    		<w2:header id="header5" style="">
+    			<w2:row id="row9" style="">
+    				<w2:column id="column45" style="height:20px;"
+    					inputType="text" width="120">
+    				</w2:column>
+    				<w2:column id="column43" style="height:20px"
+    					width="70" inputType="text">
+    				</w2:column>
+    			</w2:row>
+    		</w2:header>
+    		<w2:gBody id="gBody5" style="">
+    			<w2:row id="row10" style="">
+    				<w2:column id="SFX_NM" style="height:20px;"
+    					inputType="text" width="70" hidden="false">
+    				</w2:column>
+    				<w2:column id="SFX_CD" style="height:20px"
+    					width="70" inputType="text" hidden="true">
+    				</w2:column>
+    			</w2:row>
+    		</w2:gBody>
+    		<script ev:event="oncellclick(row,col)" type="javascript"><![CDATA[
+    			fn_SfxClick(row);
+    			grd_Variant.visible( false );
+    		 ]]></script>
+    	</w2:grid>
+    </body>
+</html>

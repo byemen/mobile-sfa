@@ -1,0 +1,534 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?xml-stylesheet href="/mp/css/style.css" type="text/css"?>
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:ev="http://www.w3.org/2001/xml-events"
+    xmlns:w2="http://www.inswave.com/websquare" xmlns:xf="http://www.w3.org/2002/xforms">
+    <head>
+    	<w2:buildDate />
+    	<xf:model>
+    		<xf:instance>
+    			<data xmlns="" />
+    		</xf:instance>
+    		<xf:submission id="submissionList" ref="request" target="resList"
+        		action=""
+        		method="post" mediatype="application/xml" encoding="UTF-8" instance="" replace="instance"
+        		errorHandler="" customHandler="" mode="asynchronous"
+        		processMsg="처리중입니다.">
+        		<script type="javascript" ev:event="xforms-submit-done"><![CDATA[
+            		grd_List.setXML(WebSquare.ModelUtil.findInstanceNode("resList/root/dataset[@id='ds_List']"));
+    		
+    				fn_AfterSearch();
+            	]]></script>
+        	</xf:submission>
+    		<xf:submission id="submissionSc" ref="request"
+    			target="resSc" action="" method="post"
+    			mediatype="application/xml" encoding="UTF-8" instance=""
+    			replace="instance" errorHandler="" customHandler=""
+    			mode="asynchronous" processMsg="">
+    			<script type="javascript" ev:event="xforms-submit-done"><![CDATA[     				
+		        	parent.fn_SpinnerHide();
+		        	
+		        	if(GV_USER_TYPE == "23")	
+		        		cb_Sc.setValue(GV_USER_ID);
+		        	else
+		        		cb_Sc.setSelectedIndex(0);		        		
+		        	        		
+		        	cal_RegFrDt.setValue(gfn_GetDate(0,0,0));
+		        	cal_RegToDt.setValue(gfn_GetDate(0,0,0));	        	
+		        	
+		        	fn_Search();
+    			]]></script>
+    		</xf:submission>
+    	</xf:model>
+    	<script type="javascript" src="/mp/js/common.js"></script>
+		<script type="javascript" src="/mp/js/WebSquare.js"></script>
+    	<script type="javascript"><![CDATA[
+     	var FV_SEARCH_CNT = 18;		// 조회 건수
+		var FV_nMAXCNT = -1;		// 전체 데이터 수
+		var FV_sCustSeq = "";
+		var FV_sCustNm = "";
+		var FV_sActSeq = "";
+		var FV_sDealerId = "";
+		var	FV_sCustType = "";
+		/****************************************************************
+		* 화면로드
+		* @param  : 없음
+		* @return : 없음
+		******************************************************************/
+        function fn_OnLoad(){
+        	wfrm_Page.visible(false);
+        	
+        	// SC
+        	setTitSendInfo("request", "", "", "mdms/mp/comm::CO_USERS_S01");
+        	setInputParamData("COND1", GV_UP_GROUP_ID);
+        	if(GV_USER_GROUP.indexOf("DS6") >= 0)
+        		setInputParamData("COND2", GV_DEPT_CD);
+        	setSubmissison("submissionSc");        	
+        }
+        /****************************************************************
+		* 조회
+		* @param  : 페이지번호
+		* @return : 없음
+		******************************************************************/ 
+        function fn_Search(pageNo){
+        	var dRegFrDt = cal_RegFrDt.getValue().replaceAll('-','');
+      		var dRegToDt = cal_RegToDt.getValue().replaceAll('-','');
+      		var dActFrDt = cal_ActFrDt.getValue().replaceAll('-','');
+      		var dActToDt = cal_ActToDt.getValue().replaceAll('-','');
+			
+		  	if(dRegFrDt > dRegToDt) {
+	        	alert("예약/등록일자 종료일자를 시작일자 이후로 선택해주세요.");
+	        	cal_RegToDt.focus();  
+	        	return;
+		  	}
+		  	if(dActFrDt > dActToDt) {
+	        	alert("실행일자 종료일자를 시작일자 이후로 선택해주세요.");
+	        	cal_ActToDt.focus();  
+	        	return;
+		  	}
+		  	
+        	if(pageNo == null){
+				FV_nMAXCNT = -1;
+				pageNo = 1;
+				fn_InitPage();
+			}        	
+        	
+        	var sSqlid = "mdms/mp/act:S310301_W01_S01@" + pageNo + "/" + FV_SEARCH_CNT;
+        	
+        	setTitSendInfo("request", "", "", sSqlid);
+        	setInputParamData("DEALER_ID", GV_UP_GROUP_ID);
+        	setInputParamData("MNG_SC_ID", cb_Sc.getValue());
+        	setInputParamData("CUST_NM", edt_CustNm.getValue());        	
+        	setInputParamData("REG_FR_DT", dRegFrDt);
+        	setInputParamData("REG_TO_DT", dRegToDt);
+        	setInputParamData("ACTIVE_FR_DT", dActFrDt);
+        	setInputParamData("ACTIVE_TO_DT", dActToDt);
+        	if(GV_USER_GROUP.indexOf("DS6") == 0)
+        		setInputParamData("DEPT_CD", GV_DEPT_CD);
+        		
+    		setSubmissison("submissionList");
+        }
+        /****************************************************************
+		* callback (조회)
+		* @param  : 없음
+		* @return : 없음
+		******************************************************************/
+        function fn_AfterSearch(){
+        	var nRownum = (FV_nCurrPage-1) * FV_SEARCH_CNT;
+        	
+        	if(FV_nCurrPage == -1 && grd_List.getRowCount() > 0){
+				FV_nMAXCNT = grd_List.getCellData(0,0);
+				fn_SetPageInfo(1,FV_nMAXCNT,FV_SEARCH_CNT);
+				nRownum = 0;
+			}
+			
+			for(var i=0; i<grd_List.getRowCount(); i++){
+        		grd_List.setCellData(i, 1, (i+1)+nRownum);
+        	}
+        }
+		/****************************************************************
+		* 업무일지수정
+		* @param  : 없음
+		* @return : 없음
+		******************************************************************/  
+		function fn_ModifyAct(row,col){
+			if(col == 3 || col == 4){
+				var sSrc = "/mp/act/S310302_W01.xml";
+				
+				FV_sCustSeq = grd_List.getCellData(row,7);
+				FV_sCustNm = grd_List.getCellData(row,6);
+				FV_sActSeq = grd_List.getCellData(row,8);
+				
+				gfn_OpenPopup(sSrc,"업무일지수정",814,456,90,46);
+			}
+		}
+		/****************************************************************
+		* 업무일지등록
+		* @param  : 없음
+		* @return : 없음
+		******************************************************************/
+        function fn_NewAct(){
+        	var sSrc = "/mp/act/S310302_W01.xml";
+			
+			FV_sCustSeq = "";
+			FV_sCustNm = "";
+			FV_sActSeq = "";
+			
+			gfn_OpenPopup(sSrc,"업무일지등록",814,456,90,46);
+        }
+		/****************************************************************
+		* 고객등록
+		* @param  : 없음
+		* @return : 없음
+		******************************************************************/
+        function fn_Cust(){
+        	//gfn_OpenPopup("/mp/cust/S310102_W01.xml","고객등록",994,620,0,0);
+        	gfn_OpenPopup("/mp/main/Uc.xml","공사중",994,620,0,0);
+        }
+        /****************************************************************
+		* 팝업 닫기
+		* @param  : flag	팝업 닫은 후 재조회 여부
+		* @return : 없음
+		******************************************************************/
+        function fn_PopupClose(flag){
+        	gfn_PopupClose();
+        	
+        	if(flag)	fn_Search();
+        }
+        fn_OnLoad();    
+        ]]></script>
+    </head>
+    <body>
+
+    	<w2:grid baseNode="dataset" autoFit=""
+    		class="grid" resize=""
+    		id="grd_List" focusMode="row"
+    		style="position:absolute;height:407px;width:991px;left:1px;top:151px;"
+    		evenRowBackgroundColor="#e1ebf5" overflowX="hidden"
+    		overflowY="hidden" oddEvenColorDisplay="true"
+    		oddRowBackgroundColor="#ffffff" repeatNode="record"
+    		sortEvent="onclick" readOnly="true">
+    		<w2:header id="header7" style="" width="472"
+    			columnClass="gridHeaderTD1" class="gridHeaderTable">
+    			<w2:row id="row16" style="">
+    				<w2:column id="column350" style="height:25px"
+    					hidden="" inputType="text" width="70" valueType="binary">
+    				</w2:column>
+    				<w2:column id="column222" style="height:20px;"
+    					hidden="" width="30" inputType="text" value="No" rowSpan=""
+    					valueType="binary" colSpan="">
+    				</w2:column>
+    				<w2:column id="column223" style="height:20px;"
+    					hidden="" width="70" inputType="text" value="등록일시"
+    					valueType="binary" colSpan="" rowSpan="">
+    				</w2:column>
+    				<w2:column id="column224" style="height:20px;"
+    					hidden="" width="80" inputType="text" value="예정일자"
+    					valueType="binary" colSpan="" rowSpan="">
+    				</w2:column>
+    				<w2:column id="column225" style="height:20px;"
+    					hidden="" width="80" inputType="text" value="실행일자"
+    					valueType="binary" colSpan="" rowSpan="">
+    				</w2:column>
+    				<w2:column id="column278" style="height:20px"
+    					hidden="" inputType="text" width="80" valueType="binary"
+    					value="담당SC" colSpan="" rowSpan="">
+    				</w2:column>
+    				<w2:column id="column284" style="height:25px"
+    					hidden="" inputType="text" width="110" valueType="binary"
+    					value="고객명" colSpan="" rowSpan="">
+    				</w2:column>
+    				<w2:column id="column351" style="height:25px"
+    					hidden="" inputType="text" width="70" valueType="binary">
+    				</w2:column>
+    				<w2:column id="column353" style="height:25px"
+    					hidden="" inputType="text" width="70" valueType="binary">
+    				</w2:column>
+    				<w2:column id="column343" style="height:25px"
+    					hidden="" width="88" inputType="text" valueType="binary"
+    					value="활동구분">
+    				</w2:column>
+    				<w2:column id="column344" style="height:25px"
+    					hidden="" width="80" inputType="text" valueType="binary"
+    					value="접촉방법">
+    				</w2:column>
+    				<w2:column id="column345" style="height:25px"
+    					hidden="" width="90" inputType="text" valueType="binary"
+    					value="활동결과">
+    				</w2:column>
+    				<w2:column id="column322" style="height:20px"
+    					hidden="" inputType="text" width="108" valueType="binary"
+    					colSpan="" rowSpan="" value="상담차량">
+    				</w2:column>
+    				<w2:column id="column348" style="height:25px"
+    					hidden="" inputType="text" width="98" valueType="binary"
+    					value="보유차량/연식">
+    				</w2:column>
+    				<w2:column id="column346" style="height:25px"
+    					hidden="" inputType="text" width="76" valueType="binary"
+    					value="관리자 코멘트">
+    				</w2:column>
+    			</w2:row>
+    		</w2:header>
+    		<w2:gBody id="gBody7" style="" columnClass="gridBodyTD"
+    			class="gridBodyTable">
+    			<w2:row id="row17" style="">
+    				<w2:column id="_T_CNT" style="height:21px"
+    					hidden="true" inputType="text" width="70" valueType="binary">
+    				</w2:column>
+    				<w2:column id="column227" style="height:21px;"
+    					hidden="" width="50" inputType="text" value=""
+    					valueType="binary" textAlign="left">
+    				</w2:column>
+    				<w2:column id="REG_DT" style="height:21px;"
+    					hidden="" width="79" inputType="text" value=""
+    					valueType="binary">
+    				</w2:column>
+    				<w2:column id="PLAN_DT" style="height:21px;"
+    					hidden="" width="90" inputType="text" value=""
+    					valueType="binary">
+    				</w2:column>
+    				<w2:column id="ACTIVE_DT" style="height:21px;"
+    					hidden="" width="60" inputType="text" value=""
+    					valueType="binary">
+    				</w2:column>
+    				<w2:column id="MNG_SC_NM" style="height:21px"
+    					hidden="" inputType="text" width="100" valueType="binary"
+    					textAlign="left">
+    				</w2:column>
+    				<w2:column id="CUST_NM" style="height:21px"
+    					hidden="" inputType="text" width="100" valueType="binary"
+    					textAlign="left">
+    				</w2:column>
+    				<w2:column id="CUST_SEQ" style="height:21px"
+    					hidden="true" inputType="text" width="70" valueType="binary">
+    				</w2:column>
+    				<w2:column id="ACTIVE_SEQ" style="height:21px"
+    					hidden="true" inputType="text" width="70" valueType="binary">
+    				</w2:column>
+    				<w2:column id="ACTIVE_KND" style="height:21px"
+    					hidden="" inputType="text" width="88" valueType="binary"
+    					textAlign="left">
+    				</w2:column>
+    				<w2:column id="ACTIVE_METHOD" style="height:21px"
+    					hidden="" inputType="text" width="60" valueType="binary"
+    					textAlign="left">
+    				</w2:column>
+    				<w2:column id="ACTIVE_RESULT" style="height:21px"
+    					hidden="" inputType="text" width="110" valueType="binary"
+    					textAlign="left">
+    				</w2:column>
+    				<w2:column id="ACTIVE_MODEL" style="height:21px"
+    					hidden="" inputType="text" width="105" valueType="binary"
+    					textAlign="left">
+    				</w2:column>
+    				<w2:column id="VARIANT_NM" style="height:21px"
+    					hidden="" inputType="text" width="82" valueType="binary"
+    					textAlign="left">
+    				</w2:column>
+    				<w2:column id="MNG_COMMENT_CNT" style="height:21px"
+    					hidden="" inputType="text" width="70" valueType="binary"
+    					textAlign="">
+    				</w2:column>
+    			</w2:row>
+    		</w2:gBody>
+    		<script ev:event="onCellClick( row , col )"
+    			type="javascript"><![CDATA[ 
+    			fn_ModifyAct(row,col);
+    		]]></script>
+    	</w2:grid>
+    	<xf:image id="image42"
+    		src="/mp/images/smenu_bg.png"
+    		style="position: absolute ;height:36px;width:991px;left:0px;top:0px;">
+    	</xf:image>
+
+    	<xf:image id="image43"
+    		src="/mp/images/stitle_bg.png"
+    		style="position: absolute ;height:36px;width:172px;left:1px;top:0px;">
+    	</xf:image>
+    	<w2:textbox class="title" id="title" label="업무일지조회"
+    		style="position: absolute ;height:20px;width:149px;left:3px;top:11px;text-align:center;">
+    	</w2:textbox>
+    	<xf:group 
+    		id="roundRectangle2"
+    		style="position: absolute ;height:70px;width:991px;left:1px;top:45px;" class="if_group">
+    	</xf:group>
+    	<xf:select1 allOption="" appearance="minimal" chooseOption=""
+    		class="input_edit" direction="auto" disabled="false"
+    		displayMode="label" id="cb_Sc"
+    		style="position: absolute ;height:22px;width:104px;left:64px;top:56px;"
+    		submenuSize="auto" visibleRowNum="20">
+    		<xf:choices>
+    			<xf:itemset nodeset="resSc/root/dataset[@id='ds_Sc']">
+    				<xf:label ref="record/NAME"></xf:label>
+    				<xf:value ref="record/CODE"></xf:value>
+    			</xf:itemset>
+    		</xf:choices>
+    	</xf:select1>
+    	<w2:textbox class="if_lable" id="output50" label="담당SC"
+    		style="position: absolute ;height:22px;width:50px;left:11px;top:55px;">
+    	</w2:textbox>
+    	<xf:image id="btn_Search"
+    		src="/mp/images/if_btn_seach.png"
+    		style="position: absolute ;cursor:pointer;height:25px;width:77px;left:892px;top:82px;">
+    		<script ev:event="onclick" type="javascript"><![CDATA[ 
+    			fn_Search();
+    		]]></script>
+    	</xf:image>
+    	<xf:trigger class="btn_on1" id="trigger1"
+    		style="position: absolute ;height:25px;width:106px;left:772px;top:6px;"
+    		type="image">
+    		<xf:label>업무일지조회</xf:label>
+    		<script ev:event="onclick" type="javascript"><![CDATA[ 
+    			parent.fn_SpinnerShow();
+    			parent.ifrm_Main.setSrc("/mp/act/S310301_W01.xml");
+    		]]></script>
+    	</xf:trigger>
+    	<xf:trigger class="btn_s3" id="trigger3"
+    		style="position: absolute ;height:25px;width:106px;left:879px;top:6px;"
+    		type="image">
+    		<xf:label>금일영업기회</xf:label>
+    		<script ev:event="onclick" type="javascript"><![CDATA[ 
+    			parent.fn_SpinnerShow();
+//				gfn_OpenPopup("/mp/act/S310303_P01.xml","금일영업기회",1024,943,0,0);
+				var sSrc = "/mp/act/S310303_P01.xml";
+				
+//				top.FV_CustSeq = sCustSeq;
+				
+				parent.fn_MainPopup(sSrc,"금일영업기회",1024,1087,0,0,"Today");
+
+//    			parent.ifrm_Main.setSrc("/mp/act/S310303_W01.xml");
+    		]]></script>
+    	</xf:trigger>
+    	<w2:textbox id="output73"
+    		style="position: absolute ;height:22px;width:82px;left:191px;top:55px;"
+    		class="if_lable" label="예약/등록일자">
+    	</w2:textbox>
+    	<w2:textbox class="if_lable" id="output74" label="고객명"
+    		style="position: absolute ;height:22px;width:41px;left:20px;top:83px;">
+    	</w2:textbox>
+    	<xf:input class="input_edit" id="edt_CustNm"
+    		style="position: absolute ;height:22px;width:100px;left:64px;top:83px;">
+    	</xf:input>
+    	<w2:textbox id="output77"
+    		style="position: absolute ;height:22px;width:82px;left:191px;top:83px;"
+    		class="if_lable" label="실행일자">
+    	</w2:textbox>
+    	<xf:trigger id="btn_RegYear"
+    		style="position: absolute ;height:26px;width:31px;left:678px;top:54px;"
+    		type="button">
+    		<xf:label>Y</xf:label>
+    		<script ev:event="onclick" type="javascript"><![CDATA[ 
+    			gfn_ProcessDate("year",cal_RegFrDt,cal_RegToDt);
+    		]]></script>
+    	</xf:trigger>
+    	<w2:inputCalendar calendarValueType="yearMonthDate"
+    		class="input_edit" id="cal_RegFrDt"
+    		style="position: absolute ;height:24px;width:109px;left:275px;top:55px;">
+    	</w2:inputCalendar>
+    	<xf:trigger id="btn_RegWeek"
+    		style="position: absolute ;height:26px;width:31px;left:612px;top:54px;"
+    		type="button">
+    		<xf:label>W</xf:label>
+    		<script ev:event="onclick" type="javascript"><![CDATA[ 
+    			gfn_ProcessDate("week",cal_RegFrDt,cal_RegToDt);
+    		]]></script>
+    	</xf:trigger>
+    	<xf:trigger id="btn_RegDay"
+    		style="position: absolute ;height:26px;width:31px;left:579px;top:54px;"
+    		type="button">
+    		<xf:label>D</xf:label>
+    		<script ev:event="onclick" type="javascript"><![CDATA[ 
+    			gfn_ProcessDate("day",cal_RegFrDt,cal_RegToDt);
+    		]]></script>
+    	</xf:trigger>
+    	<xf:image id="btn_RegNext"
+    		src="/mp/images/btn2_right.png"
+    		style="position: absolute ;cursor:hand;height:24px;width:31px;left:545px;top:55px;">
+    		<script ev:event="onclick" type="javascript"><![CDATA[ 
+    			gfn_ProcessDate("next",cal_RegFrDt,cal_RegToDt);
+    		]]></script>
+    	</xf:image>
+    	<w2:textbox class="txt1" id="output78" label="~"
+    		style="position: absolute ;height:21px;text-align:center;width:14px;left:385px;top:55px;">
+    	</w2:textbox>
+    	<w2:inputCalendar calendarValueType="yearMonthDate"
+    		class="input_edit" id="cal_RegToDt"
+    		style="position: absolute ;height:24px;width:109px;left:399px;top:55px;">
+    	</w2:inputCalendar>
+    	<xf:image id="btn_RegPrev"
+    		src="/mp/images/btn2_left.png"
+    		style="position: absolute ;cursor:hand;height:24px;width:31px;left:510px;top:55px;">
+    		<script ev:event="onclick" type="javascript"><![CDATA[ 
+    			gfn_ProcessDate("prev",cal_RegFrDt,cal_RegToDt);
+    		]]></script>
+    	</xf:image>
+    	<xf:trigger id="btn_RegMonth"
+    		style="position: absolute ;height:26px;width:31px;left:645px;top:54px;"
+    		type="button">
+    		<xf:label>M</xf:label>
+    		<script ev:event="onclick" type="javascript"><![CDATA[ 
+    			gfn_ProcessDate("month",cal_RegFrDt,cal_RegToDt);
+    		]]></script>
+    	</xf:trigger>
+    	<xf:trigger id="btn_ActYear"
+    		style="position: absolute ;height:26px;width:31px;left:678px;top:83px;"
+    		type="button">
+    		<xf:label>Y</xf:label>
+    		<script ev:event="onclick" type="javascript"><![CDATA[     		
+    			gfn_ProcessDate("year",cal_ActFrDt,cal_ActToDt);
+    		]]></script>
+    	</xf:trigger>
+    	<w2:inputCalendar id="cal_ActFrDt"
+    		calendarValueType="yearMonthDate"
+    		style="position: absolute ;height:24px;width:109px;left:275px;top:83px;"
+    		class="input_edit">
+    	</w2:inputCalendar>
+    	<xf:trigger id="btn_ActWeek"
+    		style="position: absolute ;height:26px;width:31px;left:612px;top:83px;"
+    		type="button">
+    		<xf:label>W</xf:label>
+    		<script ev:event="onclick" type="javascript"><![CDATA[     		
+    			gfn_ProcessDate("week",cal_ActFrDt,cal_ActToDt);
+    		]]></script>
+    	</xf:trigger>
+    	<xf:trigger id="btn_ActDay"
+    		style="position: absolute ;height:26px;width:31px;left:579px;top:83px;"
+    		type="button">
+    		<xf:label>D</xf:label>
+    		<script ev:event="onclick" type="javascript"><![CDATA[     		
+    			gfn_ProcessDate("day",cal_ActFrDt,cal_ActToDt);
+    		]]></script>
+    	</xf:trigger>
+    	<xf:image id="btn_ActNext"
+    		style="position: absolute ;cursor:hand;height:24px;width:31px;left:545px;top:84px;"
+    		src="/mp/images/btn2_right.png">
+    		<script ev:event="onclick" type="javascript"><![CDATA[     		
+    			gfn_ProcessDate("next",cal_ActFrDt,cal_ActToDt);
+    		]]></script>
+    	</xf:image>
+    	<w2:textbox id="output79"
+    		style="position: absolute ;height:21px;text-align:center;width:14px;left:385px;top:84px;"
+    		class="txt1" label="~">
+    	</w2:textbox>
+    	<w2:inputCalendar id="cal_ActToDt"
+    		calendarValueType="yearMonthDate"
+    		style="position: absolute ;height:24px;width:109px;left:399px;top:83px;"
+    		class="input_edit">
+    	</w2:inputCalendar>
+    	<xf:image id="btn_ActPrev"
+    		style="position: absolute ;cursor:hand;height:24px;width:31px;left:510px;top:84px;"
+    		src="/mp/images/btn2_left.png">
+    		<script ev:event="onclick" type="javascript"><![CDATA[     		
+    			gfn_ProcessDate("prev",cal_ActFrDt,cal_ActToDt);
+    		]]></script>
+    	</xf:image>
+    	<xf:trigger id="btn_ActMonth"
+    		style="position: absolute ;height:26px;width:31px;left:645px;top:83px;"
+    		type="button">
+    		<xf:label>M</xf:label>
+    		<script ev:event="onclick" type="javascript"><![CDATA[     		
+    			gfn_ProcessDate("month",cal_ActFrDt,cal_ActToDt);
+    		]]></script>
+    	</xf:trigger>
+    	<xf:trigger class="btn_n" id="btn_Act"
+    		style="position: absolute ;height:30px;width:110px;left:884px;top:121px;"
+    		type="image">
+    		<xf:label>업무일지등록</xf:label>
+    		<script ev:event="onclick" type="javascript"><![CDATA[ 
+    			fn_NewAct();
+    		]]></script>
+    	</xf:trigger>
+    	<xf:trigger id="btn_Cust"
+    		style="position: absolute ;height:30px;width:92px;left:789px;top:121px;"
+    		class="btn_n" type="image">
+    		<xf:label>고객등록</xf:label>
+    		<script ev:event="onclick" type="javascript"><![CDATA[ 
+    			fn_Cust();
+    		]]></script>
+    	</xf:trigger>
+    	<w2:wframe id="wfrm_Page" mode="sync"
+    		src="/mp/comm/Paging.xml"
+    		style="position: absolute ;left:281px;top:569px;width:443px;height:28px;">
+    	</w2:wframe>
+    </body>
+</html>

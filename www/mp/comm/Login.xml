@@ -1,0 +1,126 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?xml-stylesheet href="/mp/css/style.css" type="text/css"?>
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:ev="http://www.w3.org/2001/xml-events"
+    xmlns:w2="http://www.inswave.com/websquare" xmlns:xf="http://www.w3.org/2002/xforms">
+    <head>
+    	<w2:buildDate />
+    	<xf:model>
+    		<xf:instance>
+    			<data xmlns="" />
+    		</xf:instance>
+    		<xf:submission id="submissionLogin" ref="request"
+    			target="resUser" action="" method="post"
+    			mediatype="application/xml" encoding="UTF-8" instance=""
+    			replace="instance" errorHandler="" customHandler=""
+    			mode="asynchronous" processMsg="">
+    			<script type="javascript" ev:event="xforms-submit-done"><![CDATA[ 
+    				fn_AfterLogin();
+    			]]></script>
+    		</xf:submission>
+    		<xf:submission id="submissionSave" ref="request" target="resSave"
+	    		action=""
+        		method="post" mediatype="application/xml" encoding="UTF-8" instance="" replace="instance"
+        		errorHandler="" customHandler="" mode="asynchronous"
+        		processMsg="">
+        	</xf:submission>
+    	</xf:model>
+    	<script type="javascript" src="/mp/js/common.js"></script>
+		<script type="javascript" src="/mp/js/WebSquare.js"></script>
+    	<script type="javascript"><![CDATA[
+     	/****************************************************************
+		* Login
+		* @param  : 없음
+		* @return : 없음
+		******************************************************************/
+     	function fn_Login(){
+     		if(edt_UserId.getValue().length <= 0) {
+     			alert("사용자 아이디를 넣어주세요.");
+				edt_UserId.focus();
+				return;
+     		}
+     		if(edt_Passwd.getValue().length <= 0) {
+     			alert("비밀번호를 넣어주세요.");
+				edt_Passwd.focus();
+				return;
+     		}
+     		
+        	var sSqlid = "mdms/mp/comm:LOGIN_S01";        	
+        	setTitSendInfo("request", "", "", sSqlid);
+			setInputParamData("USER_ID", edt_UserId.getValue());
+			setInputParamData("PASSWORD", edt_Passwd.getValue());
+				
+			setSubmissison("submissionLogin");
+        }
+        /****************************************************************
+		* callback (Login)
+		* @param  : 없음
+		* @return : 없음
+		******************************************************************/
+     	function fn_AfterLogin(){
+     		var userinfo = WebSquare.ModelUtil.findInstanceNodes("resUser/root/dataset[@id='ds_UserInfo']/record");
+     		
+        	// 사용자 있는지
+        	if(userinfo.length <= 0){
+        		alert("사용자 아이디가 존재하지 않습니다.");
+				return;
+        	}
+        	// 비밀번호 체크
+        	if(WebSquare.xml.getValue(userinfo[0],"ISEQUAL") != "Y") {
+        		alert("비밀번호가 다릅니다.");
+				return;
+        	}
+        	// 비밀번호 잠겨있는지
+        	if(WebSquare.xml.getValue(userinfo[0],"PASSWORD_LOCK") == "Y") {
+        		alert("로그인 하실수 없는 아이디 입니다. 운영자에게 문의해주십시요.");
+				return;
+        	}
+        	// 권한체크
+        	var sUserGroup = WebSquare.xml.getValue(userinfo[0],"USER_GROUP");        	
+        	var arrAuth = sUserGroup.split("|");
+        	var bFlag = false;
+        	for(var i=0; i<arrAuth.length; i++){
+        		if(arrAuth[i]=="*" || arrAuth[i]=="D" || arrAuth[i].indexOf("DS")==0 || arrAuth[i]=="DE2" || arrAuth[i]=="TE2"){
+        			bFlag = true;
+        			break;
+        		}        	
+        	}
+        	if(!bFlag){
+        		alert("로그인 권한이 없는 사용자입니다.");
+        		return;
+        	}
+        	
+        	// 로그인  로그
+        	setTitSendInfo("request", "MdmsCommon", "loginLog", "");	
+  			setSubmissison("submissionSave");
+        	
+        	WebSquare.cookie.setCookie("userId", WebSquare.xml.getValue(userinfo[0],"USER_ID"));										    
+        	document.location.href = path+"/mp/comm/Main.xml";
+     	}
+     	
+        ]]></script>
+    </head>
+    <body>
+    	<xf:output id="output1"
+    		style="position: absolute ;height:100%;width:100%;background-color:#000000;left:0px;top:0px;"
+    		label="">
+    		<xf:label></xf:label>
+    	</xf:output>
+    	<xf:image id="image3"
+    		style="position: absolute ;height:690px;width:1024px;left:0px;top:0px;"
+    		src="/mp/images/login_bg.png">
+    	</xf:image>
+    	<xf:input id="edt_UserId"
+    		style="position: absolute ;height:20px;font-size:12px;width:157px;background-color:#e4e4e4;font-family:Dotum,Helvetica,AppleGothic;left:394px;border:1px solid #e4e4e4;top:176px;">
+    	</xf:input>
+    	<xf:secret id="edt_Passwd"
+    		style="position: absolute ;height:20px;font-size:12px;width:157px;background-color:#e4e4e4;font-family:Dotum,Helvetica,AppleGothic;left:394px;border:1px solid #e4e4e4;top:233px;">
+    	</xf:secret>
+    	<xf:image id="img_Login"
+    		style="position: absolute ;height:87px;width:91px;left:624px;top:172px;"
+    		src="/mp/images/login_btn.png">
+    		<script ev:event="onclick" type="javascript"><![CDATA[ 
+    			fn_Login();
+    		]]></script>
+    	</xf:image>
+    </body>
+</html>

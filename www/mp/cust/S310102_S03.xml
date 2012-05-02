@@ -1,0 +1,254 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?xml-stylesheet href="/mp/css/style.css" type="text/css"?>
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:ev="http://www.w3.org/2001/xml-events"
+    xmlns:w2="http://www.inswave.com/websquare" xmlns:xf="http://www.w3.org/2002/xforms">
+    <head>
+    	<w2:buildDate />
+    	<xf:model>
+    		<xf:instance>
+    			<data xmlns="" />
+    		</xf:instance>
+    		<xf:submission id="submissionPossVehic" ref="request" target="resPossVehic"
+        		action=""
+        		method="post" mediatype="application/xml" encoding="UTF-8" instance="" replace="instance"
+        		errorHandler="" customHandler="" mode="asynchronous"
+        		processMsg="처리중입니다.">
+        		<script type="javascript" ev:event="xforms-submit-done"><![CDATA[
+            		grd_PossVehic.setXML(WebSquare.ModelUtil.findInstanceNode("resPossVehic/root/dataset[@id='ds_PossVehic']"));
+			
+    				fn_AfterSearch();
+            	]]></script>
+        	</xf:submission>
+    		<xf:submission id="submissionCode" ref="request"
+    			target="resCode" action="" method="post"
+    			mediatype="application/xml" encoding="UTF-8" instance=""
+    			replace="instance" errorHandler="" customHandler=""
+    			mode="asynchronous" processMsg="">
+    			<script type="javascript" ev:event="xforms-submit-done"><![CDATA[    				
+		        	if(!gfn_IsNullVal(parent.FV_sCustSeq)){
+		        		fn_Search();
+		        	}
+    			]]></script>
+    		</xf:submission>
+    	</xf:model>
+    	<script type="javascript" src="/mp/js/common.js"></script>
+		<script type="javascript" src="/mp/js/WebSquare.js"></script>
+    	<script type="javascript"><![CDATA[
+		/****************************************************************
+		* 화면로드
+		* @param  : 없음
+		* @return : 없음
+		******************************************************************/
+		btn_NewPossVehic.visible(false);
+        function fn_OnLoad(){
+        	// 브랜드, 차종, 주운전자
+			setTitSendInfo("request", "", "", "mdms/mp/comm::CO_OTHER_BRAND_S02,mdms/mp/comm::CO_OTHER_BRAND_S03,mdms/mp/cust::S310102_P01_S02");
+        	setInputParamData("CUST_SEQ", parent.FV_sCustSeq);
+        	setSubmissison("submissionCode");        	
+        }        
+        /****************************************************************
+		* 조회
+		* @param  : 없음
+		* @return : 없음
+		******************************************************************/ 
+        function fn_Search(){
+        	var sSqlid = "mdms/mp/cust:S310102_S03_S01";        	
+        	setTitSendInfo("request", "", "", sSqlid);
+        	setInputParamData("CUST_SEQ", parent.FV_sCustSeq);
+			setSubmissison("submissionPossVehic");
+        }
+        /****************************************************************
+		* callback (조회)
+		* @param  : 없음
+		* @return : 없음
+		******************************************************************/
+        function fn_AfterSearch(){
+        	for(var i=0; i<grd_PossVehic.getRowCount(); i++){
+        		grd_PossVehic.setCellData(i, 1, i+1);
+        	}
+        	
+        	var nTotalCnt = grd_PossVehic.getRowCount();
+			
+			if(gfn_IsNullVal(nTotalCnt))	nTotalCnt = 0;
+			
+			parent.tab_SubList.setLabelText(2,"타사보유차량(" + nTotalCnt + ")");
+        }
+        /****************************************************************
+		* 신규등록
+		* @param  : 없음
+		* @return : 없음
+		******************************************************************/        
+		function fn_NewPossVehic(){;
+			if(gfn_IsNullVal(parent.FV_sCustSeq)){
+				alert("고객을 먼저 지정하세요.");
+				return;
+			}
+			       	 
+			var sSrc = "/mp/cust/S310102_P01.xml";
+			
+			parent.FV_sFlag = "I";
+			parent.FV_sDealerId = parent.edt_DealerId.getValue();
+			parent.FV_sMngScId = parent.edt_MngScId.getValue();
+			parent.FV_sCustSeq = parent.FV_sCustSeq;		
+			
+			parent.fn_Popup(sSrc,"타사보유차량 등록",613,233,190,50);
+		}
+		/****************************************************************
+		* 수정
+		* @param  : 없음
+		* @return : 없음
+		******************************************************************/  
+		function fn_ModifyPossVehic(row){
+			var sSrc = "/mp/cust/S310102_P01.xml";
+			
+			parent.FV_sFlag = "U";
+			parent.FV_sCustSeq = grd_PossVehic.getCellData(row,2);
+			parent.FV_sSeq = grd_PossVehic.getCellData(row,3);
+			parent.FV_sDealerId = parent.edt_DealerId.getValue();
+			parent.FV_sMngScId = parent.edt_MngScId.getValue();
+			
+			parent.fn_Popup(sSrc,"타사보유차량 수정",613,233,190,50);
+		}
+        ]]></script>
+    </head>
+    <body>
+    	<w2:grid autoFit="" baseNode="dataset" class="grid"
+    		evenRowBackgroundColor="#e1ebf5" focusMode="row"
+    		id="grd_PossVehic" oddEvenColorDisplay="true"
+    		oddRowBackgroundColor="#ffffff" overflowX="hidden"
+    		overflowY="hidden" readOnly="true"
+    		repeatNode="record" resize=""
+    		style="position:absolute;height:196px;width:967px;left:3px;top:3px;">
+    		<w2:header class="gridHeaderTable"
+    			columnClass="gridHeaderTD1" id="header13" style="" width="840">
+    			<w2:row id="row28" style="">
+    				<w2:column hidden="" id="column413" inputType="text"
+    					style="height:26px" valueType="binary" width="40">
+    				</w2:column>
+    				<w2:column colSpan="" hidden="" id="column414"
+    					inputType="text" rowSpan="" style="height:26px;" value="No"
+    					valueType="binary" width="40" textAlign="left">
+    				</w2:column>
+    				<w2:column id="column427" style="height:26px"
+    					hidden="" inputType="text" width="70" valueType="binary">
+    				</w2:column>
+    				<w2:column id="column429" style="height:26px"
+    					hidden="" inputType="text" width="70" valueType="binary">
+    				</w2:column>
+    				<w2:column colSpan="" hidden="" id="column415"
+    					inputType="text" rowSpan="" style="height:26px;" value="차량번호"
+    					valueType="binary" width="110">
+    				</w2:column>
+    				<w2:column hidden="" id="column416" inputType="text"
+    					style="height:26px;" value="명의" valueType="binary"
+    					width="130">
+    				</w2:column>
+    				<w2:column hidden="" id="column417" inputType="text"
+    					style="height:26px;" value="브랜드" valueType="binary"
+    					width="130">
+    				</w2:column>
+    				<w2:column hidden="" id="column418" inputType="text"
+    					style="height:26px" value="차종" valueType="binary"
+    					width="143">
+    				</w2:column>
+    				<w2:column hidden="" id="column419" inputType="text"
+    					style="height:26px" value="년식" valueType="binary"
+    					width="80">
+    				</w2:column>
+    				<w2:column hidden="" id="column420" inputType="text"
+    					style="height:26px" value="주운전자" valueType="binary"
+    					width="143">
+    				</w2:column>
+    				<w2:column hidden="" id="column421" inputType="text"
+    					style="height:26px" value="대체예정년월" valueType="binary"
+    					width="110">
+    				</w2:column>
+    				<w2:column hidden="" id="column423" inputType="text"
+    					style="height:26px" value="보유여부" valueType="binary"
+    					width="80">
+    				</w2:column>
+    			</w2:row>
+    		</w2:header>
+    		<w2:gBody class="gridBodyTable" columnClass="gridBodyTD"
+    			id="gBody13" style="" width="840">
+    			<w2:row id="row29" style="">
+    				<w2:column hidden="true" id="_T_CNT"
+    					inputType="text" style="height:21px" valueType="binary"
+    					width="40">
+    				</w2:column>
+    				<w2:column hidden="" id="column426" inputType="text"
+    					style="height:21px;" value="" valueType="binary" width="60">
+    				</w2:column>
+    				<w2:column id="CUST_SEQ" style="height:21px"
+    					hidden="true" inputType="text" width="70" valueType="binary">
+    				</w2:column>
+    				<w2:column id="VEHIC_SEQ" style="height:21px"
+    					hidden="true" inputType="text" width="70" valueType="binary">
+    				</w2:column>
+    				<w2:column hidden="" id="VEHIC_NO" inputType="text"
+    					style="height:21px;" textAlign="left" value=""
+    					valueType="binary" width="130">
+    				</w2:column>
+    				<w2:column hidden="" id="OWNER_TYPE"
+    					inputType="text" style="height:21px;" textAlign="left"
+    					value="" valueType="binary" width="90">
+    				</w2:column>
+    				<w2:column hidden="" id="MAKER_CD"
+    					inputType="select" style="height:21px;" textAlign="left"
+    					value="" valueType="binary" width="90" allOption=""
+    					chooseOption="">
+    					<w2:choices>
+    						<w2:itemset
+    							nodeset="resCode/root/dataset[@id='ds_OtherBrand']">
+    							<w2:label ref="record/NAME"></w2:label>
+    							<w2:value ref="record/CODE"></w2:value>
+    						</w2:itemset>
+    					</w2:choices>
+    				</w2:column>
+    				<w2:column hidden="" id="MODEL_CD"
+    					inputType="select" style="height:21px" valueType="binary"
+    					width="60" textAlign="left" allOption="" chooseOption="">
+    					<w2:choices>
+    						<w2:itemset
+    							nodeset="resCode/root/dataset[@id='ds_OtherModel']">
+    							<w2:label ref="record/NAME"></w2:label>
+    							<w2:value ref="record/CODE"></w2:value>
+    						</w2:itemset>
+    					</w2:choices>
+    				</w2:column>
+    				<w2:column hidden="" id="YEAR_CD" inputType="text"
+    					style="height:21px" valueType="binary" width="150">
+    				</w2:column>
+    				<w2:column hidden="" id="MAIN_DRIVER"
+    					inputType="select" style="height:21px" valueType="binary"
+    					width="70" textAlign="left" allOption="" chooseOption="">
+    					<w2:choices>
+    						<w2:itemset
+    							nodeset="resCode/root/dataset[@id='ds_MainDriver']">
+    							<w2:label ref="record/NAME"></w2:label>
+    							<w2:value ref="record/CODE"></w2:value>
+    						</w2:itemset>
+    					</w2:choices>
+    				</w2:column>
+    				<w2:column hidden="" id="CHANGE_YM" inputType="text"
+    					style="height:21px" valueType="binary" width="80" displayFormat="####-##">
+    				</w2:column>
+    				<w2:column hidden="" id="POSS_YN" inputType="text"
+    					style="height:21px" valueType="binary" width="65">
+    				</w2:column>
+    			</w2:row>
+    		</w2:gBody>
+    		<script ev:event="onCellClick( row , col )" type="javascript"><![CDATA[ 
+    			fn_ModifyPossVehic(row);
+    		]]></script>
+    	</w2:grid>
+    	<xf:trigger class="btn_n" id="btn_NewPossVehic"
+    		style="position: absolute ;height:30px;width:92px;left:878px;top:-1px;visibility:hidden;"
+    		type="image">
+    		<xf:label>신규등록</xf:label>
+    		<script ev:event="onclick" type="javascript"><![CDATA[ 
+    			fn_NewPossVehic();
+    		]]></script>
+    	</xf:trigger>
+    </body>
+</html>

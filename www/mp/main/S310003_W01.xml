@@ -1,0 +1,2151 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?xml-stylesheet href="/mp/css/style.css" type="text/css"?>
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:ev="http://www.w3.org/2001/xml-events"
+    xmlns:w2="http://www.inswave.com/websquare" xmlns:xf="http://www.w3.org/2002/xforms">
+    <head>
+    	<w2:buildDate />
+    	<xf:model>
+    		<xf:instance>
+    			<data xmlns="" />
+    		</xf:instance>
+    		<xf:submission id="submissionSend" ref="request" target="resSend"
+	    		action=""
+        		method="post" mediatype="application/xml" encoding="UTF-8" instance="" replace="instance"
+        		errorHandler="" customHandler="" mode="synchronous"
+        		processMsg="">
+        	</xf:submission>
+    		<xf:submission id="submissionMsgSave" ref="request" target="resMsgSave"
+	    		action=""
+        		method="post" mediatype="application/xml" encoding="UTF-8" instance="" replace="instance"
+        		errorHandler="" customHandler="" mode="synchronous"
+        		processMsg="">
+        		<script type="javascript" ev:event="xforms-submit-done"><![CDATA[
+            		fn_AfterSaveMsg();
+            	]]></script>
+        	</xf:submission>
+    		<xf:submission id="submissionMsgDelete" ref="request" target="resMsgDelete"
+	    		action=""
+        		method="post" mediatype="application/xml" encoding="UTF-8" instance="" replace="instance"
+        		errorHandler="" customHandler="" mode="synchronous"
+        		processMsg="">
+        		<script type="javascript" ev:event="xforms-submit-done"><![CDATA[
+            		fn_AfterDeleteMsg();
+            	]]></script>
+        	</xf:submission>
+    		<xf:submission id="submissionList" ref="request" target="resList"
+        		action=""
+        		method="post" mediatype="application/xml" encoding="UTF-8" instance="" replace="instance"
+        		errorHandler="" customHandler="" mode="asynchronous"
+        		processMsg="처리중입니다.">
+        		<script type="javascript" ev:event="xforms-submit-done"><![CDATA[
+            		grd_List.setXML(WebSquare.ModelUtil.findInstanceNode("resList/root/dataset[@id='ds_List']"));
+            		fn_AfterSearch();
+            	]]></script>
+        	</xf:submission>    		
+    	</xf:model>
+    	<script type="javascript" src="/mp/js/common.js"></script>
+		<script type="javascript" src="/mp/js/WebSquare.js"></script>
+    	<script type="javascript"><![CDATA[
+    	/****************************************************************
+		* 화면로드
+		* @param  : 없음
+		* @return : 없음
+		******************************************************************/
+     	var FV_SEARCH_CNT = 7;		// 조회 건수
+		var FV_nMAXCNT = -1;		// 전체 데이터 수
+		var FV_CUST_NM_FLAG = "{{고객명}}";
+        function fn_OnLoad(){
+        	wfrm_Page.visible(false);
+        	for(var i=0; i<5; i++){
+        	   	grd_RecvList.insertRow(i);
+        	   	grd_RecvList.setCellData(i, 0, i+1);
+        	}
+        	grd_RecvList.setFocusedCell(0,0,false);
+        	
+        	edt_CallBackNo.setValue(GV_USER_TEL_NO);
+        	
+        	if(!gfn_IsNullVal(parent.FV_smsCustHpNo)){
+        		grd_RecvList.setCellData(0, 1, parent.FV_smsCustSeq);
+        		grd_RecvList.setCellData(0, 2, parent.FV_smsCustNm);
+        		grd_RecvList.setCellData(0, 3, parent.FV_smsCustHpNo);
+        	}
+        	fn_Search();
+        }
+     	/****************************************************************
+		* 이모티콘 삽입
+		* @param  : emoticon
+		* @return : null
+		******************************************************************/ 
+        function fn_setEmo(emo){
+			ta_Data.setValue(ta_Data.getValue()+emo);
+			fn_GetByteLength(ta_Data.getValue());
+		}
+     	/****************************************************************
+		* 대표 전화번호 얻기
+		* @param  : group_id
+		* @return : tel_no
+		******************************************************************/ 
+        function fn_getTelNo(groupid){
+			var telno = "";
+			switch(groupid){
+				case "NY00000": //렉서스 광주
+					telno = "080-3847-733";
+					break;
+				case "PM00000": //렉서스 서초
+					telno = "080-924-9000";
+					break;
+				case "SY00000": //렉서스 인천
+					telno = "080-330-4300";
+					break;
+				case "TM00000": //TMKR
+					telno = "02-3404-8200";
+					break;
+				case "YM00000": //렉서스 대구
+					telno = "080-762-7000";
+					break;
+				case "CT00000": //렉서스 분당
+					telno = "080-683-5000";
+					break;
+				case "CW00000": //렉서스 용산
+					telno = "080-799-0500";
+					break;
+				case "DT00000": //렉서스 강남
+					telno = "080-555-3579";
+					break;
+				case "JB00000": //렉서스 대전
+					telno = "042-500-3369";
+					break;
+				case "KM00000": //렉서스 부산
+					telno = "051-601-0400";
+					break;
+				case "YM10101": //렉서스 포항
+					telno = "080-293-7000";
+					break;
+				case "JB10101": //렉서스 천안
+					telno = "041-569-3368";
+					break;
+				case "KM10101": //렉서스 해운큑
+					telno = "051-710-2058";
+					break;
+				case "PM10101": //렉서스 강서
+					telno = "080-924-9001";
+					break;
+				case "CW10101": //렉서스 일산
+					telno = "080-961-0500";
+					break;
+				default:
+					telno = "";
+					break;
+			}
+			return telno;
+		}
+     	/****************************************************************
+		* 상용구 저장
+		* @param  : null
+		* @return : null
+		******************************************************************/ 
+        function fn_SavePreparedMsg(){
+			if(gfn_IsNullVal(cb_MsgType.getValue())){
+				alert("메세지 타입을 선택해주시기 바랍니다.");
+				document.getElementById("cb_MsgType").focus();
+				return;
+			}
+
+			if(gfn_IsNullVal(ta_Data.getValue())){
+				alert("메세지를 입력해 주시기 바랍니다.");
+				document.getElementById("ta_Data").focus();
+				return;
+			}
+			setTitSendInfo("request", "S310003_SMSAction", "save", "");
+
+			setInputParamData("MSG_TYPE",cb_MsgType.getValue());
+			setInputParamData("MSG",fn_TransSpecialString(ta_Data.getValue()));
+			setInputParamData("TEST","seho\rseho\rseho\nseho\n");
+
+  			setSubmissison("submissionMsgSave");
+		}
+     	/****************************************************************
+		* 상용구 삭제
+		* @param  : null
+		* @return : null
+		******************************************************************/ 
+        function fn_DeletePreparedMsg(seq){
+			if(!confirm("메세지를 삭제하시겠습니까?")){
+				return;
+			}else{
+				setTitSendInfo("request", "S310003_SMSAction", "delete", "");
+				
+				setInputParamData("SEQ",seq);
+				setSubmissison("submissionMsgDelete");
+			}
+		}
+     	/****************************************************************
+		* 상용구 조회
+		* @param  : null
+		* @return : null
+		******************************************************************/ 
+        function fn_Search(pageNo){
+        	if(pageNo == null){
+				FV_nMAXCNT = -1;
+				pageNo = 1;
+				fn_InitPage();
+			}
+        	var sSqlid = "mdms/mp/main:SMS_PREPARED_MSG_S01@" + pageNo + "/" + FV_SEARCH_CNT;
+
+        	setTitSendInfo("request", "", "", sSqlid);
+        	setInputParamData("MSG_TYPE", cb_MsgType.getValue());
+    		setSubmissison("submissionList");
+		}
+        /****************************************************************
+		* callback (조회)
+		* @param  : 없음
+		* @return : 없음
+		******************************************************************/
+        function fn_AfterSearch(){
+        	var nRownum = (FV_nCurrPage-1) * FV_SEARCH_CNT;
+        	
+        	if(FV_nCurrPage == -1 && grd_List.getRowCount() > 0){
+				FV_nMAXCNT = grd_List.getCellData(0,0);
+				fn_SetPageInfo(1,FV_nMAXCNT,FV_SEARCH_CNT);
+				nRownum = 0;
+			}
+			
+			for(var i=0; i<grd_List.getRowCount(); i++){
+        		grd_List.setCellData(i, 1, (i+1)+nRownum);
+        	}
+        } 
+     	/****************************************************************
+		* CallBack 
+		* @param  : null
+		* @return : null
+		******************************************************************/ 
+		function fn_AfterSaveMsg(){
+      		var errCode = WebSquare.ModelUtil.getInstanceValue("resMsgSave/root/params/param[@id='ErrorCode']");
+
+        	if(errCode == 0){
+        		alert("저장이 완료되었습니다.");
+        	}
+			fn_Search();
+		}
+     	/****************************************************************
+		* CallBack 
+		* @param  : null
+		* @return : null
+		******************************************************************/ 
+		function fn_AfterDeleteMsg(){
+      		var errCode = WebSquare.ModelUtil.getInstanceValue("resMsgDelete/root/params/param[@id='ErrorCode']");
+
+        	if(errCode == 0){
+        		alert("삭제가 완료되었습니다.");
+        	}
+			fn_Search();
+		}
+     	/****************************************************************
+		* <,> 등 문자 xml 형식으로 변환.
+		* @param  : Target String
+		* @return : Transformed String
+		******************************************************************/ 
+		function fn_TransSpecialString(tarStr){
+			var rtnStr = "";
+			for(var i=0;i<tarStr.length;i++){
+				switch(tarStr.charAt(i)){
+					case "<":
+						rtnStr += "&lt;";
+						break;
+					case ">":
+						rtnStr += "&gt;";
+						break;
+					case "&":
+						rtnStr += "&amp;";
+						break;
+					case '"':
+						rtnStr += "&quot;";
+						break;
+					case "'":
+						rtnStr += "&apos;";
+						break;
+					default:
+						rtnStr += tarStr.charAt(i);
+						break;
+				}
+			}
+			return rtnStr;
+		}
+     	/****************************************************************
+		* 발송내역
+		* @param  : 없음
+		* @return : 없음
+		******************************************************************/ 
+     	function fn_SmsList(){
+     		parent.fn_MainPopup("/mp/main/S310003_P01.xml","SMS List",905,519,46,110,"smsList");
+     	}
+     	/****************************************************************
+		* 조직도
+		* @param  : 없음
+		* @return : 없음
+		******************************************************************/ 
+     	function fn_Organization(){
+     	//	gfn_OpenPopup("/mp/main/S310003_P02.xml","조직도",905,586,46,46);
+     	}
+     	/****************************************************************
+		* 팝업 닫기
+		* @param  : arrRtn	리턴값
+		* @return : 없음
+		******************************************************************/
+        function fn_PopupClose(arrRtn){
+        	gfn_PopupClose();
+
+        	if(arrRtn != null){
+        		var arrVal = "";
+        		var nRow = 0;
+
+        		for(var i=0; i<arrRtn.length; i++){
+        			arrVal = arrRtn[i].split("^");
+
+        			if(gfn_IsNullVal(grd_RecvList.getMatchedIndex(2,arrVal[1],true,0,4))){
+        				var arrRow = grd_RecvList.getMatchedIndex(2,"",true,0,5).toString().split(",");
+        				nRow = eval(arrRow[0]);
+
+        				grd_RecvList.setCellData(nRow, 1, arrVal[0]);
+        				grd_RecvList.setCellData(nRow, 2, arrVal[1]);
+        			}
+        		}
+        		st_Cnt.setValue(nRow+1);
+        	}
+        }
+        /****************************************************************
+		* 문자메시지 제한
+		* @param  : data	문자메시지 (ta_Data.getValue)
+		* @return : 없음
+		******************************************************************/
+        function fn_GetByteLength(data) {
+		    var pos;
+		    var msglen = 0;
+			var nLength = data.length;
+
+		    for(i=0; i<nLength; i++){
+		        pos = data.charAt(i);
+
+		        if (escape(pos).length > 4)
+		            msglen += 2;
+		        else
+		            msglen++;
+		    }
+
+		    st_CharLeng.setValue(msglen);
+
+		    if(msglen > 2000 ){
+		        alert('문자메시지는 2000바이트를 넘을 수 없습니다.');
+				ta_Data.setValue(ta_Data.getValue().substr(0,2000));
+		    }
+		}
+		/****************************************************************
+		* 수신정보 삭제
+		* @param  : row	해당 row	col	해당 col
+		* @return : 없음
+		******************************************************************/
+		function fn_DeleteList(row, col){
+			if(col == 4){
+				if(!gfn_IsNullVal(grd_RecvList.getCellData(row,3))){
+					grd_RecvList.removeRow(row);
+					grd_RecvList.insertRow(4);
+					var nCnt = 0;
+					for(var i=0; i<5; i++){
+		        	   	grd_RecvList.setCellData(i, 0, i+1);
+		        	   	
+		        	   	if(!gfn_IsNullVal(grd_RecvList.getCellData(i,3)))
+		        	   		nCnt++;
+		        	}
+		        	grd_RecvList.setFocusedCell(0,0,false);
+		        	st_Cnt.setValue(nCnt);
+		        }
+			}
+		}
+		/****************************************************************
+		* SMS 전송
+		* @param  : 없음
+		* @return : 없음
+		******************************************************************/
+        function fn_SendSms(){
+        	if(st_Cnt.getValue() == 0){
+        		alert("전송할 정보가 없습니다.");
+        		return;
+        	}
+        	
+        	var sReserve = "";
+        	
+        	if(gfn_IsNullVal(ta_Data.getValue())){
+				alert("내용 항목에 값이 누락되었습니다.\n확인하여 주십시오.");
+				ta_Data.focus();
+				return;
+			}
+			if(gfn_IsNullVal(edt_CallBackNo.getValue())){
+				alert("회신번호 항목에 값이 누락되었습니다.\n확인하여 주십시오.");
+				edt_CallBackNo.focus();
+				return;
+			}
+			if(chk_Reserved.getValue() == "1"){
+				if(gfn_IsNullVal(edt_ReserveDt.getValue())
+					|| edt_ReserveHour.getValue()=="" || edt_ReserveMin.getValue()==""){
+					alert("일시 항목에 값이 누락되었습니다.\n확인하여 주십시오.");
+					return;
+				} else{
+					if(!gfn_IsValidDate(edt_ReserveDt.getFormattedValue())){
+						alert("예약일자 값을 확인하여 주십시오.");
+						edt_ReserveDt.focus();
+						return;
+					}
+					
+					edt_ReserveHour.setValue(gfn_IsValidHour(edt_ReserveHour.getValue()));
+				}
+				sReserve = edt_ReserveDt.getValue().replaceAll("-","") + edt_ReserveHour.getValue() + edt_ReserveMin.getValue();
+			}
+
+			setTitSendInfo("request", "S310003_W01Action", "save", "");
+
+			//request에 수정된 xml을 추가
+			//setInstanceNodeDataSetforTIT("ds_SendSP", grd_RecvList.getUnmatchedXML(2,"",true,0,5), "request/root");
+
+			setInputParamData("CUST_NM",fn_MakeDataSetForSp(2));
+			setInputParamData("CALL_NO",fn_MakeDataSetForSp(3));
+			setInputParamData("CUST_SEQ",fn_MakeDataSetForSp(1));
+			setInputParamData("CALLBACKNO",edt_CallBackNo.getValue());
+			setInputParamData("DATA",ta_Data.getValue());
+			setInputParamData("YEYAK_TIME",sReserve);
+			setInputParamData("UPDATE_COUNT",st_Cnt.getValue());
+/*			setInputParamData("RESERVED","91");
+			setInputParamData("JEOBSU_NO","");
+			setInputParamData("JEOBSU_SUB_NO","99");
+			setInputParamData("SC_SEND","N");
+			setInputParamData("COMMIT_MODE,"");*/
+
+  			setSubmissison("submissionSend");
+
+  			fn_AfterSendSms();
+        }
+        /****************************************************************
+		* Multi Procedure Call용
+		* @param  : 없음
+		* @return : 없음
+		******************************************************************/
+        function fn_MakeDataSetForSp(col){
+        	var sColData = "";
+        	for(var i=0; i<grd_RecvList.getRowCount(); i++){        		
+        		if(!gfn_IsNullVal(grd_RecvList.getCellData(i, 3))){
+       				sColData += grd_RecvList.getCellData(i, col) + "),(";
+       			}
+        	}
+
+        	return sColData;
+        }
+        /****************************************************************
+		* callback (SMS 전송)
+		* @param  : 없음
+		* @return : 없음
+		******************************************************************/
+        function fn_AfterSendSms(){      		
+      		var errCode = WebSquare.ModelUtil.getInstanceValue("resSend/root/params/param[@id='ErrorCode']");
+
+        	if(errCode == 0){
+        		alert("전송이 완료되었습니다.");
+        	} 
+        }
+        fn_OnLoad();
+        ]]></script>
+    </head>
+    <body>
+    	<xf:output id="output54"
+    		style="position: absolute ;height:573px;width:1005px;background-color:#FFFFFF;left:0px;top:0px;"
+    		label="">
+    		<xf:label></xf:label>
+    	</xf:output>
+    	<w2:textbox class="se_box" id="textbox5" label=""
+    		style="position: absolute ;height:110px;width:722px;background-color:#FFFFFF;left:271px;top:308px;">
+    	</w2:textbox>
+    	<xf:output id="output55" label=""
+    		style="position: absolute ;height:552px;width:248px;background-color:#FFFFFF;left:8px;top:8px;;border:1px solid #cccccc">
+    		<xf:label></xf:label>
+    	</xf:output>
+    	<xf:image id="image42"
+    		style="position: absolute ;height:542px;width:238px;left:14px;top:13px;"
+    		src="/mp/images/iphone.png">
+    	</xf:image>
+    	<xf:textarea id="ta_Data"
+    		style="position: absolute ;height:86px;font-size:12px;width:152px;background-color:#ffffff;border-color:#ffffff;font-family:Dotum;left:55px;top:99px;">
+    		<script type="javascript" ev:event="onkeyup"><![CDATA[ fn_GetByteLength(this.getValue());
+			]]></script>
+    	</xf:textarea>
+    	<xf:output class="if_lable" id="st_CharLeng" label=""
+    		style="position: absolute ;height:17px;width:42px;left:129px;top:197px;">
+    		<xf:label>0</xf:label>
+    	</xf:output>
+
+    	<xf:output id="st_Cnt"
+    		style="vertical-align:middle;position: absolute ;height:20px;color:#ffffff;font-size:12px;width:17px;left:70px;top:254px;"
+    		class="if_lable" label="">
+    		<xf:label>0</xf:label>
+    	</xf:output>
+    	<xf:output id="output48"
+    		style="position: absolute ;vertical-align:middle;height:20px;text-align:left;color:#ffffff;font-size:12px;width:32px;left:52px;top:254px;"
+    		class="if_lable" label="">
+    		<xf:label>수신:</xf:label>
+    	</xf:output>
+    	<xf:output id="output50"
+    		style="position: absolute ;vertical-align:middle;height:20px;text-align:left;color:#ffffff;font-size:12px;width:21px;left:89px;top:254px;"
+    		class="if_lable" label="">
+    		<xf:label>명</xf:label>
+    	</xf:output>
+    	<xf:output id="output51"
+    		style="position: absolute ;height:17px;width:40px;left:174px;top:197px;"
+    		class="if_lable" label="">
+    		<xf:label>bytes</xf:label>
+    	</xf:output>
+    	<w2:grid autoFit="" baseNode="dataset" class="grid"
+    		evenRowBackgroundColor="#e1ebf5" focusMode="row" id="grd_RecvList"
+    		oddEvenColorDisplay="false" oddRowBackgroundColor="#000000"
+    		overflowX="hidden" overflowY="hidden"
+    		readOnlyBackgroundColor="#eeeeee" repeatNode="recode" resize=""
+    		style="position:absolute;height:101px;width:174px;background-color:#000000;left:47px;top:276px;"
+    		rowMouseOver="false" selectedRowColor="#000000"
+    		editModeEvent="onclick">
+    		<w2:header class="gridHeaderTable2"
+    			columnClass="gridHeaderTD2" id="header2" style="" width="472">
+    			<w2:row id="row3" style="">
+    				<w2:column colSpan="" hidden="" id="column11"
+    					inputType="text" rowSpan="" style="height:15px;" value=""
+    					valueType="binary" width="17">
+    				</w2:column>
+    				<w2:column id="column24" style="height:16px"
+    					hidden="" inputType="text" width="70" valueType="binary">
+    				</w2:column>
+    				<w2:column colSpan="" hidden="" id="column12"
+    					inputType="text" rowSpan="" style="height:15px;" value="고객명"
+    					valueType="binary" width="46">
+    				</w2:column>
+    				<w2:column colSpan="2" hidden="" id="column13"
+    					inputType="text" rowSpan="" style="height:16px;" value="수신번호"
+    					valueType="binary" width="110">
+    				</w2:column>
+    			</w2:row>
+    		</w2:header>
+    		<w2:gBody class="gridBodyTable1" columnClass="gridBodyTD1"
+    			id="gBody2" style="">
+    			<w2:row id="row4" style="">
+    				<w2:column hidden="" id="column18" inputType="text"
+    					style="height:15px;color:#d3ad0e;" valueType="binary"
+    					width="17" value="2">
+    				</w2:column>
+    				<w2:column id="CUST_SEQ" style="height:16px"
+    					hidden="true" inputType="text" width="70" valueType="binary">
+    				</w2:column>
+    				<w2:column hidden="" id="CUST_NM" inputType="text"
+    					style="height:15px;" valueType="binary" width="-18" value="">
+    				</w2:column>
+    				<w2:column hidden="" id="CALL_NO" inputType="text"
+    					style="height:15px;" valueType="binary" width="89" value=""
+    					dataType="number">
+    				</w2:column>
+    				<w2:column hidden="" id="column21" inputType="image"
+    					style="height:15px;" valueType="binary" width="21"
+    					imageSrc="/mp/images/po_bt_sms_gr_del.png">
+    				</w2:column>
+    			</w2:row>
+    		</w2:gBody>
+    		<script ev:event="onCellClick( row , col )"
+    			type="javascript"><![CDATA[ 
+    			fn_DeleteList(row, col);
+    		]]></script>
+    		<script ev:event="onChange( row , col, newData, oldData )"
+    			type="javascript"><![CDATA[ 
+    			if(col == 3){
+    				var nCnt = 0;
+    				for(var i=0; i<5; i++){
+    					if(grd_RecvList.getCellData(i, 3))
+    						nCnt++;
+    				}
+    				
+    				st_Cnt.setValue(nCnt);				
+    			}
+    		]]></script>
+    	</w2:grid>
+    	<xf:output id="output52"
+    		style="position: absolute ;vertical-align:middle;height:22px;color:#ffffff;text-align:left;font-size:12px;width:51px;left:52px;top:384px;"
+    		class="if_lable" label="">
+    		<xf:label>회신번호</xf:label>
+    	</xf:output>
+    	<xf:input class="input_edit" id="edt_CallBackNo"
+    		style="position: absolute ;height:20px;width:112px;left:101px;border:1px solid #000000;top:384px;">
+    	</xf:input>
+    	<xf:select appearance="full" id="chk_Reserved"
+    		style="position: absolute ;height:20px;color:#ffffff;width:71px;left:49px;top:417px;"
+    		selectedindex="-1" cols="" rows="">
+    		<xf:choices>
+    			<xf:item>
+    				<xf:label>예약전송</xf:label>
+    				<xf:value>1</xf:value>
+    			</xf:item>
+    		</xf:choices>
+    		<script ev:event="onchange" type="javascript"><![CDATA[ 
+    			if(this.getValue() == "1"){
+    				var curDate = new Date();
+				 	var dHour = curDate.getHours();
+				 	var dMin = curDate.getMinutes();			
+				 	if(dHour < 10) dHour = "0" + dHour;
+				 	if(dMin < 10) dMin = "0" + dMin;
+		 	
+    				edt_ReserveDt.setValue(gfn_GetDate(0,0,0).replaceAll("-",""));
+    				edt_ReserveHour.setValue(dHour);
+    				edt_ReserveMin.setValue(dMin);
+    				edt_ReserveDt.setReadOnly(false);
+    				edt_ReserveHour.setReadOnly(false);
+    				edt_ReserveMin.setReadOnly(false);
+    			} else{
+    				edt_ReserveDt.setReadOnly(true);
+    				edt_ReserveHour.setReadOnly(true);
+    				edt_ReserveMin.setReadOnly(true);
+    				edt_ReserveDt.setValue("");
+    				edt_ReserveHour.setValue("");
+    				edt_ReserveMin.setValue("");
+    			}
+    		]]></script>
+    	</xf:select>
+    	<xf:output id="output53"
+    		style="position: absolute ;vertical-align:middle;height:22px;color:#ffffff;text-align:left;font-size:12px;width:33px;left:52px;top:439px;"
+    		class="if_lable" label="">
+    		<xf:label>일시</xf:label>
+    	</xf:output>
+    	<xf:input class="input_edit" id="edt_ReserveDt"
+    		style="position: absolute ;height:22px;width:71px;left:79px;top:439px;"
+    		displayFormat="" dataType="date" maxlength="8" readOnly="true">
+    		<script ev:event="onkeypress" type="javascript"><![CDATA[ 
+    			if(event.keyCode<45 || event.keyCode>57) event.returnValue=false;
+    		]]></script>
+    	</xf:input>
+    	<xf:input class="input_edit" id="edt_ReserveHour"
+    		style="position: absolute ;height:22px;width:22px;left:156px;top:439px;"
+    		dataType="number" maxlength="2" readOnly="true">
+    	</xf:input>
+    	<xf:output class="txt1" id="output56" label=""
+    		style="position: absolute ;vertical-align:middle;height:24px;color:#ffffff;text-align:center;width:10px;left:183px;top:440px;">
+    		<xf:label>:</xf:label>
+    	</xf:output>
+    	<xf:input class="input_edit" id="edt_ReserveMin"
+    		style="position: absolute ;height:22px;width:22px;left:190px;top:439px;"
+    		maxlength="2" dataType="number" readOnly="true">
+    	</xf:input>
+    	<xf:image id="btn_Send"
+    		style="position: absolute ;height:44px;width:83px;left:48px;top:468px;;cursor:pointer"
+    		src="/mp/images/po_bt_sms_send.gif">
+    		<script ev:event="onclick" type="javascript"><![CDATA[ 
+    			fn_SendSms();
+    		]]></script>
+    	</xf:image>
+    	<xf:image id="btn_Close"
+    		style="position: absolute ;height:44px;width:83px;left:135px;top:468px;;cursor:pointer"
+    		src="/mp/images/po_bt_sms_close.gif">
+    		<script ev:event="onclick" type="javascript"><![CDATA[ 
+    			parent.fn_MainPopupClose("");
+    		]]></script>
+    	</xf:image>
+    	<xf:image id="image47"
+    		style="position: absolute ;left:42px;top:257px;width: 12px;height: 12px;"
+    		src="/mp/images/po_bl_sms_bl.png">
+    	</xf:image>
+    	<xf:image id="image48"
+    		style="position: absolute ;left:42px;top:388px;width: 12px;height: 12px;"
+    		src="/mp/images/po_bl_sms_bl.png">
+    	</xf:image>
+    	<xf:image id="image49"
+    		style="position: absolute ;left:42px;top:443px;width: 12px;height: 12px;"
+    		src="/mp/images/po_bl_sms_bl.png">
+    	</xf:image>
+    	<xf:image id="btn_ClearData"
+    		style="position: absolute ;left:54px;top:215px;width: 65px;height: 17px;;cursor:pointer"
+    		src="/mp/images/po_bt_sms_reset.gif">
+    		<script ev:event="onclick" type="javascript"><![CDATA[ 
+    			ta_Data.setValue("");
+    		]]></script>
+    	</xf:image>
+    	<xf:image id="btn_SmsList"
+    		style="position: absolute ;left:158px;top:254px;width: 65px;height: 18px;;cursor:pointer"
+    		src="/mp/images/po_bt_sms_list.gif">
+    		<script ev:event="onclick" type="javascript"><![CDATA[ 
+    			fn_SmsList();
+    		]]></script>
+    	</xf:image>
+    	<xf:output class="emo" id="output57" label=""
+    		style="position: absolute ;left:686px;top:348px;width:30px;height:22px;">
+    		<xf:label><![CDATA[◁]]></xf:label>
+    		<script ev:event="onclick" type="javascript"><![CDATA[fn_setEmo('◁');]]></script>
+    	</xf:output>
+    	<xf:output class="emo" id="output58" label=""
+    		style="position: absolute ;left:754px;top:348px;width:30px;height:22px;">
+    		<xf:label><![CDATA[◇]]></xf:label>
+    		<script ev:event="onclick" type="javascript"><![CDATA[fn_setEmo('◇');]]></script>
+    	</xf:output>
+    	<xf:output class="emo" id="output59" label=""
+    		style="position: absolute ;left:822px;top:382px;width:30px;height:22px;">
+    		<xf:label><![CDATA[∽]]></xf:label>
+    		<script ev:event="onclick" type="javascript"><![CDATA[fn_setEmo('∽');]]></script>
+    	</xf:output>
+    	<xf:output class="emo" id="output60" label=""
+    		style="position: absolute ;left:278px;top:314px;width:30px;height:22px;">
+    		<xf:label><![CDATA[★]]></xf:label>
+    		<script ev:event="onclick" type="javascript"><![CDATA[fn_setEmo('★');]]></script>
+    	</xf:output>
+    	<xf:output class="emo" id="output61" label=""
+    		style="position: absolute ;left:278px;top:382px;width:30px;height:22px;">
+    		<xf:label><![CDATA[○]]></xf:label>
+    		<script ev:event="onclick" type="javascript"><![CDATA[fn_setEmo('○');]]></script>
+    	</xf:output>
+    	<xf:output class="emo" id="output62" label=""
+    		style="position: absolute ;left:584px;top:382px;width:30px;height:22px;">
+    		<xf:label><![CDATA[∃]]></xf:label>
+    		<script ev:event="onclick" type="javascript"><![CDATA[fn_setEmo('∃');]]></script>
+    	</xf:output>
+    	<xf:output class="emo" id="output63" label=""
+    		style="position: absolute ;left:380px;top:348px;width:30px;height:22px;">
+    		<xf:label><![CDATA[▩]]></xf:label>
+    		<script ev:event="onclick" type="javascript"><![CDATA[fn_setEmo('▩');]]></script>
+    	</xf:output>
+    	<w2:tabContainer contentsClass="tab1Contens" id="tabContainer1"
+    		style="position:absolute;height:137px;width:723px;left:271px;top:425px;"
+    		tabDefaultCenterImageClass="tab1C"
+    		tabDefaultCenterImageStyle="position:absolute;vertical-align:middle;word-wrap:break-word"
+    		tabDefaultLeftImageClass="tab1L"
+    		tabDefaultLeftImageStyle="position:absolute;vertical-align:middle;word-wrap:break-word"
+    		tabDefaultRightImageClass="tab1R"
+    		tabDefaultRightImageStyle="position:absolute;vertical-align:middle;word-wrap:break-word"
+    		tabHoverCenterImageClass="tab1C_over"
+    		tabHoverCenterImageStyle="position:absolute;vertical-align:middle;word-wrap:break-word"
+    		tabHoverLeftImageClass="tab1L_over"
+    		tabHoverLeftImageStyle="position:absolute;vertical-align:middle;word-wrap:break-word"
+    		tabHoverRightImageClass="tab1R_over"
+    		tabHoverRightImageStyle="position:absolute;vertical-align:middle;word-wrap:break-word"
+    		tabSelectedCenterImageClass="tab1C_on"
+    		tabSelectedCenterImageStyle="position:absolute;vertical-align:middle;word-wrap:break-word"
+    		tabSelectedLeftImageClass="tab1L_on"
+    		tabSelectedLeftImageStyle="position:absolute;vertical-align:middle;word-wrap:break-word"
+    		tabSelectedRightImageClass="tab1R_on"
+    		tabSelectedRightImageStyle="position:absolute;vertical-align:middle;word-wrap:break-word">
+    		<w2:tab id="tab1"
+    			style="position:absolute; top:1px; left:1px; width:60px; height:26px; "
+    			tabDefaultCenterImageStyle="" tabDefaultLeftImageStyle=""
+    			tabDefaultRightImageStyle="" tabHoverCenterImageStyle=""
+    			tabHoverLeftImageStyle="" tabHoverRightImageStyle=""
+    			tabSelectedCenterImageStyle="" tabSelectedLeftImageStyle=""
+    			tabSelectedRightImageStyle="" value="웃음">
+    		</w2:tab>
+    		<w2:contents id="contents1"
+    			style="position:absolute;height:109px;width:721px;  left:1px;  top:26px; ">
+    			<xf:output class="emo" id="output64" label=""
+    				style="position: absolute ;left:244px;top:74px;width:76px;height:22px;">
+    				<xf:label><![CDATA[S(^.^)b]]></xf:label>
+    				<script ev:event="onclick" type="javascript"><![CDATA[fn_setEmo('S(^.^)b');]]></script>
+    			</xf:output>
+    			<xf:output class="emo" id="output65" label=""
+    				style="position: absolute ;left:5px;top:6px;width:76px;height:22px;">
+    				<xf:label><![CDATA[n.n]]></xf:label>
+    				<script ev:event="onclick" type="javascript"><![CDATA[fn_setEmo('n.n');]]></script>
+    			</xf:output>
+    			<xf:output class="emo" id="output66" label=""
+    				style="position: absolute ;left:481px;top:6px;width:76px;height:22px;">
+    				<xf:label><![CDATA[^L^]]></xf:label>
+    				<script ev:event="onclick" type="javascript"><![CDATA[fn_setEmo('^L^');]]></script>
+    			</xf:output>
+    			<xf:output class="emo" id="output67" label=""
+    				style="position: absolute ;left:402px;top:40px;width:76px;height:22px;">
+    				<xf:label><![CDATA[(^^)γ]]></xf:label>
+    				<script ev:event="onclick" type="javascript"><![CDATA[fn_setEmo('(^^)γ');]]></script>
+    			</xf:output>
+    			<xf:output class="emo" id="output68" label=""
+    				style="position: absolute ;left:165px;top:74px;width:76px;height:22px;">
+    				<xf:label><![CDATA[o(^-^)o]]></xf:label>
+    				<script ev:event="onclick" type="javascript"><![CDATA[fn_setEmo('o(^-^)o');]]></script>
+    			</xf:output>
+    			<xf:output class="emo" id="output69" label=""
+    				style="position: absolute ;left:560px;top:6px;width:76px;height:22px;">
+    				<xf:label><![CDATA[⌒⌒]]></xf:label>
+    				<script ev:event="onclick" type="javascript"><![CDATA[fn_setEmo('⌒⌒');]]></script>
+    			</xf:output>
+    			<xf:output class="emo" id="output70" label=""
+    				style="position: absolute ;left:560px;top:74px;width:76px;height:22px;">
+    				<xf:label></xf:label>
+    			</xf:output>
+    			<xf:output class="emo" id="output71" label=""
+    				style="position: absolute ;left:323px;top:40px;width:76px;height:22px;">
+    				<xf:label><![CDATA[=^.^=]]></xf:label>
+    				<script ev:event="onclick" type="javascript"><![CDATA[fn_setEmo('=^.^=');]]></script>
+    			</xf:output>
+    			<xf:output class="emo" id="output72" label=""
+    				style="position: absolute ;left:560px;top:40px;width:76px;height:22px;">
+    				<xf:label><![CDATA[(*^-^)]]></xf:label>
+    				<script ev:event="onclick" type="javascript"><![CDATA[fn_setEmo('(*^-^)');]]></script>
+    			</xf:output>
+    			<xf:output class="emo" id="output73" label=""
+    				style="position: absolute ;left:323px;top:6px;width:76px;height:22px;">
+    				<xf:label><![CDATA[^_^]]></xf:label>
+    				<script ev:event="onclick" type="javascript"><![CDATA[fn_setEmo('^_^');]]></script>
+    			</xf:output>
+    			<xf:output class="emo" id="output74" label=""
+    				style="position: absolute ;left:323px;top:74px;width:76px;height:22px;">
+    				<xf:label><![CDATA[(￣∇￣)]]></xf:label>
+    				<script ev:event="onclick" type="javascript"><![CDATA[fn_setEmo('(￣∇￣)');]]></script>
+    			</xf:output>
+    			<xf:output class="emo" id="output75" label=""
+    				style="position: absolute ;left:402px;top:74px;width:76px;height:22px;">
+    				<xf:label><![CDATA[♬(^0^)~♪]]></xf:label>
+    				<script ev:event="onclick" type="javascript"><![CDATA[fn_setEmo('♬(^0^)~♪');]]></script>
+    			</xf:output>
+    			<xf:output class="emo" id="output76" label=""
+    				style="position: absolute ;left:165px;top:6px;width:76px;height:22px;">
+    				<xf:label><![CDATA[^v^]]></xf:label>
+    				<script ev:event="onclick" type="javascript"><![CDATA[fn_setEmo('^v^');]]></script>
+    			</xf:output>
+    			<xf:output class="emo" id="output77" label=""
+    				style="position: absolute ;left:481px;top:74px;width:76px;height:22px;">
+    				<xf:label><![CDATA[s(￣▽￣)/]]></xf:label>
+    				<script ev:event="onclick" type="javascript"><![CDATA[fn_setEmo('s(￣▽￣)/');]]></script>
+    			</xf:output>
+    			<xf:output class="emo" id="output78" label=""
+    				style="position: absolute ;left:85px;top:40px;width:76px;height:22px;">
+    				<xf:label><![CDATA[^-^b]]></xf:label>
+    				<script ev:event="onclick" type="javascript"><![CDATA[fn_setEmo('^-^b');]]></script>
+    			</xf:output>
+    			<xf:output class="emo" id="output79" label=""
+    				style="position: absolute ;left:85px;top:74px;width:76px;height:22px;">
+    				<xf:label><![CDATA[☞^.^☜]]></xf:label>
+    				<script ev:event="onclick" type="javascript"><![CDATA[fn_setEmo('☞^.^☜');]]></script>
+    			</xf:output>
+    			<xf:output class="emo" id="output80" label=""
+    				style="position: absolute ;left:5px;top:40px;width:76px;height:22px;">
+    				<xf:label><![CDATA[^ε^]]></xf:label>
+    				<script ev:event="onclick" type="javascript"><![CDATA[fn_setEmo('^ε^');]]></script>
+    			</xf:output>
+    			<xf:output class="emo" id="output81" label=""
+    				style="position: absolute ;left:165px;top:40px;width:76px;height:22px;">
+    				<xf:label><![CDATA[*^^*]]></xf:label>
+    				<script ev:event="onclick" type="javascript"><![CDATA[fn_setEmo('*^^*');]]></script>
+    			</xf:output>
+    			<xf:output class="emo" id="output82" label=""
+    				style="position: absolute ;left:481px;top:40px;width:76px;height:22px;">
+    				<xf:label><![CDATA[<^O^>]]></xf:label>
+    				<script ev:event="onclick" type="javascript"><![CDATA[fn_setEmo('<^O^>');]]></script>
+    			</xf:output>
+    			<xf:output class="emo" id="output83" label=""
+    				style="position: absolute ;left:639px;top:40px;width:76px;height:22px;">
+    				<xf:label><![CDATA[(*^o^*)]]></xf:label>
+    				<script ev:event="onclick" type="javascript"><![CDATA[fn_setEmo('(*^o^*)');]]></script>
+    			</xf:output>
+    			<xf:output class="emo" id="output84" label=""
+    				style="position: absolute ;left:402px;top:6px;width:76px;height:22px;">
+    				<xf:label><![CDATA[^0^]]></xf:label>
+    				<script ev:event="onclick" type="javascript"><![CDATA[fn_setEmo('^0^');]]></script>
+    			</xf:output>
+    			<xf:output class="emo" id="output85" label=""
+    				style="position: absolute ;left:86px;top:6px;width:76px;height:22px;">
+    				<xf:label><![CDATA[^Δ^]]></xf:label>
+    				<script ev:event="onclick" type="javascript"><![CDATA[fn_setEmo('^Δ^');]]></script>
+    			</xf:output>
+    			<xf:output class="emo" id="output86" label=""
+    				style="position: absolute ;left:244px;top:40px;width:76px;height:22px;">
+    				<xf:label><![CDATA[^▽^]]></xf:label>
+    				<script ev:event="onclick" type="javascript"><![CDATA[fn_setEmo('^▽^');]]></script>
+    			</xf:output>
+    			<xf:output class="emo" id="output87" label=""
+    				style="position: absolute ;left:639px;top:6px;width:76px;height:22px;">
+    				<xf:label><![CDATA[^.~]]></xf:label>
+    				<script ev:event="onclick" type="javascript"><![CDATA[fn_setEmo('^.~');]]></script>
+    			</xf:output>
+    			<xf:output class="emo" id="output88" label=""
+    				style="position: absolute ;left:639px;top:74px;width:76px;height:22px;">
+    				<xf:label></xf:label>
+    			</xf:output>
+    			<xf:output class="emo" id="output89" label=""
+    				style="position: absolute ;left:5px;top:75px;width:76px;height:22px;">
+    				<xf:label><![CDATA[^o^~~♬]]></xf:label>
+    				<script ev:event="onclick" type="javascript"><![CDATA[fn_setEmo('^o^~~♬');]]></script>
+    			</xf:output>
+    			<xf:output class="emo" id="output90" label=""
+    				style="position: absolute ;left:244px;top:6px;width:76px;height:22px;">
+    				<xf:label><![CDATA[^.^]]></xf:label>
+    				<script ev:event="onclick" type="javascript"><![CDATA[fn_setEmo('^.^');]]></script>
+    			</xf:output>
+    		</w2:contents>
+    		<w2:tab id="tab2"
+    			style="position:absolute;top:1px;left:121px;width:60px;height:26px;"
+    			tabDefaultCenterImageStyle="" tabDefaultLeftImageStyle=""
+    			tabDefaultRightImageStyle="" tabHoverCenterImageStyle=""
+    			tabHoverLeftImageStyle="" tabHoverRightImageStyle=""
+    			tabSelectedCenterImageStyle="" tabSelectedLeftImageStyle=""
+    			tabSelectedRightImageStyle="" value="사랑">
+    		</w2:tab>
+    		<w2:contents id="contents2"
+    			style="position:absolute;height:109px;width:721px;left:1px;top:26px;">
+    			<xf:output class="emo" id="output91" label=""
+    				style="position: absolute ;left:481px;top:6px;width:76px;height:22px;">
+    				<xf:label><![CDATA[(♡.♡)]]></xf:label>
+    				<script ev:event="onclick" type="javascript"><![CDATA[fn_setEmo('(♡.♡)');]]></script>
+    			</xf:output>
+    			<xf:output class="emo" id="output92" label=""
+    				style="position: absolute ;left:165px;top:6px;width:76px;height:22px;">
+    				<xf:label><![CDATA[*♥o♥*]]></xf:label>
+    				<script ev:event="onclick" type="javascript"><![CDATA[fn_setEmo('*♥o♥*');]]></script>
+    			</xf:output>
+    			<xf:output class="emo" id="output93" label=""
+    				style="position: absolute ;left:244px;top:74px;width:76px;height:22px;">
+    				<xf:label></xf:label>
+    			</xf:output>
+    			<xf:output class="emo" id="output94" label=""
+    				style="position: absolute ;left:639px;top:6px;width:76px;height:22px;">
+    				<xf:label><![CDATA[(⌒ε⌒*)]]></xf:label>
+    				<script ev:event="onclick" type="javascript"><![CDATA[fn_setEmo('(⌒ε⌒*)');]]></script>
+    			</xf:output>
+    			<xf:output class="emo" id="output95" label=""
+    				style="position: absolute ;left:85px;top:74px;width:76px;height:22px;">
+    				<xf:label></xf:label>
+    			</xf:output>
+    			<xf:output class="emo" id="output96" label=""
+    				style="position: absolute ;left:639px;top:74px;width:76px;height:22px;">
+    				<xf:label></xf:label>
+    			</xf:output>
+    			<xf:output class="emo" id="output97" label=""
+    				style="position: absolute ;left:244px;top:40px;width:76px;height:22px;">
+    				<xf:label><![CDATA[☜(^^*)☞]]></xf:label>
+    				<script ev:event="onclick" type="javascript"><![CDATA[fn_setEmo('☜(^^*)☞');]]></script>
+    			</xf:output>
+    			<xf:output class="emo" id="output98" label=""
+    				style="position: absolute ;left:5px;top:74px;width:76px;height:22px;">
+    				<xf:label></xf:label>
+    			</xf:output>
+    			<xf:output class="emo" id="output99" label=""
+    				style="position: absolute ;left:402px;top:40px;width:76px;height:22px;">
+    				<xf:label><![CDATA[(^*^)kiss]]></xf:label>
+    				<script ev:event="onclick" type="javascript"><![CDATA[fn_setEmo('(^*^)kiss');]]></script>
+    			</xf:output>
+    			<xf:output class="emo" id="output100" label=""
+    				style="position: absolute ;left:481px;top:74px;width:76px;height:22px;">
+    				<xf:label></xf:label>
+    			</xf:output>
+    			<xf:output class="emo" id="output101" label=""
+    				style="position: absolute ;left:165px;top:40px;width:76px;height:22px;">
+    				<xf:label><![CDATA[ⓛⓞⓥⓔ]]></xf:label>
+    				<script ev:event="onclick" type="javascript"><![CDATA[fn_setEmo('ⓛⓞⓥⓔ');]]></script>
+    			</xf:output>
+    			<xf:output class="emo" id="output102" label=""
+    				style="position: absolute ;left:560px;top:74px;width:76px;height:22px;">
+    				<xf:label></xf:label>
+    			</xf:output>
+    			<xf:output class="emo" id="output103" label=""
+    				style="position: absolute ;left:5px;top:6px;width:76px;height:22px;">
+    				<xf:label><![CDATA[♥.♥]]></xf:label>
+    				<script ev:event="onclick" type="javascript"><![CDATA[fn_setEmo('♥.♥');]]></script>
+    			</xf:output>
+    			<xf:output class="emo" id="output104" label=""
+    				style="position: absolute ;left:402px;top:6px;width:76px;height:22px;">
+    				<xf:label><![CDATA[γ^ε^γ]]></xf:label>
+    				<script ev:event="onclick" type="javascript"><![CDATA[fn_setEmo('γ^ε^γ');]]></script>
+    			</xf:output>
+    			<xf:output class="emo" id="output105" label=""
+    				style="position: absolute ;left:165px;top:74px;width:76px;height:22px;">
+    				<xf:label></xf:label>
+    			</xf:output>
+    			<xf:output class="emo" id="output106" label=""
+    				style="position: absolute ;left:323px;top:74px;width:76px;height:22px;">
+    				<xf:label></xf:label>
+    			</xf:output>
+    			<xf:output class="emo" id="output107" label=""
+    				style="position: absolute ;left:5px;top:40px;width:76px;height:22px;">
+    				<xf:label><![CDATA[(*^}{^*)]]></xf:label>
+    				<script ev:event="onclick" type="javascript"><![CDATA[fn_setEmo('(*^}{^*)');]]></script>
+    			</xf:output>
+    			<xf:output class="emo" id="output108" label=""
+    				style="position: absolute ;left:560px;top:6px;width:76px;height:22px;">
+    				<xf:label><![CDATA[(*`0`*)]]></xf:label>
+    				<script ev:event="onclick" type="javascript"><![CDATA[fn_setEmo('(*`0`*)');]]></script>
+    			</xf:output>
+    			<xf:output class="emo" id="output109" label=""
+    				style="position: absolute ;left:639px;top:40px;width:76px;height:22px;">
+    				<xf:label><![CDATA[(*^-^)♡(^o^*)]]></xf:label>
+    				<script ev:event="onclick" type="javascript"><![CDATA[fn_setEmo('(*^-^)♡(^o^*)');]]></script>
+    			</xf:output>
+    			<xf:output class="emo" id="output110" label=""
+    				style="position: absolute ;left:244px;top:6px;width:76px;height:22px;">
+    				<xf:label><![CDATA[(~.^)s]]></xf:label>
+    				<script ev:event="onclick" type="javascript"><![CDATA[fn_setEmo('(~.^)s');]]></script>
+    			</xf:output>
+    			<xf:output class="emo" id="output111" label=""
+    				style="position: absolute ;left:85px;top:40px;width:76px;height:22px;">
+    				<xf:label><![CDATA[づ^0^)づ]]></xf:label>
+    				<script ev:event="onclick" type="javascript"><![CDATA[fn_setEmo('づ^0^)づ');]]></script>
+    			</xf:output>
+    			<xf:output class="emo" id="output112" label=""
+    				style="position: absolute ;left:323px;top:6px;width:76px;height:22px;">
+    				<xf:label><![CDATA[☞♡☜]]></xf:label>
+    				<script ev:event="onclick" type="javascript"><![CDATA[fn_setEmo('☞♡☜');]]></script>
+    			</xf:output>
+    			<xf:output class="emo" id="output113" label=""
+    				style="position: absolute ;left:85px;top:6px;width:76px;height:22px;">
+    				<xf:label><![CDATA[♡.♡]]></xf:label>
+    				<script ev:event="onclick" type="javascript"><![CDATA[fn_setEmo('♡.♡');]]></script>
+    			</xf:output>
+    			<xf:output class="emo" id="output114" label=""
+    				style="position: absolute ;left:560px;top:40px;width:76px;height:22px;">
+    				<xf:label><![CDATA[(*⌒.^)(^ε⌒*)]]></xf:label>
+    				<script ev:event="onclick" type="javascript"><![CDATA[fn_setEmo('(*⌒.^)(^ε⌒*)');]]></script>
+    			</xf:output>
+    			<xf:output class="emo" id="output115" label=""
+    				style="position: absolute ;left:481px;top:40px;width:76px;height:22px;">
+    				<xf:label><![CDATA[(つ＾з＾)つ]]></xf:label>
+    				<script ev:event="onclick" type="javascript"><![CDATA[fn_setEmo('(つ＾з＾)つ');]]></script>
+    			</xf:output>
+    			<xf:output class="emo" id="output116" label=""
+    				style="position: absolute ;left:402px;top:74px;width:76px;height:22px;">
+    				<xf:label></xf:label>
+    			</xf:output>
+    			<xf:output class="emo" id="output117" label=""
+    				style="position: absolute ;left:323px;top:40px;width:76px;height:22px;">
+    				<xf:label><![CDATA[(*^3(^^*)]]></xf:label>
+    				<script ev:event="onclick" type="javascript"><![CDATA[fn_setEmo('(*^3(^^*)');]]></script>
+    			</xf:output>
+    		</w2:contents>
+    		<w2:tab id="tab3"
+    			style="position: absolute;height: 26px;width:60px;left:181px;top: 1px;"
+    			value="놀람">
+    		</w2:tab>
+    		<w2:contents id="contents3"
+    			style="position: absolute; left: 1px; top: 26px;width:721px;height:110px;">
+    			<xf:output class="emo" id="output118" label=""
+    				style="position: absolute ;left:639px;top:40px;width:76px;height:22px;">
+    				<xf:label><![CDATA[ㅡ..ㅡㆀ]]></xf:label>
+    				<script ev:event="onclick" type="javascript"><![CDATA[fn_setEmo('ㅡ..ㅡㆀ');]]></script>
+    			</xf:output>
+    			<xf:output class="emo" id="output119" label=""
+    				style="position: absolute ;left:323px;top:74px;width:76px;height:22px;">
+    				<xf:label></xf:label>
+    			</xf:output>
+    			<xf:output class="emo" id="output120" label=""
+    				style="position: absolute ;left:165px;top:74px;width:76px;height:22px;">
+    				<xf:label></xf:label>
+    			</xf:output>
+    			<xf:output class="emo" id="output121" label=""
+    				style="position: absolute ;left:639px;top:74px;width:76px;height:22px;">
+    				<xf:label></xf:label>
+    			</xf:output>
+    			<xf:output class="emo" id="output122" label=""
+    				style="position: absolute ;left:85px;top:40px;width:76px;height:22px;">
+    				<xf:label><![CDATA[⊙.⊙]]></xf:label>
+    				<script ev:event="onclick" type="javascript"><![CDATA[fn_setEmo('⊙.⊙');]]></script>
+    			</xf:output>
+    			<xf:output class="emo" id="output123" label=""
+    				style="position: absolute ;left:5px;top:6px;width:76px;height:22px;">
+    				<xf:label><![CDATA[?o?]]></xf:label>
+    				<script ev:event="onclick" type="javascript"><![CDATA[fn_setEmo('?o?');]]></script>
+    			</xf:output>
+    			<xf:output class="emo" id="output124" label=""
+    				style="position: absolute ;left:639px;top:6px;width:76px;height:22px;">
+    				<xf:label><![CDATA[★.★]]></xf:label>
+    				<script ev:event="onclick" type="javascript"><![CDATA[fn_setEmo('★.★');]]></script>
+    			</xf:output>
+    			<xf:output class="emo" id="output125" label=""
+    				style="position: absolute ;left:560px;top:74px;width:76px;height:22px;">
+    				<xf:label></xf:label>
+    			</xf:output>
+    			<xf:output class="emo" id="output126" label=""
+    				style="position: absolute ;left:244px;top:74px;width:76px;height:22px;">
+    				<xf:label></xf:label>
+    			</xf:output>
+    			<xf:output class="emo" id="output127" label=""
+    				style="position: absolute ;left:85px;top:6px;width:76px;height:22px;">
+    				<xf:label><![CDATA[O_O]]></xf:label>
+    				<script ev:event="onclick" type="javascript"><![CDATA[fn_setEmo('O_O');]]></script>
+    			</xf:output>
+    			<xf:output class="emo" id="output128" label=""
+    				style="position: absolute ;left:560px;top:40px;width:76px;height:22px;">
+    				<xf:label><![CDATA[ご,.ごㆀ]]></xf:label>
+    				<script ev:event="onclick" type="javascript"><![CDATA[fn_setEmo('ご,.ごㆀ');]]></script>
+    			</xf:output>
+    			<xf:output class="emo" id="output129" label=""
+    				style="position: absolute ;left:244px;top:6px;width:76px;height:22px;">
+    				<xf:label><![CDATA[!.!]]></xf:label>
+    				<script ev:event="onclick" type="javascript"><![CDATA[fn_setEmo('!.!');]]></script>
+    			</xf:output>
+    			<xf:output class="emo" id="output130" label=""
+    				style="position: absolute ;left:323px;top:40px;width:76px;height:22px;">
+    				<xf:label><![CDATA[(=_=;)]]></xf:label>
+    				<script ev:event="onclick" type="javascript"><![CDATA[fn_setEmo('(=_=;)');]]></script>
+    			</xf:output>
+    			<xf:output class="emo" id="output131" label=""
+    				style="position: absolute ;left:165px;top:40px;width:76px;height:22px;">
+    				<xf:label><![CDATA[☞_☜]]></xf:label>
+    				<script ev:event="onclick" type="javascript"><![CDATA[fn_setEmo('☞_☜');]]></script>
+    			</xf:output>
+    			<xf:output class="emo" id="output132" label=""
+    				style="position: absolute ;left:244px;top:40px;width:76px;height:22px;">
+    				<xf:label><![CDATA[(o)(o)]]></xf:label>
+    				<script ev:event="onclick" type="javascript"><![CDATA[fn_setEmo('(o)(o)');]]></script>
+    			</xf:output>
+    			<xf:output class="emo" id="output133" label=""
+    				style="position: absolute ;left:481px;top:74px;width:76px;height:22px;">
+    				<xf:label></xf:label>
+    			</xf:output>
+    			<xf:output class="emo" id="output134" label=""
+    				style="position: absolute ;left:323px;top:6px;width:76px;height:22px;">
+    				<xf:label><![CDATA[⊙⊙]]></xf:label>
+    				<script ev:event="onclick" type="javascript"><![CDATA[fn_setEmo('⊙⊙');]]></script>
+    			</xf:output>
+    			<xf:output class="emo" id="output135" label=""
+    				style="position: absolute ;left:402px;top:6px;width:76px;height:22px;">
+    				<xf:label><![CDATA[(o_o)]]></xf:label>
+    				<script ev:event="onclick" type="javascript"><![CDATA[fn_setEmo('(o_o)');]]></script>
+    			</xf:output>
+    			<xf:output class="emo" id="output136" label=""
+    				style="position: absolute ;left:165px;top:6px;width:76px;height:22px;">
+    				<xf:label><![CDATA[@_@]]></xf:label>
+    				<script ev:event="onclick" type="javascript"><![CDATA[fn_setEmo('@_@');]]></script>
+    			</xf:output>
+    			<xf:output class="emo" id="output137" label=""
+    				style="position: absolute ;left:5px;top:74px;width:76px;height:22px;">
+    				<xf:label></xf:label>
+    			</xf:output>
+    			<xf:output class="emo" id="output138" label=""
+    				style="position: absolute ;left:481px;top:40px;width:76px;height:22px;">
+    				<xf:label><![CDATA[ㆀ-_-ㆀ]]></xf:label>
+    				<script ev:event="onclick" type="javascript"><![CDATA[fn_setEmo('ㆀ-_-ㆀ');]]></script>
+    			</xf:output>
+    			<xf:output class="emo" id="output139" label=""
+    				style="position: absolute ;left:5px;top:40px;width:76px;height:22px;">
+    				<xf:label><![CDATA[☆_☆]]></xf:label>
+    				<script ev:event="onclick" type="javascript"><![CDATA[fn_setEmo('☆_☆');]]></script>
+    			</xf:output>
+    			<xf:output class="emo" id="output140" label=""
+    				style="position: absolute ;left:481px;top:6px;width:76px;height:22px;">
+    				<xf:label><![CDATA[(@.@)]]></xf:label>
+    				<script ev:event="onclick" type="javascript"><![CDATA[fn_setEmo('(@.@)');]]></script>
+    			</xf:output>
+    			<xf:output class="emo" id="output141" label=""
+    				style="position: absolute ;left:402px;top:40px;width:76px;height:22px;">
+    				<xf:label><![CDATA[⊙⊙ㆀ]]></xf:label>
+    				<script ev:event="onclick" type="javascript"><![CDATA[fn_setEmo('⊙⊙ㆀ');]]></script>
+    			</xf:output>
+    			<xf:output class="emo" id="output142" label=""
+    				style="position: absolute ;left:560px;top:6px;width:76px;height:22px;">
+    				<xf:label><![CDATA[('o')]]></xf:label>
+    				<script ev:event="onclick" type="javascript"><![CDATA[fn_setEmo("('o')");]]></script>
+    			</xf:output>
+    			<xf:output class="emo" id="output143" label=""
+    				style="position: absolute ;left:402px;top:74px;width:76px;height:22px;">
+    				<xf:label></xf:label>
+    			</xf:output>
+    			<xf:output class="emo" id="output144" label=""
+    				style="position: absolute ;left:85px;top:74px;width:76px;height:22px;">
+    				<xf:label></xf:label>
+    			</xf:output>
+    		</w2:contents>
+    		<w2:tab id="tab4"
+    			style="position: absolute;height: 26px;width:60px;left:281px;top: 1px;"
+    			value="슬픔">
+    		</w2:tab>
+    		<w2:contents id="contents4"
+    			style="position: absolute; left: 1px; top: 26px;width:721px;height:110px;">
+    			<xf:output class="emo" id="output145" label=""
+    				style="position: absolute ;left:323px;top:6px;width:76px;height:22px;">
+    				<xf:label><![CDATA[ㅠ.ㅠ]]></xf:label>
+    				<script ev:event="onclick" type="javascript"><![CDATA[fn_setEmo('ㅠ.ㅠ');]]></script>
+    			</xf:output>
+    			<xf:output class="emo" id="output146" label=""
+    				style="position: absolute ;left:244px;top:6px;width:76px;height:22px;">
+    				<xf:label><![CDATA[Θ_Θ]]></xf:label>
+    				<script ev:event="onclick" type="javascript"><![CDATA[fn_setEmo('Θ_Θ');]]></script>
+    			</xf:output>
+    			<xf:output class="emo" id="output147" label=""
+    				style="position: absolute ;left:244px;top:74px;width:76px;height:22px;">
+    				<xf:label></xf:label>
+    			</xf:output>
+    			<xf:output class="emo" id="output148" label=""
+    				style="position: absolute ;left:481px;top:6px;width:76px;height:22px;">
+    				<xf:label><![CDATA[ㅡ.ㅜ]]></xf:label>
+    				<script ev:event="onclick" type="javascript"><![CDATA[fn_setEmo('ㅡ.ㅜ');]]></script>
+    			</xf:output>
+    			<xf:output class="emo" id="output149" label=""
+    				style="position: absolute ;left:560px;top:6px;width:76px;height:22px;">
+    				<xf:label><![CDATA[(v.v)]]></xf:label>
+    				<script ev:event="onclick" type="javascript"><![CDATA[fn_setEmo('(v.v)');]]></script>
+    			</xf:output>
+    			<xf:output class="emo" id="output150" label=""
+    				style="position: absolute ;left:85px;top:74px;width:76px;height:22px;">
+    				<xf:label><![CDATA[(T(oo)T)]]></xf:label>
+    				<script ev:event="onclick" type="javascript"><![CDATA[fn_setEmo('(T(oo)T)');]]></script>
+    			</xf:output>
+    			<xf:output class="emo" id="output151" label=""
+    				style="position: absolute ;left:639px;top:74px;width:76px;height:22px;">
+    				<xf:label></xf:label>
+    			</xf:output>
+    			<xf:output class="emo" id="output152" label=""
+    				style="position: absolute ;left:560px;top:40px;width:76px;height:22px;">
+    				<xf:label><![CDATA[(ㅜ.ㅜ)]]></xf:label>
+    				<script ev:event="onclick" type="javascript"><![CDATA[fn_setEmo('(ㅜ.ㅜ)');]]></script>
+    			</xf:output>
+    			<xf:output class="emo" id="output153" label=""
+    				style="position: absolute ;left:639px;top:6px;width:76px;height:22px;">
+    				<xf:label><![CDATA[(∏.∏)]]></xf:label>
+    				<script ev:event="onclick" type="javascript"><![CDATA[fn_setEmo('(∏.∏)');]]></script>
+    			</xf:output>
+    			<xf:output class="emo" id="output154" label=""
+    				style="position: absolute ;left:165px;top:6px;width:76px;height:22px;">
+    				<xf:label><![CDATA[TmT]]></xf:label>
+    				<script ev:event="onclick" type="javascript"><![CDATA[fn_setEmo('TmT');]]></script>
+    			</xf:output>
+    			<xf:output class="emo" id="output155" label=""
+    				style="position: absolute ;left:5px;top:74px;width:76px;height:22px;">
+    				<xf:label><![CDATA[(♨_♨)]]></xf:label>
+    				<script ev:event="onclick" type="javascript"><![CDATA[fn_setEmo('♨_♨');]]></script>
+    			</xf:output>
+    			<xf:output class="emo" id="output156" label=""
+    				style="position: absolute ;left:323px;top:74px;width:76px;height:22px;">
+    				<xf:label></xf:label>
+    			</xf:output>
+    			<xf:output class="emo" id="output157" label=""
+    				style="position: absolute ;left:5px;top:40px;width:76px;height:22px;">
+    				<xf:label><![CDATA[ご.ご]]></xf:label>
+    				<script ev:event="onclick" type="javascript"><![CDATA[fn_setEmo('ご.ご');]]></script>
+    			</xf:output>
+    			<xf:output class="emo" id="output158" label=""
+    				style="position: absolute ;left:5px;top:6px;width:76px;height:22px;">
+    				<xf:label><![CDATA[T.T]]></xf:label>
+    				<script ev:event="onclick" type="javascript"><![CDATA[fn_setEmo('T.T');]]></script>
+    			</xf:output>
+    			<xf:output class="emo" id="output159" label=""
+    				style="position: absolute ;left:402px;top:6px;width:76px;height:22px;">
+    				<xf:label><![CDATA[ㅜ.ㅜ]]></xf:label>
+    				<script ev:event="onclick" type="javascript"><![CDATA[fn_setEmo('ㅜ.ㅜ');]]></script>
+    			</xf:output>
+    			<xf:output class="emo" id="output160" label=""
+    				style="position: absolute ;left:85px;top:40px;width:76px;height:22px;">
+    				<xf:label><![CDATA[(X_X)]]></xf:label>
+    				<script ev:event="onclick" type="javascript"><![CDATA[fn_setEmo('(X_X)');]]></script>
+    			</xf:output>
+    			<xf:output class="emo" id="output161" label=""
+    				style="position: absolute ;left:85px;top:6px;width:76px;height:22px;">
+    				<xf:label><![CDATA[;_;]]></xf:label>
+    				<script ev:event="onclick" type="javascript"><![CDATA[fn_setEmo(';_;');]]></script>
+    			</xf:output>
+    			<xf:output class="emo" id="output162" label=""
+    				style="position: absolute ;left:244px;top:40px;width:76px;height:22px;">
+    				<xf:label><![CDATA[+_+;;]]></xf:label>
+    				<script ev:event="onclick" type="javascript"><![CDATA[fn_setEmo('+_+;;');]]></script>
+    			</xf:output>
+    			<xf:output class="emo" id="output163" label=""
+    				style="position: absolute ;left:165px;top:74px;width:76px;height:22px;">
+    				<xf:label></xf:label>
+    			</xf:output>
+    			<xf:output class="emo" id="output164" label=""
+    				style="position: absolute ;left:402px;top:74px;width:76px;height:22px;">
+    				<xf:label></xf:label>
+    			</xf:output>
+    			<xf:output class="emo" id="output165" label=""
+    				style="position: absolute ;left:481px;top:40px;width:76px;height:22px;">
+    				<xf:label><![CDATA[o(T^T)o]]></xf:label>
+    				<script ev:event="onclick" type="javascript"><![CDATA[fn_setEmo('o(T^T)o');]]></script>
+    			</xf:output>
+    			<xf:output class="emo" id="output166" label=""
+    				style="position: absolute ;left:560px;top:74px;width:76px;height:22px;">
+    				<xf:label></xf:label>
+    			</xf:output>
+    			<xf:output class="emo" id="output167" label=""
+    				style="position: absolute ;left:481px;top:74px;width:76px;height:22px;">
+    				<xf:label></xf:label>
+    			</xf:output>
+    			<xf:output class="emo" id="output168" label=""
+    				style="position: absolute ;left:402px;top:40px;width:76px;height:22px;">
+    				<xf:label><![CDATA[(づ_ど)]]></xf:label>
+    				<script ev:event="onclick" type="javascript"><![CDATA[fn_setEmo('(づ_ど)');]]></script>
+    			</xf:output>
+    			<xf:output class="emo" id="output169" label=""
+    				style="position: absolute ;left:639px;top:40px;width:76px;height:22px;">
+    				<xf:label><![CDATA[(ㅠ.ㅠ)]]></xf:label>
+    				<script ev:event="onclick" type="javascript"><![CDATA[fn_setEmo('(ㅠ.ㅠ)');]]></script>
+    			</xf:output>
+    			<xf:output class="emo" id="output170" label=""
+    				style="position: absolute ;left:165px;top:40px;width:76px;height:22px;">
+    				<xf:label><![CDATA[(>_<)]]></xf:label>
+    				<script ev:event="onclick" type="javascript"><![CDATA[fn_setEmo('(>_<)');]]></script>
+    			</xf:output>
+    			<xf:output class="emo" id="output171" label=""
+    				style="position: absolute ;left:323px;top:40px;width:76px;height:22px;">
+    				<xf:label><![CDATA[(づ_T)]]></xf:label>
+    				<script ev:event="onclick" type="javascript"><![CDATA[fn_setEmo('(づ_T)');]]></script>
+    			</xf:output>
+    		</w2:contents>
+    		<w2:tab id="tab5"
+    			style="position: absolute;height: 26px;width:60px;left:381px;top: 1px;"
+    			value="피곤">
+    		</w2:tab>
+    		<w2:contents id="contents5"
+    			style="position: absolute; left: 1px; top: 26px;width:721px;height:110px;">
+    			<xf:output class="emo" id="output172" label=""
+    				style="position: absolute ;left:323px;top:6px;width:76px;height:22px;">
+    				<xf:label><![CDATA[(@.@)]]></xf:label>
+    				<script ev:event="onclick" type="javascript"><![CDATA[fn_setEmo('(@.@)');]]></script>
+    			</xf:output>
+    			<xf:output class="emo" id="output173" label=""
+    				style="position: absolute ;left:244px;top:6px;width:76px;height:22px;">
+    				<xf:label><![CDATA[(-0-)]]></xf:label>
+    				<script ev:event="onclick" type="javascript"><![CDATA[fn_setEmo('(-0-)');]]></script>
+    			</xf:output>
+    			<xf:output class="emo" id="output174" label=""
+    				style="position: absolute ;left:244px;top:74px;width:76px;height:22px;">
+    				<xf:label></xf:label>
+    			</xf:output>
+    			<xf:output class="emo" id="output175" label=""
+    				style="position: absolute ;left:481px;top:6px;width:76px;height:22px;">
+    				<xf:label><![CDATA[∋.∈]]></xf:label>
+    				<script ev:event="onclick" type="javascript"><![CDATA[fn_setEmo('∋.∈');]]></script>
+    			</xf:output>
+    			<xf:output class="emo" id="output176" label=""
+    				style="position: absolute ;left:560px;top:6px;width:76px;height:22px;">
+    				<xf:label><![CDATA[⊇.⊆]]></xf:label>
+    				<script ev:event="onclick" type="javascript"><![CDATA[fn_setEmo('⊇.⊆');]]></script>
+    			</xf:output>
+    			<xf:output class="emo" id="output177" label=""
+    				style="position: absolute ;left:85px;top:74px;width:76px;height:22px;">
+    				<xf:label></xf:label>
+    			</xf:output>
+    			<xf:output class="emo" id="output178" label=""
+    				style="position: absolute ;left:639px;top:74px;width:76px;height:22px;">
+    				<xf:label></xf:label>
+    			</xf:output>
+    			<xf:output class="emo" id="output179" label=""
+    				style="position: absolute ;left:560px;top:40px;width:76px;height:22px;">
+    				<xf:label></xf:label>
+    			</xf:output>
+    			<xf:output class="emo" id="output180" label=""
+    				style="position: absolute ;left:639px;top:6px;width:76px;height:22px;">
+    				<xf:label><![CDATA[(u_u)]]></xf:label>
+    				<script ev:event="onclick" type="javascript"><![CDATA[fn_setEmo('(u_u)');]]></script>
+    			</xf:output>
+    			<xf:output class="emo" id="output181" label=""
+    				style="position: absolute ;left:165px;top:6px;width:76px;height:22px;">
+    				<xf:label><![CDATA[@L@]]></xf:label>
+    				<script ev:event="onclick" type="javascript"><![CDATA[fn_setEmo('@L@');]]></script>
+    			</xf:output>
+    			<xf:output class="emo" id="output182" label=""
+    				style="position: absolute ;left:5px;top:74px;width:76px;height:22px;">
+    				<xf:label></xf:label>
+    			</xf:output>
+    			<xf:output class="emo" id="output183" label=""
+    				style="position: absolute ;left:323px;top:74px;width:76px;height:22px;">
+    				<xf:label></xf:label>
+    			</xf:output>
+    			<xf:output class="emo" id="output184" label=""
+    				style="position: absolute ;left:5px;top:40px;width:76px;height:22px;">
+    				<xf:label><![CDATA[(g_g)]]></xf:label>
+    				<script ev:event="onclick" type="javascript"><![CDATA[fn_setEmo('(g_g)');]]></script>
+    			</xf:output>
+    			<xf:output class="emo" id="output185" label=""
+    				style="position: absolute ;left:5px;top:6px;width:76px;height:22px;">
+    				<xf:label><![CDATA[=.=]]></xf:label>
+    				<script ev:event="onclick" type="javascript"><![CDATA[fn_setEmo('=.=');]]></script>
+    			</xf:output>
+    			<xf:output class="emo" id="output186" label=""
+    				style="position: absolute ;left:402px;top:6px;width:76px;height:22px;">
+    				<xf:label><![CDATA[(Z_Z)]]></xf:label>
+    				<script ev:event="onclick" type="javascript"><![CDATA[fn_setEmo('(Z_Z)');]]></script>
+    			</xf:output>
+    			<xf:output class="emo" id="output187" label=""
+    				style="position: absolute ;left:85px;top:40px;width:76px;height:22px;">
+    				<xf:label><![CDATA[(づ_-)]]></xf:label>
+    				<script ev:event="onclick" type="javascript"><![CDATA[fn_setEmo('(づ_-)');]]></script>
+    			</xf:output>
+    			<xf:output class="emo" id="output188" label=""
+    				style="position: absolute ;left:85px;top:6px;width:76px;height:22px;">
+    				<xf:label><![CDATA[θ.θ]]></xf:label>
+    				<script ev:event="onclick" type="javascript"><![CDATA[fn_setEmo('θ.θ');]]></script>
+    			</xf:output>
+    			<xf:output class="emo" id="output189" label=""
+    				style="position: absolute ;left:244px;top:40px;width:76px;height:22px;">
+    				<xf:label><![CDATA[(=.&=)]]></xf:label>
+    				<script ev:event="onclick" type="javascript"><![CDATA[fn_setEmo('(=.&=)');]]></script>
+    			</xf:output>
+    			<xf:output class="emo" id="output190" label=""
+    				style="position: absolute ;left:165px;top:74px;width:76px;height:22px;">
+    				<xf:label></xf:label>
+    			</xf:output>
+    			<xf:output class="emo" id="output191" label=""
+    				style="position: absolute ;left:402px;top:74px;width:76px;height:22px;">
+    				<xf:label></xf:label>
+    			</xf:output>
+    			<xf:output class="emo" id="output192" label=""
+    				style="position: absolute ;left:481px;top:40px;width:76px;height:22px;">
+    				<xf:label></xf:label>
+    			</xf:output>
+    			<xf:output class="emo" id="output193" label=""
+    				style="position: absolute ;left:560px;top:74px;width:76px;height:22px;">
+    				<xf:label></xf:label>
+    			</xf:output>
+    			<xf:output class="emo" id="output194" label=""
+    				style="position: absolute ;left:481px;top:74px;width:76px;height:22px;">
+    				<xf:label></xf:label>
+    			</xf:output>
+    			<xf:output class="emo" id="output195" label=""
+    				style="position: absolute ;left:402px;top:40px;width:76px;height:22px;">
+    				<xf:label><![CDATA[[(￣.￣)]zZ]]></xf:label>
+    				<script ev:event="onclick" type="javascript"><![CDATA[fn_setEmo('(￣.￣)]zZ');]]></script>
+    			</xf:output>
+    			<xf:output class="emo" id="output196" label=""
+    				style="position: absolute ;left:639px;top:40px;width:76px;height:22px;">
+    				<xf:label></xf:label>
+    			</xf:output>
+    			<xf:output class="emo" id="output197" label=""
+    				style="position: absolute ;left:165px;top:40px;width:76px;height:22px;">
+    				<xf:label><![CDATA[(-_ど)]]></xf:label>
+    				<script ev:event="onclick" type="javascript"><![CDATA[fn_setEmo('(-_ど)');]]></script>
+    			</xf:output>
+    			<xf:output class="emo" id="output198" label=""
+    				style="position: absolute ;left:323px;top:40px;width:76px;height:22px;">
+    				<xf:label><![CDATA[(-.-)Zzz..]]></xf:label>
+    				<script ev:event="onclick" type="javascript"><![CDATA[fn_setEmo('(-.-)Zzz..');]]></script>
+    			</xf:output>
+    		</w2:contents>
+    		<w2:tab id="tab6"
+    			style="position: absolute;height: 26px;width:60px;left:481px;top: 1px;"
+    			value="화남">
+    		</w2:tab>
+    		<w2:contents id="contents6"
+    			style="position: absolute; left: 1px; top: 26px;width:721px;height:110px;">
+    			<xf:output class="emo" id="output199" label=""
+    				style="position: absolute ;left:323px;top:6px;width:76px;height:22px;">
+    				<xf:label><![CDATA[ㅡㅡ^]]></xf:label>
+    				<script ev:event="onclick" type="javascript"><![CDATA[fn_setEmo('ㅡㅡ^');]]></script>
+    			</xf:output>
+    			<xf:output class="emo" id="output200" label=""
+    				style="position: absolute ;left:244px;top:6px;width:76px;height:22px;">
+    				<xf:label><![CDATA[(#_-)]]></xf:label>
+    				<script ev:event="onclick" type="javascript"><![CDATA[fn_setEmo('(#_-)');]]></script>
+    			</xf:output>
+    			<xf:output class="emo" id="output201" label=""
+    				style="position: absolute ;left:244px;top:74px;width:76px;height:22px;">
+    				<xf:label></xf:label>
+    			</xf:output>
+    			<xf:output class="emo" id="output202" label=""
+    				style="position: absolute ;left:481px;top:6px;width:76px;height:22px;">
+    				<xf:label><![CDATA[☞_☜]]></xf:label>
+    				<script ev:event="onclick" type="javascript"><![CDATA[fn_setEmo('☞_☜');]]></script>
+    			</xf:output>
+    			<xf:output class="emo" id="output203" label=""
+    				style="position: absolute ;left:560px;top:6px;width:76px;height:22px;">
+    				<xf:label><![CDATA[s(￣へ￣)z]]></xf:label>
+    				<script ev:event="onclick" type="javascript"><![CDATA[fn_setEmo('s(￣へ￣)z');]]></script>
+    			</xf:output>
+    			<xf:output class="emo" id="output204" label=""
+    				style="position: absolute ;left:85px;top:74px;width:76px;height:22px;">
+    				<xf:label><![CDATA[＼(*｀Д´)/]]></xf:label>
+    				<script ev:event="onclick" type="javascript"><![CDATA[fn_setEmo('＼(*｀Д´)/');]]></script>
+    			</xf:output>
+    			<xf:output class="emo" id="output205" label=""
+    				style="position: absolute ;left:639px;top:74px;width:76px;height:22px;">
+    				<xf:label></xf:label>
+    			</xf:output>
+    			<xf:output class="emo" id="output206" label=""
+    				style="position: absolute ;left:560px;top:40px;width:76px;height:22px;">
+    				<xf:label><![CDATA[(-.-")凸]]></xf:label>
+    				<script ev:event="onclick" type="javascript"><![CDATA[fn_setEmo('(-.-")凸');]]></script>
+    			</xf:output>
+    			<xf:output class="emo" id="output207" label=""
+    				style="position: absolute ;left:639px;top:6px;width:76px;height:22px;">
+    				<xf:label><![CDATA[(-ヘㅡメ)]]></xf:label>
+    				<script ev:event="onclick" type="javascript"><![CDATA[fn_setEmo('(-ヘㅡメ)');]]></script>
+    			</xf:output>
+    			<xf:output class="emo" id="output208" label=""
+    				style="position: absolute ;left:165px;top:6px;width:76px;height:22px;">
+    				<xf:label><![CDATA[(`o')]]></xf:label>
+    				<script ev:event="onclick" type="javascript"><![CDATA[fn_setEmo("(`o')");]]></script>
+    			</xf:output>
+    			<xf:output class="emo" id="output209" label=""
+    				style="position: absolute ;left:5px;top:74px;width:76px;height:22px;">
+    				<xf:label><![CDATA[(/ㅡ_-)/~]]></xf:label>
+    				<script ev:event="onclick" type="javascript"><![CDATA[fn_setEmo('(/ㅡ_-)/~');]]></script>
+    			</xf:output>
+    			<xf:output class="emo" id="output210" label=""
+    				style="position: absolute ;left:323px;top:74px;width:76px;height:22px;">
+    				<xf:label></xf:label>
+    			</xf:output>
+    			<xf:output class="emo" id="output211" label=""
+    				style="position: absolute ;left:5px;top:40px;width:76px;height:22px;">
+    				<xf:label><![CDATA[(-.￥)]]></xf:label>
+    				<script ev:event="onclick" type="javascript"><![CDATA[fn_setEmo('(-.￥)');]]></script>
+    			</xf:output>
+    			<xf:output class="emo" id="output212" label=""
+    				style="position: absolute ;left:5px;top:6px;width:76px;height:22px;">
+    				<xf:label><![CDATA[:-<]]></xf:label>
+    				<script ev:event="onclick" type="javascript"><![CDATA[fn_setEmo(':-<');]]></script>
+    			</xf:output>
+    			<xf:output class="emo" id="output213" label=""
+    				style="position: absolute ;left:402px;top:6px;width:76px;height:22px;">
+    				<xf:label><![CDATA[(@_@)]]></xf:label>
+    				<script ev:event="onclick" type="javascript"><![CDATA[fn_setEmo('@_@');]]></script>
+    			</xf:output>
+    			<xf:output class="emo" id="output214" label=""
+    				style="position: absolute ;left:85px;top:40px;width:76px;height:22px;">
+    				<xf:label><![CDATA[(｀へ´)]]></xf:label>
+    				<script ev:event="onclick" type="javascript"><![CDATA[fn_setEmo('(｀へ´)');]]></script>
+    			</xf:output>
+    			<xf:output class="emo" id="output215" label=""
+    				style="position: absolute ;left:85px;top:6px;width:76px;height:22px;">
+    				<xf:label><![CDATA[ㅡㅡ+]]></xf:label>
+    				<script ev:event="onclick" type="javascript"><![CDATA[fn_setEmo('ㅡㅡ+');]]></script>
+    			</xf:output>
+    			<xf:output class="emo" id="output216" label=""
+    				style="position: absolute ;left:244px;top:40px;width:76px;height:22px;">
+    				<xf:label><![CDATA[(-_-メ)]]></xf:label>
+    				<script ev:event="onclick" type="javascript"><![CDATA[fn_setEmo('(-_-メ)');]]></script>
+    			</xf:output>
+    			<xf:output class="emo" id="output217" label=""
+    				style="position: absolute ;left:165px;top:74px;width:76px;height:22px;">
+    				<xf:label></xf:label>
+    			</xf:output>
+    			<xf:output class="emo" id="output218" label=""
+    				style="position: absolute ;left:402px;top:74px;width:76px;height:22px;">
+    				<xf:label></xf:label>
+    			</xf:output>
+    			<xf:output class="emo" id="output219" label=""
+    				style="position: absolute ;left:481px;top:40px;width:76px;height:22px;">
+    				<xf:label><![CDATA[(-(oo)-)]]></xf:label>
+    				<script ev:event="onclick" type="javascript"><![CDATA[fn_setEmo('(-(oo)-)');]]></script>
+    			</xf:output>
+    			<xf:output class="emo" id="output220" label=""
+    				style="position: absolute ;left:560px;top:74px;width:76px;height:22px;">
+    				<xf:label></xf:label>
+    			</xf:output>
+    			<xf:output class="emo" id="output221" label=""
+    				style="position: absolute ;left:481px;top:74px;width:76px;height:22px;">
+    				<xf:label></xf:label>
+    			</xf:output>
+    			<xf:output class="emo" id="output222" label=""
+    				style="position: absolute ;left:402px;top:40px;width:76px;height:22px;">
+    				<xf:label><![CDATA[(↗∇↖)]]></xf:label>
+    				<script ev:event="onclick" type="javascript"><![CDATA[fn_setEmo('(↗∇↖)');]]></script>
+    			</xf:output>
+    			<xf:output class="emo" id="output223" label=""
+    				style="position: absolute ;left:639px;top:40px;width:76px;height:22px;">
+    				<xf:label><![CDATA[(*｀Д´)/]]></xf:label>
+    				<script ev:event="onclick" type="javascript"><![CDATA[fn_setEmo('(*｀Д´)/');]]></script>
+    			</xf:output>
+    			<xf:output class="emo" id="output224" label=""
+    				style="position: absolute ;left:165px;top:40px;width:76px;height:22px;">
+    				<xf:label><![CDATA[o(-"-)o]]></xf:label>
+    				<script ev:event="onclick" type="javascript"><![CDATA[fn_setEmo('o(-"-)o');]]></script>
+    			</xf:output>
+    			<xf:output class="emo" id="output225" label=""
+    				style="position: absolute ;left:323px;top:40px;width:76px;height:22px;">
+    				<xf:label><![CDATA[(-"-メ)]]></xf:label>
+    				<script ev:event="onclick" type="javascript"><![CDATA[fn_setEmo('(-"-メ)');]]></script>
+    			</xf:output>
+    		</w2:contents>
+    		<w2:tab id="tab7"
+    			style="position: absolute;  width: 60px;  height: 26px;  top: 1px;  left:581px; "
+    			value="기타">
+    		</w2:tab>
+    		<w2:contents id="contents7"
+    			style="position: absolute; left: 1px; top: 26px;width:721px;height:110px;">
+    			<xf:output class="emo" id="output226" label=""
+    				style="position: absolute ;left:323px;top:6px;width:76px;height:22px;">
+    				<xf:label><![CDATA[ご,,ご]]></xf:label>
+    				<script ev:event="onclick" type="javascript"><![CDATA[fn_setEmo('ご,,ご');]]></script>
+    			</xf:output>
+    			<xf:output class="emo" id="output227" label=""
+    				style="position: absolute ;left:244px;top:6px;width:76px;height:22px;">
+    				<xf:label><![CDATA[('⌒')]]></xf:label>
+    				<script ev:event="onclick" type="javascript"><![CDATA[fn_setEmo("('⌒')");]]></script>
+    			</xf:output>
+    			<xf:output class="emo" id="output228" label=""
+    				style="position: absolute ;left:244px;top:74px;width:76px;height:22px;">
+    				<xf:label></xf:label>
+    			</xf:output>
+    			<xf:output class="emo" id="output229" label=""
+    				style="position: absolute ;left:481px;top:6px;width:76px;height:22px;">
+    				<xf:label><![CDATA[('º')/)/)]]></xf:label>
+    				<script ev:event="onclick" type="javascript"><![CDATA[fn_setEmo("('º')/)/)");]]></script>
+    			</xf:output>
+    			<xf:output class="emo" id="output230" label=""
+    				style="position: absolute ;left:560px;top:6px;width:76px;height:22px;">
+    				<xf:label><![CDATA[( ㅅ)=333]]></xf:label>
+    				<script ev:event="onclick" type="javascript"><![CDATA[fn_setEmo('( ㅅ)=333');]]></script>
+    			</xf:output>
+    			<xf:output class="emo" id="output231" label=""
+    				style="position: absolute ;left:85px;top:74px;width:76px;height:22px;">
+    				<xf:label></xf:label>
+    			</xf:output>
+    			<xf:output class="emo" id="output232" label=""
+    				style="position: absolute ;left:639px;top:74px;width:76px;height:22px;">
+    				<xf:label></xf:label>
+    			</xf:output>
+    			<xf:output class="emo" id="output233" label=""
+    				style="position: absolute ;left:560px;top:40px;width:76px;height:22px;">
+    				<xf:label><![CDATA[(=`.`=)@@]]></xf:label>
+    				<script ev:event="onclick" type="javascript"><![CDATA[fn_setEmo('(=`.`=)@@');]]></script>
+    			</xf:output>
+    			<xf:output class="emo" id="output234" label=""
+    				style="position: absolute ;left:639px;top:6px;width:76px;height:22px;">
+    				<xf:label><![CDATA[∠(- o -)]]></xf:label>
+    				<script ev:event="onclick" type="javascript"><![CDATA[fn_setEmo('∠(- o -)');]]></script>
+    			</xf:output>
+    			<xf:output class="emo" id="output235" label=""
+    				style="position: absolute ;left:165px;top:6px;width:76px;height:22px;">
+    				<xf:label><![CDATA[( ㅅ )]]></xf:label>
+    				<script ev:event="onclick" type="javascript"><![CDATA[fn_setEmo('( ㅅ )');]]></script>
+    			</xf:output>
+    			<xf:output class="emo" id="output236" label=""
+    				style="position: absolute ;left:5px;top:74px;width:76px;height:22px;">
+    				<xf:label></xf:label>
+    			</xf:output>
+    			<xf:output class="emo" id="output237" label=""
+    				style="position: absolute ;left:323px;top:74px;width:76px;height:22px;">
+    				<xf:label></xf:label>
+    			</xf:output>
+    			<xf:output class="emo" id="output238" label=""
+    				style="position: absolute ;left:5px;top:40px;width:76px;height:22px;">
+    				<xf:label><![CDATA[☞(>.<)☜]]></xf:label>
+    				<script ev:event="onclick" type="javascript"><![CDATA[fn_setEmo('☞(>.<)☜');]]></script>
+    			</xf:output>
+    			<xf:output class="emo" id="output239" label=""
+    				style="position: absolute ;left:5px;top:6px;width:76px;height:22px;">
+    				<xf:label><![CDATA[(-_-)]]></xf:label>
+    				<script ev:event="onclick" type="javascript"><![CDATA[fn_setEmo('(-_-)');]]></script>
+    			</xf:output>
+    			<xf:output class="emo" id="output240" label=""
+    				style="position: absolute ;left:402px;top:6px;width:76px;height:22px;">
+    				<xf:label><![CDATA[o(>_<)o]]></xf:label>
+    				<script ev:event="onclick" type="javascript"><![CDATA[fn_setEmo('o(>_<)o');]]></script>
+    			</xf:output>
+    			<xf:output class="emo" id="output241" label=""
+    				style="position: absolute ;left:85px;top:40px;width:76px;height:22px;">
+    				<xf:label><![CDATA[<(>.<ㆀ)>]]></xf:label>
+    				<script ev:event="onclick" type="javascript"><![CDATA[fn_setEmo('<(>.<ㆀ)>');]]></script>
+    			</xf:output>
+    			<xf:output class="emo" id="output242" label=""
+    				style="position: absolute ;left:85px;top:6px;width:76px;height:22px;">
+    				<xf:label><![CDATA[($_$)]]></xf:label>
+    				<script ev:event="onclick" type="javascript"><![CDATA[fn_setEmo('($_$)');]]></script>
+    			</xf:output>
+    			<xf:output class="emo" id="output243" label=""
+    				style="position: absolute ;left:244px;top:40px;width:76px;height:22px;">
+    				<xf:label><![CDATA[s(ごoご)グ]]></xf:label>
+    				<script ev:event="onclick" type="javascript"><![CDATA[fn_setEmo('s(ごoご)グ');]]></script>
+    			</xf:output>
+    			<xf:output class="emo" id="output244" label=""
+    				style="position: absolute ;left:165px;top:74px;width:76px;height:22px;">
+    				<xf:label></xf:label>
+    			</xf:output>
+    			<xf:output class="emo" id="output245" label=""
+    				style="position: absolute ;left:402px;top:74px;width:76px;height:22px;">
+    				<xf:label></xf:label>
+    			</xf:output>
+    			<xf:output class="emo" id="output246" label=""
+    				style="position: absolute ;left:481px;top:40px;width:76px;height:22px;">
+    				<xf:label><![CDATA[('' )( '')]]></xf:label>
+    				<script ev:event="onclick" type="javascript"><![CDATA[fn_setEmo("('' )( '')");]]></script>
+    			</xf:output>
+    			<xf:output class="emo" id="output247" label=""
+    				style="position: absolute ;left:560px;top:74px;width:76px;height:22px;">
+    				<xf:label></xf:label>
+    			</xf:output>
+    			<xf:output class="emo" id="output248" label=""
+    				style="position: absolute ;left:481px;top:74px;width:76px;height:22px;">
+    				<xf:label></xf:label>
+    			</xf:output>
+    			<xf:output class="emo" id="output249" label=""
+    				style="position: absolute ;left:402px;top:40px;width:76px;height:22px;">
+    				<xf:label><![CDATA[(. .)|/)/)]]></xf:label>
+    				<script ev:event="onclick" type="javascript"><![CDATA[fn_setEmo('(. .)|/)/)');]]></script>
+    			</xf:output>
+    			<xf:output class="emo" id="output250" label=""
+    				style="position: absolute ;left:639px;top:40px;width:76px;height:22px;">
+    				<xf:label></xf:label>
+    			</xf:output>
+    			<xf:output class="emo" id="output251" label=""
+    				style="position: absolute ;left:165px;top:40px;width:76px;height:22px;">
+    				<xf:label><![CDATA[┌(ㆀ_ _)┐]]></xf:label>
+    				<script ev:event="onclick" type="javascript"><![CDATA[fn_setEmo('┌(ㆀ_ _)┐');]]></script>
+    			</xf:output>
+    			<xf:output class="emo" id="output252" label=""
+    				style="position: absolute ;left:323px;top:40px;width:76px;height:22px;">
+    				<xf:label><![CDATA[(^(**)^))~]]></xf:label>
+    				<script ev:event="onclick" type="javascript"><![CDATA[fn_setEmo('(^(**)^))~');]]></script>
+    			</xf:output>
+    		</w2:contents>
+    	</w2:tabContainer>
+    	<xf:output class="emo" id="output253" label=""
+    		style="position: absolute ;left:856px;top:348px;width:30px;height:22px;">
+    		<xf:label><![CDATA[⊙]]></xf:label>
+    		<script ev:event="onclick" type="javascript"><![CDATA[fn_setEmo('⊙');]]></script>
+    	</xf:output>
+    	<xf:output class="emo" id="output254" label=""
+    		style="position: absolute ;left:686px;top:314px;width:30px;height:22px;">
+    		<xf:label><![CDATA[♤]]></xf:label>
+    		<script ev:event="onclick" type="javascript"><![CDATA[fn_setEmo('♤');]]></script>
+    	</xf:output>
+    	<xf:output class="emo" id="output255" label=""
+    		style="position: absolute ;left:890px;top:348px;width:30px;height:22px;">
+    		<xf:label><![CDATA[◐]]></xf:label>
+    		<script ev:event="onclick" type="javascript"><![CDATA[fn_setEmo('◐');]]></script>
+    	</xf:output>
+    	<xf:output class="emo" id="output256" label=""
+    		style="position: absolute ;left:618px;top:348px;width:30px;height:22px;">
+    		<xf:label><![CDATA[▽]]></xf:label>
+    		<script ev:event="onclick" type="javascript"><![CDATA[fn_setEmo('▽');]]></script>
+    	</xf:output>
+    	<xf:output class="emo" id="output257" label=""
+    		style="position: absolute ;left:822px;top:314px;width:30px;height:22px;">
+    		<xf:label><![CDATA[♪]]></xf:label>
+    		<script ev:event="onclick" type="javascript"><![CDATA[fn_setEmo('♪');]]></script>
+    	</xf:output>
+    	<w2:grid autoFit="" baseNode="dataset" class="grid"
+    		evenRowBackgroundColor="#e1ebf5" focusMode="row" id="grd_List"
+    		oddEvenColorDisplay="true" oddRowBackgroundColor="#ffffff"
+    		overflowX="hidden" overflowY="hidden" readOnlyBackgroundColor=""
+    		repeatNode="record" resize=""
+    		style="position:absolute;height:196px;width:722px;left:271px;top:55px;"
+    		readOnly="true">
+    		<w2:header class="gridHeaderTable"
+    			columnClass="gridHeaderTD1" id="header3" style="" width="400">
+    			<w2:row id="row5" style="">
+    				<w2:column id="" style="height:26px" hidden="true"
+    					inputType="text" width="70" valueType="binary">
+    				</w2:column>
+    				<w2:column id="column222" style="height:26px;"
+    					hidden="true" width="30" inputType="text" value="No" rowSpan=""
+    					valueType="binary" colSpan="">
+    				</w2:column>
+    				<w2:column hidden="" id="column25" inputType="text"
+    					style="height:26px;" value="구분" valueType="binary"
+    					width="90">
+    				</w2:column>
+    				<w2:column hidden="" id="column26" inputType="text"
+    					style="height:26px;" value="내용" valueType="binary"
+    					width="563">
+    				</w2:column>
+    				<w2:column hidden="" id="column27" inputType="text"
+    					style="height:26px;" value="삭제" valueType="binary"
+    					width="70">
+    				</w2:column>
+    				<w2:column hidden="true" id="_SEQ" inputType="text"
+    					style="height:26px;" value="" valueType="binary" width="1">
+    				</w2:column>
+    				<w2:column hidden="true" id="_MSG" inputType="text"
+    					style="height:26px;" value="" valueType="binary" width="1">
+    				</w2:column>
+    			</w2:row>
+    		</w2:header>
+    		<w2:gBody class="gridBodyTable" columnClass="gridBodyTD"
+    			id="gBody3" style="">
+    			<w2:row id="row6" style="">
+    				<w2:column id="_T_CNT" style="height:22px"
+    					hidden="true" inputType="text" width="70" valueType="binary">
+    				</w2:column>
+    				<w2:column id="column227" style="height:22px;"
+    					hidden="true" width="50" inputType="text" value=""
+    					valueType="binary" textAlign="left">
+    				</w2:column>
+    				<w2:column hidden="" id="TYPE_NM" inputType="text"
+    					style="height:21px;" value="" valueType="binary" width="90">
+    				</w2:column>
+    				<w2:column hidden="" id="MSG_TEMP" inputType="text"
+    					style="height:21px;" value="" valueType="binary" width="563"
+    					textAlign="left">
+    				</w2:column>
+    				<w2:column hidden="" id="column30"
+    					inputType="button" style="height:21px;" value="삭제"
+    					valueType="binary" width="70">
+    				</w2:column>
+    				<w2:column hidden="true" id="SEQ" inputType="text"
+    					style="height:21px;" value="" valueType="binary" width="1">
+    				</w2:column>
+    				<w2:column hidden="true" id="MSG" inputType="text"
+    					style="height:21px;" value="" valueType="binary" width="1">
+    				</w2:column>
+    			</w2:row>
+    		</w2:gBody>
+    		<script ev:event="onCellClick( row , col )"
+    			type="javascript"><![CDATA[ 
+						if(col==4){
+							fn_DeletePreparedMsg(this.getCellData(row,5));
+						}else if(col==3){
+							var msg = this.getCellData(row,6);
+//							msg = msg.replaceAll('+_RETURN+',"\n");
+							ta_Data.setValue(msg);
+							fn_GetByteLength(ta_Data.getValue());
+						}
+				]]></script>
+    	</w2:grid>
+    	<xf:output class="emo" id="output258" label=""
+    		style="position: absolute ;left:346px;top:382px;width:30px;height:22px;">
+    		<xf:label><![CDATA[↑]]></xf:label>
+    		<script ev:event="onclick" type="javascript"><![CDATA[fn_setEmo('↑');]]></script>
+    	</xf:output>
+    	<xf:output class="emo" id="output259" label=""
+    		style="position: absolute ;left:822px;top:348px;width:30px;height:22px;">
+    		<xf:label><![CDATA[◎]]></xf:label>
+    		<script ev:event="onclick" type="javascript"><![CDATA[fn_setEmo('◎');]]></script>
+    	</xf:output>
+    	<xf:output class="emo" id="output260" label=""
+    		style="position: absolute ;left:414px;top:382px;width:30px;height:22px;">
+    		<xf:label><![CDATA[↓]]></xf:label>
+    		<script ev:event="onclick" type="javascript"><![CDATA[fn_setEmo('↓');]]></script>
+    	</xf:output>
+    	<xf:output class="emo" id="output261" label=""
+    		style="position: absolute ;left:720px;top:314px;width:30px;height:22px;">
+    		<xf:label><![CDATA[♨]]></xf:label>
+    		<script ev:event="onclick" type="javascript"><![CDATA[fn_setEmo('♨');]]></script>
+    	</xf:output>
+    	<xf:output class="emo" id="output262" label=""
+    		style="position: absolute ;left:754px;top:314px;width:30px;height:22px;">
+    		<xf:label><![CDATA[ㆀ]]></xf:label>
+    		<script ev:event="onclick" type="javascript"><![CDATA[fn_setEmo('ㆀ');]]></script>
+    	</xf:output>
+    	<xf:output class="emo" id="output263" label=""
+    		style="position: absolute ;left:958px;top:314px;width:30px;height:22px;">
+    		<xf:label><![CDATA[▣]]></xf:label>
+    		<script ev:event="onclick" type="javascript"><![CDATA[fn_setEmo('▣');]]></script>
+    	</xf:output>
+    	<xf:output class="emo" id="output264" label=""
+    		style="position: absolute ;left:720px;top:348px;width:30px;height:22px;">
+    		<xf:label><![CDATA[◆]]></xf:label>
+    		<script ev:event="onclick" type="javascript"><![CDATA[fn_setEmo('◆');]]></script>
+    	</xf:output>
+    	<xf:output class="emo" id="output265" label=""
+    		style="position: absolute ;left:312px;top:348px;width:30px;height:22px;">
+    		<xf:label><![CDATA[▦]]></xf:label>
+    		<script ev:event="onclick" type="javascript"><![CDATA[fn_setEmo('▦');]]></script>
+    	</xf:output>
+    	<xf:output class="emo" id="output266" label=""
+    		style="position: absolute ;left:312px;top:314px;width:30px;height:22px;">
+    		<xf:label><![CDATA[☆]]></xf:label>
+    		<script ev:event="onclick" type="javascript"><![CDATA[fn_setEmo('☆');]]></script>
+    	</xf:output>
+    	<xf:output class="emo" id="output267" label=""
+    		style="position: absolute ;left:516px;top:348px;width:30px;height:22px;">
+    		<xf:label><![CDATA[▶]]></xf:label>
+    		<script ev:event="onclick" type="javascript"><![CDATA[fn_setEmo('▶');]]></script>
+    	</xf:output>
+    	<xf:output class="emo" id="output268" label=""
+    		style="position: absolute ;left:584px;top:348px;width:30px;height:22px;">
+    		<xf:label><![CDATA[▼]]></xf:label>
+    		<script ev:event="onclick" type="javascript"><![CDATA[fn_setEmo('▼');]]></script>
+    	</xf:output>
+    	<xf:output class="emo" id="output269" label=""
+    		style="position: absolute ;left:312px;top:382px;width:30px;height:22px;">
+    		<xf:label><![CDATA[←]]></xf:label>
+    		<script ev:event="onclick" type="javascript"><![CDATA[fn_setEmo('←');]]></script>
+    	</xf:output>
+    	<xf:output class="emo" id="output270" label=""
+    		style="position: absolute ;left:482px;top:314px;width:30px;height:22px;">
+    		<xf:label><![CDATA[※]]></xf:label>
+    		<script ev:event="onclick" type="javascript"><![CDATA[fn_setEmo('※');]]></script>
+    	</xf:output>
+    	<xf:output class="emo" id="output271" label=""
+    		style="position: absolute ;left:924px;top:314px;width:30px;height:22px;">
+    		<xf:label><![CDATA[ㅁ]]></xf:label>
+    		<script ev:event="onclick" type="javascript"><![CDATA[fn_setEmo('ㅁ');]]></script>
+    	</xf:output>
+    	<w2:wframe id="wfrm_Page" mode="async"
+    		src="/mp/comm/Paging.xml"
+    		style="position: absolute ;left:405px;top:255px;width:443px;height:28px;">
+    	</w2:wframe>
+    	<xf:output class="emo" id="output272" label=""
+    		style="position: absolute ;left:788px;top:314px;width:30px;height:22px;">
+    		<xf:label><![CDATA[♩]]></xf:label>
+    		<script ev:event="onclick" type="javascript"><![CDATA[fn_setEmo('♩');]]></script>
+    	</xf:output>
+    	<xf:output class="emo" id="output273" label=""
+    		style="position: absolute ;left:584px;top:314px;width:30px;height:22px;">
+    		<xf:label><![CDATA[♣]]></xf:label>
+    		<script ev:event="onclick" type="javascript"><![CDATA[fn_setEmo('♣');]]></script>
+    	</xf:output>
+    	<xf:output class="emo" id="output274" label=""
+    		style="position: absolute ;left:346px;top:348px;width:30px;height:22px;">
+    		<xf:label><![CDATA[▨]]></xf:label>
+    		<script ev:event="onclick" type="javascript"><![CDATA[fn_setEmo('▨');]]></script>
+    	</xf:output>
+    	<xf:output class="emo" id="output275" label=""
+    		style="position: absolute ;left:482px;top:382px;width:30px;height:22px;">
+    		<xf:label><![CDATA[§]]></xf:label>
+    		<script ev:event="onclick" type="javascript"><![CDATA[fn_setEmo('§');]]></script>
+    	</xf:output>
+    	<xf:output class="emo" id="output276" label=""
+    		style="position: absolute ;left:346px;top:314px;width:30px;height:22px;">
+    		<xf:label><![CDATA[☎]]></xf:label>
+    		<script ev:event="onclick" type="javascript"><![CDATA[fn_setEmo('☎');]]></script>
+    	</xf:output>
+    	<xf:output class="emo" id="output277" label=""
+    		style="position: absolute ;left:788px;top:382px;width:30px;height:22px;">
+    		<xf:label><![CDATA[∴]]></xf:label>
+    		<script ev:event="onclick" type="javascript"><![CDATA[fn_setEmo('∴');]]></script>
+    	</xf:output>
+    	<w2:textbox class="sub_title" id="textbox1" label="등록 메시지"
+    		style="position: absolute;left:271px;top:36px;width:260px;height:20px;color: #000000;">
+    	</w2:textbox>
+    	<xf:output class="emo" id="output278" label=""
+    		style="position: absolute ;left:550px;top:314px;width:30px;height:22px;">
+    		<xf:label><![CDATA[♡]]></xf:label>
+    		<script ev:event="onclick" type="javascript"><![CDATA[fn_setEmo('♡');]]></script>
+    	</xf:output>
+    	<w2:textbox class="txt1" id="textbox2"
+    		label="* 광고, 행사, 판매조건 등의 광고성 문자 발송시에는 반드시 [수신거부]안내 내용을 삽입해야 합니다."
+    		style="position: absolute;left:272px;top:8px;width:701px;height:20px;;color:#AE0000">
+    	</w2:textbox>
+    	<w2:textbox class="sub_title" id="textbox3" label="이모티콘 및 특수문자"
+    		style="position: absolute;left:271px;top:289px;width:260px;height:20px;color: #000000;">
+    	</w2:textbox>
+    	<xf:output class="emo" id="output279" label=""
+    		style="position: absolute ;left:482px;top:348px;width:30px;height:22px;">
+    		<xf:label><![CDATA[△]]></xf:label>
+    		<script ev:event="onclick" type="javascript"><![CDATA[fn_setEmo('△');]]></script>
+    	</xf:output>
+    	<xf:output class="emo" id="output280" label=""
+    		style="position: absolute ;left:550px;top:348px;width:30px;height:22px;">
+    		<xf:label><![CDATA[▷]]></xf:label>
+    		<script ev:event="onclick" type="javascript"><![CDATA[fn_setEmo('▷');]]></script>
+    	</xf:output>
+    	<xf:output class="emo" id="output281" label=""
+    		style="position: absolute ;left:958px;top:348px;width:30px;height:22px;">
+    		<xf:label><![CDATA[●]]></xf:label>
+    		<script ev:event="onclick" type="javascript"><![CDATA[fn_setEmo('●');]]></script>
+    	</xf:output>
+    	<xf:output class="emo" id="output282" label=""
+    		style="position: absolute ;left:550px;top:382px;width:30px;height:22px;">
+    		<xf:label><![CDATA[∀]]></xf:label>
+    		<script ev:event="onclick" type="javascript"><![CDATA[fn_setEmo('∀');]]></script>
+    	</xf:output>
+    	<xf:output class="emo" id="output283" label=""
+    		style="position: absolute ;left:414px;top:314px;width:30px;height:22px;">
+    		<xf:label><![CDATA[☜]]></xf:label>
+    		<script ev:event="onclick" type="javascript"><![CDATA[fn_setEmo('☜');]]></script>
+    	</xf:output>
+    	<xf:output class="emo" id="output284" label=""
+    		style="position: absolute ;left:448px;top:382px;width:30px;height:22px;">
+    		<xf:label><![CDATA[⇒]]></xf:label>
+    		<script ev:event="onclick" type="javascript"><![CDATA[fn_setEmo('⇒');]]></script>
+    	</xf:output>
+    	<xf:output class="emo" id="output285" label=""
+    		style="position: absolute ;left:652px;top:382px;width:30px;height:22px;">
+    		<xf:label><![CDATA[∞]]></xf:label>
+    		<script ev:event="onclick" type="javascript"><![CDATA[fn_setEmo('∞');]]></script>
+    	</xf:output>
+    	<xf:output class="emo" id="output286" label=""
+    		style="position: absolute ;left:788px;top:348px;width:30px;height:22px;">
+    		<xf:label><![CDATA[◈]]></xf:label>
+    		<script ev:event="onclick" type="javascript"><![CDATA[fn_setEmo('◈');]]></script>
+    	</xf:output>
+    	<xf:output class="emo" id="output287" label=""
+    		style="position: absolute ;left:618px;top:382px;width:30px;height:22px;">
+    		<xf:label><![CDATA[∏]]></xf:label>
+    		<script ev:event="onclick" type="javascript"><![CDATA[fn_setEmo('∏');]]></script>
+    	</xf:output>
+    	<xf:output class="emo" id="output288" label=""
+    		style="position: absolute ;left:856px;top:314px;width:30px;height:22px;">
+    		<xf:label><![CDATA[♬]]></xf:label>
+    		<script ev:event="onclick" type="javascript"><![CDATA[fn_setEmo('♬');]]></script>
+    	</xf:output>
+    	<xf:output class="emo" id="output289" label=""
+    		style="position: absolute ;left:380px;top:382px;width:30px;height:22px;">
+    		<xf:label><![CDATA[→]]></xf:label>
+    		<script ev:event="onclick" type="javascript"><![CDATA[fn_setEmo('→');]]></script>
+    	</xf:output>
+    	<w2:textbox class="se_lable" id="textbox4" label="분류"
+    		style="position: absolute ;height:14px;width:31px;left:871px;top:29px;">
+    	</w2:textbox>
+    	<xf:output class="emo" id="output290" label=""
+    		style="position: absolute ;left:448px;top:348px;width:30px;height:22px;">
+    		<xf:label><![CDATA[▲]]></xf:label>
+    		<script ev:event="onclick" type="javascript"><![CDATA[fn_setEmo('▲');]]></script>
+    	</xf:output>
+    	<xf:output class="emo" id="output291" label=""
+    		style="position: absolute ;left:652px;top:314px;width:30px;height:22px;">
+    		<xf:label><![CDATA[♠]]></xf:label>
+    		<script ev:event="onclick" type="javascript"><![CDATA[fn_setEmo('♠');]]></script>
+    	</xf:output>
+    	<xf:output class="emo" id="output292" label=""
+    		style="position: absolute ;left:618px;top:314px;width:30px;height:22px;">
+    		<xf:label><![CDATA[♧]]></xf:label>
+    		<script ev:event="onclick" type="javascript"><![CDATA[fn_setEmo('♧');]]></script>
+    	</xf:output>
+    	<xf:output class="emo" id="output293" label=""
+    		style="position: absolute ;left:720px;top:382px;width:30px;height:22px;">
+    		<xf:label><![CDATA[∪]]></xf:label>
+    		<script ev:event="onclick" type="javascript"><![CDATA[fn_setEmo('∪');]]></script>
+    	</xf:output>
+    	<xf:output class="emo" id="output294" label=""
+    		style="position: absolute ;left:890px;top:314px;width:30px;height:22px;">
+    		<xf:label><![CDATA[■]]></xf:label>
+    		<script ev:event="onclick" type="javascript"><![CDATA[fn_setEmo('■');]]></script>
+    	</xf:output>
+    	<xf:output class="emo" id="output295" label=""
+    		style="position: absolute ;left:890px;top:382px;width:30px;height:22px;">
+    		<xf:label><![CDATA[⊃]]></xf:label>
+    		<script ev:event="onclick" type="javascript"><![CDATA[fn_setEmo('⊃');]]></script>
+    	</xf:output>
+    	<xf:output class="emo" id="output296" label=""
+    		style="position: absolute ;left:380px;top:314px;width:30px;height:22px;">
+    		<xf:label><![CDATA[☏]]></xf:label>
+    		<script ev:event="onclick" type="javascript"><![CDATA[fn_setEmo('☏');]]></script>
+    	</xf:output>
+
+    	<xf:output class="emo" id="output297" label=""
+    		style="position: absolute ;left:652px;top:348px;width:30px;height:22px;">
+    		<xf:label><![CDATA[◀]]></xf:label>
+    		<script ev:event="onclick" type="javascript"><![CDATA[fn_setEmo('◀');]]></script>
+    	</xf:output>
+    	<xf:output class="emo" id="output298" label=""
+    		style="position: absolute ;left:924px;top:382px;width:30px;height:22px;">
+    		<xf:label><![CDATA[￠]]></xf:label>
+    		<script ev:event="onclick" type="javascript"><![CDATA[fn_setEmo('￠');]]></script>
+    	</xf:output>
+    	<xf:output class="emo" id="output299" label=""
+    		style="position: absolute ;left:516px;top:314px;width:30px;height:22px;">
+    		<xf:label><![CDATA[♥]]></xf:label>
+    		<script ev:event="onclick" type="javascript"><![CDATA[fn_setEmo('♥');]]></script>
+    	</xf:output>
+    	<xf:output class="emo" id="output300" label=""
+    		style="position: absolute ;left:516px;top:382px;width:30px;height:22px;">
+    		<xf:label><![CDATA[Ø]]></xf:label>
+    		<script ev:event="onclick" type="javascript"><![CDATA[fn_setEmo('Ø');]]></script>
+    	</xf:output>
+    	<xf:output class="emo" id="output301" label=""
+    		style="position: absolute ;left:924px;top:348px;width:30px;height:22px;">
+    		<xf:label><![CDATA[◑]]></xf:label>
+    		<script ev:event="onclick" type="javascript"><![CDATA[fn_setEmo('◑');]]></script>
+    	</xf:output>
+    	<xf:select1 allOption="" appearance="minimal" chooseOption=""
+    		class="input_edit" direction="auto" disabled="false"
+    		displayMode="label" id="cb_MsgType"
+    		style="position: absolute ;height:22px;width:80px;left:912px;top:29px;"
+    		submenuSize="auto" visibleRowNum="7">
+    		<xf:choices>
+    			<xf:item>
+    				<xf:label>전체</xf:label>
+    				<xf:value></xf:value>
+    			</xf:item>
+    			<xf:item>
+    				<xf:label>안부/인사</xf:label>
+    				<xf:value>01</xf:value>
+    			</xf:item>
+    			<xf:item>
+    				<xf:label>생일</xf:label>
+    				<xf:value>02</xf:value>
+    			</xf:item>
+    			<xf:item>
+    				<xf:label>기념일</xf:label>
+    				<xf:value>03</xf:value>
+    			</xf:item>
+    			<xf:item>
+    				<xf:label>제품안내</xf:label>
+    				<xf:value>04</xf:value>
+    			</xf:item>
+    			<xf:item>
+    				<xf:label>이벤트</xf:label>
+    				<xf:value>05</xf:value>
+    			</xf:item>
+    			<xf:item>
+    				<xf:label>기타</xf:label>
+    				<xf:value>06</xf:value>
+    			</xf:item>
+    		</xf:choices>
+    		<script ev:event="onchange" type="javascript"><![CDATA[ fn_Search(); ]]></script>
+    	</xf:select1>
+    	<xf:output class="emo" id="output302" label=""
+    		style="position: absolute ;left:278px;top:348px;width:30px;height:22px;">
+    		<xf:label><![CDATA[▤]]></xf:label>
+    		<script ev:event="onclick" type="javascript"><![CDATA[fn_setEmo('▤');]]></script>
+    	</xf:output>
+    	<xf:output class="emo" id="output303" label=""
+    		style="position: absolute ;left:414px;top:348px;width:30px;height:22px;">
+    		<xf:label><![CDATA[▒]]></xf:label>
+    		<script ev:event="onclick" type="javascript"><![CDATA[fn_setEmo('▒');]]></script>
+    	</xf:output>
+    	<xf:output class="emo" id="output304" label=""
+    		style="position: absolute ;left:958px;top:382px;width:30px;height:22px;">
+    		<xf:label><![CDATA[￥]]></xf:label>
+    		<script ev:event="onclick" type="javascript"><![CDATA[fn_setEmo('￥');]]></script>
+    	</xf:output>
+    	<xf:output class="emo" id="output305" label=""
+    		style="position: absolute ;left:856px;top:382px;width:30px;height:22px;">
+    		<xf:label><![CDATA[≠]]></xf:label>
+    		<script ev:event="onclick" type="javascript"><![CDATA[fn_setEmo('≠');]]></script>
+    	</xf:output>
+    	<xf:output class="emo" id="output306" label=""
+    		style="position: absolute ;left:754px;top:382px;width:30px;height:22px;">
+    		<xf:label><![CDATA[∬]]></xf:label>
+    		<script ev:event="onclick" type="javascript"><![CDATA[fn_setEmo('∬');]]></script>
+    	</xf:output>
+    	<xf:output class="emo" id="output307" label=""
+    		style="position: absolute ;left:448px;top:314px;width:30px;height:22px;">
+    		<xf:label><![CDATA[☞]]></xf:label>
+    		<script ev:event="onclick" type="javascript"><![CDATA[fn_setEmo('☞');]]></script>
+    	</xf:output>
+    	<xf:output class="emo" id="output308" label=""
+    		style="position: absolute ;left:686px;top:382px;width:30px;height:22px;">
+    		<xf:label><![CDATA[∧]]></xf:label>
+    		<script ev:event="onclick" type="javascript"><![CDATA[fn_setEmo('∧');]]></script>
+    	</xf:output>
+    	<xf:image id="btn_CmSave"
+    		src="/mp/images/po_bt_sms_comm.gif"
+    		style="position: absolute ;left:137px;top:215px;width: 76px;height: 17px;cursor:pointer;">
+    		<script ev:event="onclick" type="javascript"><![CDATA[ fn_SavePreparedMsg(); ]]></script>
+    	</xf:image>
+    	<xf:select appearance="full" cols="" id="chk_Reject" rows=""
+    		selectedindex="-1"
+    		style="position: absolute ;height:20px;color:#ffffff;width:98px;left:126px;top:417px;">
+    		<xf:choices>
+    			<xf:item>
+    				<xf:label>수신거부삽입</xf:label>
+    				<xf:value>1</xf:value>
+    			</xf:item>
+    		</xf:choices>
+    		<script ev:event="onchange" type="javascript"><![CDATA[ 
+    			if(this.getValue() == "1"){
+					var msg = "\n수신거부\n(또는 수신동의철회)"+fn_getTelNo(GV_GROUP_ID);
+					ta_Data.setValue(ta_Data.getValue()+ msg);
+					fn_GetByteLength(ta_Data.getValue());
+    			} else{
+					var strTxt = ta_Data.getValue();
+					ta_Data.setValue(strTxt.substr(strTxt,strTxt.indexOf("수신거부")-1));
+					fn_GetByteLength(ta_Data.getValue());
+    			}
+    		]]></script>
+    	</xf:select>
+    	<xf:trigger class="btn_po" id="trigger1"
+    		style="position: absolute ;height:30px;color:#FFFFFF;width:70px;left:926px;top:-1px;"
+    		type="image">
+    		<xf:label>닫 기</xf:label>
+    		<script ev:event="onclick" type="javascript"><![CDATA[ 
+    			parent.fn_MainPopupClose("");
+    		]]></script>
+    	</xf:trigger>
+    	<xf:select appearance="full" cols="" id="chk_CustNm" rows=""
+    		selectedindex="-1"
+    		style="position: absolute ;height:20px;color:#000000;width:85px;left:50px;top:195px;">
+    		<xf:choices>
+    			<xf:item>
+    				<xf:label>고객명삽입</xf:label>
+    				<xf:value>1</xf:value>
+    			</xf:item>
+    		</xf:choices>
+    		<script ev:event="onchange" type="javascript"><![CDATA[
+				if(this.getValue() == "1"){
+					ta_Data.setValue(ta_Data.getValue()+ FV_CUST_NM_FLAG);
+					fn_GetByteLength(ta_Data.getValue());
+				}else{
+					var strTxt = ta_Data.getValue();
+					var msgTmp1;
+					var msgTmp2;
+					var flag_posi = strTxt.indexOf(FV_CUST_NM_FLAG);
+					msgTmp1 = strTxt.substr(0,flag_posi);
+					msgTmp2 = strTxt.substr(flag_posi+FV_CUST_NM_FLAG.length);
+					ta_Data.setValue(msgTmp1+msgTmp2);
+					fn_GetByteLength(ta_Data.getValue());
+				}
+    		]]></script>
+    	</xf:select>
+    </body>
+</html>

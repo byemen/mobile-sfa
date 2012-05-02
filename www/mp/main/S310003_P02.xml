@@ -1,0 +1,434 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?xml-stylesheet href="/mp/css/style.css" type="text/css"?>
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:ev="http://www.w3.org/2001/xml-events"
+    xmlns:w2="http://www.inswave.com/websquare" xmlns:xf="http://www.w3.org/2002/xforms">
+    <head>
+    	<w2:buildDate />
+    	<xf:model>
+    		<xf:instance>
+    			<data xmlns="" />
+    		</xf:instance>
+    		<xf:submission id="submissionDept" ref="request" target="resDept"
+        		action=""
+        		method="post" mediatype="application/xml" encoding="UTF-8" instance="" replace="instance"
+        		errorHandler="" customHandler="" mode="asynchronous"
+        		processMsg="">
+        	</xf:submission>
+        	<xf:submission id="submissionList" ref="request" target="resList"
+        		action=""
+        		method="post" mediatype="application/xml" encoding="UTF-8" instance="" replace="instance"
+        		errorHandler="" customHandler="" mode="asynchronous"
+        		processMsg="">
+        		<script type="javascript" ev:event="xforms-submit-done"><![CDATA[
+            		grd_List.setXML(WebSquare.ModelUtil.findInstanceNode("resList/root/dataset[@id='ds_List']"));
+            		
+            		for(var i=0; i<grd_List.getRowCount(); i++){
+		        		grd_List.setCellData(i, 0, i+1);
+		        	}
+            	]]></script>
+        	</xf:submission>
+        	<xf:submission id="submissionDealer" ref="request"
+        		target="resDealer" action="" method="post"
+        		mediatype="application/xml" encoding="UTF-8" instance=""
+        		replace="instance" errorHandler="" customHandler=""
+        		mode="asynchronous" processMsg="">
+        		<script type="javascript" ev:event="xforms-submit-done"><![CDATA[    
+		        	cb_Dealer.setValue(GV_UP_GROUP_ID);
+		        	cb_ActiveYn.setValue("Y");
+		        	
+		        	fn_SearchDept();
+        		]]></script>
+        	</xf:submission>
+    	</xf:model>
+    	<script type="javascript" src="/mp/js/common.js"></script>
+		<script type="javascript" src="/mp/js/WebSquare.js"></script>
+    	<script type="javascript"><![CDATA[
+    	var FV_sDeptCd = "";
+    	var FV_bVisible = false;
+     	/****************************************************************
+		* 화면로드
+		* @param  : 없음
+		* @return : 없음
+		******************************************************************/
+        function fn_OnLoad(){
+        	grp_List.visible(false);
+        	roundRectangle2.visible(false);
+        	roundRectangle1.visible(false);
+        	
+        	// 딜러      	
+			setTitSendInfo("request", "", "", "mdms/mp/comm::CO_GROUP_S01");
+        	setSubmissison("submissionDealer");
+        }        
+        /****************************************************************
+		* 부서 조회
+		* @param  : 없음
+		* @return : 없음
+		******************************************************************/ 
+        function fn_SearchDept(){        	
+        	setTitSendInfo("request", "", "", "mdms/mp/main:S310003_P02_S01");
+        	setInputParamData("DEALER_ID", cb_Dealer.getValue());   
+		    setSubmissison("submissionDept");
+        }        
+        /****************************************************************
+		* 사용자 조회
+		* @param  : gb	파라메터 값 유무에 따른 조회조건값 설정 구분
+		* @return : 없음
+		******************************************************************/ 
+        function fn_SearchUser(gb){
+        
+        	if(!gfn_IsNullVal(gb)){
+        		cb_Title.setValue("");
+        		cb_ActiveYn.setValue("Y");
+        		edt_Name.setValue("");
+        	}
+        	
+        	setTitSendInfo("request", "", "", "mdms/mp/main:S310003_P02_S02");
+        	setInputParamData("DEPT_CD", FV_sDeptCd);
+        	setInputParamData("TITLE", cb_Title.getValue());
+        	setInputParamData("ACTIVE_YN", cb_ActiveYn.getValue());
+        	setInputParamData("NAME", edt_Name.getValue());  
+		    setSubmissison("submissionList");
+		    
+		    if(!FV_bVisible){
+		    	grp_List.visible(true);
+	        	roundRectangle2.visible(true);
+	        	roundRectangle1.visible(true);
+		    }
+		    
+		    FV_bVisible = true;
+		    
+		    for(var i=0; i<grd_List.getRowCount(); i++){
+        		grd_List.setCellData(i, 0, i+1);
+        	}
+        }
+        /****************************************************************
+		* SMS 수신정보
+		* @param  : 없음
+		* @return : 없음
+		******************************************************************/ 
+        function fn_Confirm(){
+        	var arrIdx = grd_List.getCheckedIndex(1);
+        	var nCnt = arrIdx.length;
+        	
+        	if(nCnt < 1){
+        		parent.fn_PopupClose();
+        	} else{
+        		var arrRtn = new Array();
+        		var arrHpNo = "";
+        		var cnt = 0;
+        		
+	        	for(var i=0; i<nCnt; i++){
+	        		var sHpNo = grd_List.getCellData(arrIdx[i], 3);
+	        		var sName = grd_List.getCellData(arrIdx[i], 2);
+	        		if(gfn_IsNullVal(sHpNo)){
+	        			arrHpNo += "'"+sName+"' ";
+	        		} else{
+	        			arrRtn[cnt++] = sName + "^" + sHpNo.replace("-","");
+	        		}
+	        	}
+	        	
+	        	if(!gfn_IsNullVal(arrHpNo))
+	        		alert(arrHpNo + "등록된 핸드폰 번호가 없어서 제외됩니다.");
+	        		
+	        	parent.fn_PopupClose(arrRtn);
+        	}
+        }
+        
+        fn_OnLoad();
+        ]]></script>
+    </head>
+    <body>
+    	<xf:output class="se_box" id="output71" label=""
+    		style="position: absolute ;height:550px;width:890px;left:1px;border:none;top:1px;">
+    		<xf:label></xf:label>
+    	</xf:output>
+    	<xf:image id="image49"
+    		src="/mp/images/pop_title_bg.png"
+    		style="position: absolute ;height:45px;width:890px;left:0px;top:0px;">
+    	</xf:image>
+    	<xf:output class="title_back" id="output72" label=""
+    		style="position: absolute ;height:20px;text-align:left;width:149px;left:15px;top:14px;">
+    		<xf:label>조직도</xf:label>
+    	</xf:output>
+    	<xf:output class="title" id="output70" label=""
+    		style="position: absolute ;height:20px;text-align:left;width:149px;left:15px;top:13px;">
+    		<xf:label>조직도</xf:label>
+    	</xf:output>
+    	<xf:output class="se_box" id="output75" label=""
+    		style="position: absolute ;height:30px;width:232px;left:10px;top:55px;">
+    		<xf:label></xf:label>
+    	</xf:output>
+    	<xf:trigger class="btn_po" id="btn_Close"
+    		style="position: absolute ;height:30px;color:#FFFFFF;width:70px;left:807px;top:10px;"
+    		type="image">
+    		<xf:label>닫 기</xf:label>
+    		<script ev:event="onclick" type="javascript"><![CDATA[ 
+    			parent.fn_PopupClose();
+    		]]></script>
+    	</xf:trigger>
+    	<xf:output class="se_lable" id="output74" label=""
+    		style="vertical-align:middle;position: absolute ;height:30px;width:60px;left:10px;top:55px;">
+    		<xf:label>딜러</xf:label>
+    	</xf:output>
+    	<xf:select1 allOption="" appearance="minimal" chooseOption=""
+    		class="input_edit" direction="auto" disabled="false"
+    		displayMode="label" id="cb_Dealer"
+    		style="position: absolute ;height:22px;width:156px;left:81px;top:59px;"
+    		submenuSize="auto">
+    		<xf:choices>
+    			<xf:itemset
+    				nodeset="resDealer/root/dataset[@id='ds_Dealer']">
+    				<xf:label ref="record/NAME"></xf:label>
+    				<xf:value ref="record/CODE"></xf:value>
+    			</xf:itemset>
+    		</xf:choices>
+    		<script ev:event="onchange" type="javascript"><![CDATA[ 
+    			fn_SearchDept();
+    		]]></script>
+    	</xf:select1>
+    	<xf:output id="output76"
+    		style="position: absolute ;height:452px;width:232px;left:10px;top:86px;"
+    		class="se_box" label="">
+    		<xf:label></xf:label>
+    	</xf:output>
+    	<w2:treeview lineShow="true" useDrag="" id="tv_Dept"
+    		style="position: absolute ;height:416px;width:222px;left:15px;border:1px solid #a4a4a4;top:91px;"
+    		dataType="listed" alwaysDraw="false" parentDependency="true"
+    		src="">
+    		<w2:itemset
+    			nodeset="resDept/root/dataset[@id='ds_Dept']/record">
+    			<w2:label ref="DEPT_NM"></w2:label>
+    			<w2:value ref="DEPT_CD"></w2:value>
+    			<w2:depth ref="LVL"></w2:depth>
+    			<w2:checkbox ref=""></w2:checkbox>
+    			<w2:iconImage ref=""></w2:iconImage>
+    			<w2:image ref=""></w2:image>
+    			<w2:selectedImage ref=""></w2:selectedImage>
+    			<w2:expandedImage ref=""></w2:expandedImage>
+    		</w2:itemset>
+    		<script ev:event="onclick" type="javascript"><![CDATA[ 
+    			FV_sDeptCd = tv_Dept.getSelectedValue();
+    			
+    			fn_SearchUser(FV_sDeptCd);
+    		]]></script>
+    	</w2:treeview>
+    	<xf:trigger id="btn_Confirm"
+    		style="position: absolute ;height:30px;color:#FFFFFF;width:70px;left:734px;top:10px;"
+    		class="btn_po" type="image">
+    		<xf:label>확 인</xf:label>
+    		<script ev:event="onclick" type="javascript"><![CDATA[ 
+    			fn_Confirm();
+    		]]></script>
+    	</xf:trigger>
+    	<xf:trigger id="btn_OpenAll"
+    		style="position: absolute ;height:26px;font-size:11px;width:84px;font-family:dotum;left:38px;top:511px;"
+    		type="button">
+    		<xf:label>모두펼치기</xf:label>
+    		<script ev:event="onclick" type="javascript"><![CDATA[ 
+    			tv_Dept.spanAll(true);
+    		]]></script>
+    	</xf:trigger>
+    	<xf:trigger id="btn_CloseAll"
+    		style="position: absolute ;height:26px;font-size:11px;width:84px;font-family:dotum;left:135px;top:511px;"
+    		type="button">
+    		<xf:label>모두닫기</xf:label>
+    		<script ev:event="onclick" type="javascript"><![CDATA[ 
+    			tv_Dept.spanAll(false);
+    		]]></script>
+    	</xf:trigger>
+    	<xf:group id="grp_List" class=""
+    		style="position: absolute ;left:248px;top:51px;width:638px;height:495px;">
+    	<w2:roundRectangle arcsize="1" borderColor="#bbbdbe" borderWidth="1" id="roundRectangle2" style="position: absolute ;height:42px;width:629px;left:4px;top:4px;">
+    		<w2:gradient color1="#ffffff" color2="#c0c0c0" gradientType="top_bottom">
+    		</w2:gradient>
+    	</w2:roundRectangle><w2:roundRectangle id="roundRectangle1" style="position: absolute ;height:40px;width:627px;left:5px;top:5px;" arcsize="1" borderWidth="1" borderColor="#FFFFFF">
+    		<w2:gradient gradientType="top_bottom" color2="#c5c8cc" color1="#ffffff">
+    		</w2:gradient>
+    	</w2:roundRectangle><xf:input id="edt_Name" style="position: absolute ;height:22px;width:100px;left:350px;top:14px;" class="input_edit">
+    	</xf:input><xf:output id="output73" style="position: absolute ;vertical-align:middle;height:22px;width:30px;left:317px;top:14px;" class="if_lable" label="">
+    		<xf:label>이름</xf:label>
+    	</xf:output>
+    		<w2:grid autoFit="" baseNode="dataset" class="grid"
+    			evenRowBackgroundColor="#e1ebf5" focusMode="row" id="grd_List"
+    			oddEvenColorDisplay="true" oddRowBackgroundColor="#ffffff"
+    			overflowX="hidden" overflowY="hidden"
+    			repeatNode="record" resize=""
+    			style="position:absolute;height:432px;width:629px;left:4px;top:55px;">
+    			<w2:header class="gridHeaderTable"
+    				columnClass="gridHeaderTD1" id="header9" style="" width="472">
+    				<w2:row id="row20" style="">
+    					<w2:column colSpan="" hidden="" id="column369"
+    						inputType="text" rowSpan="" style="height:26px;" value="No"
+    						valueType="binary" width="40">
+    					</w2:column>
+    					<w2:column colSpan="" hidden="" id="column370"
+    						inputType="checkbox" rowSpan="" style="height:26px;" value=""
+    						valueType="binary" width="40">
+    					</w2:column>
+    					<w2:column colSpan="" hidden="" id="column371"
+    						inputType="text" rowSpan="" style="height:26px;" value="이름"
+    						valueType="binary" width="100">
+    					</w2:column>
+    					<w2:column id="column385" style="height:28px"
+    						hidden="" inputType="text" width="70" valueType="binary">
+    					</w2:column>
+    					<w2:column colSpan="" hidden="" id="column372"
+    						inputType="text" rowSpan="" style="height:26px;" value="직위"
+    						valueType="binary" width="80">
+    					</w2:column>
+    					<w2:column colSpan="" hidden="" id="column373"
+    						inputType="text" rowSpan="" style="height:26px;" value="회사"
+    						valueType="binary" width="160">
+    					</w2:column>
+    					<w2:column colSpan="" hidden="" id="column374"
+    						inputType="text" rowSpan="" style="height:26px;" value="부서"
+    						valueType="binary" width="138">
+    					</w2:column>
+    					<w2:column colSpan="" hidden="" id="column375"
+    						inputType="text" rowSpan="" style="height:26px;" value="재직여부"
+    						valueType="binary" width="70">
+    					</w2:column>
+    				</w2:row>
+    			</w2:header>
+    			<w2:gBody class="gridBodyTable" columnClass="gridBodyTD"
+    				id="gBody9" style="">
+    				<w2:row id="row21" style="">
+    					<w2:column hidden="" id="column378"
+    						inputType="text" style="height:21px;" value=""
+    						valueType="binary" width="50" textAlign="left" readOnly="true">
+    					</w2:column>
+    					<w2:column hidden="" id="column379"
+    						inputType="checkbox" style="height:21px;" value=""
+    						valueType="binary" width="40">
+    					</w2:column>
+    					<w2:column hidden="" id="NAME" inputType="text"
+    						style="height:21px" valueType="binary" width="70"
+    						textAlign="left" readOnly="true">
+    					</w2:column>
+    					<w2:column id="HP_NO" style="height:23px"
+    						hidden="true" inputType="text" width="70" valueType="binary">
+    					</w2:column>
+    					<w2:column hidden="" id="TITLE_NM"
+    						inputType="text" style="height:21px" valueType="binary"
+    						width="70" textAlign="left" readOnly="true">
+    					</w2:column>
+    					<w2:column hidden="" id="GROUP_FULL_NAME"
+    						inputType="text" style="height:21px" valueType="binary"
+    						width="140" textAlign="left" readOnly="true">
+    					</w2:column>
+    					<w2:column hidden="" id="DEPT_NM"
+    						inputType="text" style="height:21px" valueType="binary"
+    						width="93" textAlign="left" readOnly="true">
+    					</w2:column>
+    					<w2:column hidden="" id="ACTIVE_YN"
+    						inputType="select" style="height:21px" valueType="binary"
+    						width="45" allOption="" chooseOption="" readOnly="true">
+    						<w2:choices>
+    							<w2:item>
+    								<w2:label>Yes</w2:label>
+    								<w2:value>Y</w2:value>
+    							</w2:item>
+    							<w2:item>
+    								<w2:label>no</w2:label>
+    								<w2:value>N</w2:value>
+    							</w2:item>
+    						</w2:choices>
+    					</w2:column>
+    				</w2:row>
+    			</w2:gBody>
+    		</w2:grid>
+    		<xf:select1 id="cb_ActiveYn" appearance="minimal"
+    			style="position: absolute ;height:22px;width:80px;left:229px;top:14px;"
+    			direction="auto" chooseOption="true" displayMode="label"
+    			class="input_edit" allOption="" submenuSize="auto"
+    			disabled="false" chooseOptionLabel="ALL">
+    			<xf:choices>
+    				<xf:item>
+    					<xf:label>Yes</xf:label>
+    					<xf:value>Y</xf:value>
+    				</xf:item>
+    				<xf:item>
+    					<xf:label>No</xf:label>
+    					<xf:value>N</xf:value>
+    				</xf:item>
+    			</xf:choices>
+    		</xf:select1>
+    		<xf:output id="output77" style="position: absolute ;vertical-align:middle;height:22px;width:30px;left:22px;top:14px;" class="if_lable" label="">
+    		<xf:label>직위</xf:label>
+    	</xf:output>
+    		<xf:select1 id="cb_Title" appearance="minimal"
+    			style="position: absolute ;height:22px;width:110px;left:55px;top:13px;"
+    			direction="auto" chooseOption="true" allOption=""
+    			class="input_edit" displayMode="label" disabled="false"
+    			submenuSize="auto" chooseOptionLabel="사용자직위">
+    			<xf:choices>
+    				<xf:item>
+    					<xf:label>사원</xf:label>
+    					<xf:value>01</xf:value>
+    				</xf:item>
+    				<xf:item>
+    					<xf:label>주임</xf:label>
+    					<xf:value>02</xf:value>
+    				</xf:item>
+    				<xf:item>
+    					<xf:label>대리</xf:label>
+    					<xf:value>03</xf:value>
+    				</xf:item>
+    				<xf:item>
+    					<xf:label>과장</xf:label>
+    					<xf:value>04</xf:value>
+    				</xf:item>
+    				<xf:item>
+    					<xf:label>차장</xf:label>
+    					<xf:value>05</xf:value>
+    				</xf:item>
+    				<xf:item>
+    					<xf:label>부장</xf:label>
+    					<xf:value>06</xf:value>
+    				</xf:item>
+    				<xf:item>
+    					<xf:label>이사</xf:label>
+    					<xf:value>07</xf:value>
+    				</xf:item>
+    				<xf:item>
+    					<xf:label>상무이사</xf:label>
+    					<xf:value>08</xf:value>
+    				</xf:item>
+    				<xf:item>
+    					<xf:label>전무이사</xf:label>
+    					<xf:value>09</xf:value>
+    				</xf:item>
+    				<xf:item>
+    					<xf:label>부사장</xf:label>
+    					<xf:value>10</xf:value>
+    				</xf:item>
+    				<xf:item>
+    					<xf:label>사장</xf:label>
+    					<xf:value>11</xf:value>
+    				</xf:item>
+    				<xf:item>
+    					<xf:label>부회장</xf:label>
+    					<xf:value>12</xf:value>
+    				</xf:item>
+    				<xf:item>
+    					<xf:label>회장</xf:label>
+    					<xf:value>13</xf:value>
+    				</xf:item>
+    				<xf:item>
+    					<xf:label>실장</xf:label>
+    					<xf:value>14</xf:value>
+    				</xf:item>
+    			</xf:choices>
+    		</xf:select1>
+    		<xf:output id="output78" style="position: absolute ;vertical-align:middle;height:22px;width:50px;left:176px;top:14px;" class="if_lable" label="">
+    		<xf:label>재직여부</xf:label>
+    	</xf:output>
+    		<xf:image id="btn_Search"
+    			src="/mp/images/if_btn_seach.png"
+    			style="position: absolute ;cursor:pointer;height:25px;width:77px;left:548px;top:13px;">
+    			<script ev:event="onclick" type="javascript"><![CDATA[ 
+    				fn_SearchUser();
+    			]]></script>
+    		</xf:image></xf:group>
+    </body>
+</html>

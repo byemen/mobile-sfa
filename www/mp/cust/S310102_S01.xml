@@ -1,0 +1,151 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?xml-stylesheet href="/mp/css/style.css" type="text/css"?>
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:ev="http://www.w3.org/2001/xml-events"
+    xmlns:w2="http://www.inswave.com/websquare" xmlns:xf="http://www.w3.org/2002/xforms">
+    <head>
+    	<w2:buildDate />
+    	<xf:model>
+    		<xf:instance>
+        		<data xmlns="" />
+    		</xf:instance>
+    		<xf:submission id="submissionActive" ref="request" target="resActive"
+        		action=""
+        		method="post" mediatype="application/xml" encoding="UTF-8" instance="" replace="instance"
+        		errorHandler="" customHandler="" mode="asynchronous"
+        		processMsg="처리중입니다.">
+        		<script type="javascript" ev:event="xforms-submit-done"><![CDATA[
+            		grd_Active.setXML(WebSquare.ModelUtil.findInstanceNode("resActive/root/dataset[@id='ds_Active']"));
+			
+    				fn_AfterSearch();
+            	]]></script>
+        	</xf:submission>
+    	</xf:model>
+    	<script type="javascript" src="/mp/js/common.js"></script>
+		<script type="javascript" src="/mp/js/WebSquare.js"></script>
+    	<script type="javascript"><![CDATA[
+     	var FV_SEARCH_CNT = 7;		// 조회 건수
+		var FV_nMAXCNT = -1;		// 전체 데이터 수			
+		/****************************************************************
+		* 화면로드
+		* @param  : 없음
+		* @return : 없음
+		******************************************************************/
+        function fn_OnLoad(){
+        	wfrm_Page.visible(false);
+        	if(!gfn_IsNullVal(parent.FV_sCustSeq)){
+        		fn_Search();
+        	}
+        }        
+        /****************************************************************
+		* 조회
+		* @param  : 페이지번호
+		* @return : 없음
+		******************************************************************/ 
+        function fn_Search(pageNo){
+        	if(pageNo == null){
+				FV_nMAXCNT = -1;
+				pageNo = 1;
+				fn_InitPage();
+			}
+        	
+        	var sSqlid = "mdms/mp/cust:S310102_S01_S01@" + pageNo + "/" + FV_SEARCH_CNT;        	
+        	setTitSendInfo("request", "", "", sSqlid);
+			setInputParamData("CUST_SEQ", parent.edt_CustSeq.getValue());
+			setSubmissison("submissionActive");
+        }
+        /****************************************************************
+		* callback (조회)
+		* @param  : 없음
+		* @return : 없음
+		******************************************************************/
+        function fn_AfterSearch(){
+        	var nRownum = (FV_nCurrPage-1) * FV_SEARCH_CNT;
+        	
+        	if(FV_nCurrPage == -1 && grd_Active.getRowCount() > 0){
+				FV_nMAXCNT = grd_Active.getCellData(0,0);
+				fn_SetPageInfo(1,FV_nMAXCNT,FV_SEARCH_CNT);
+				nRownum = 0;
+			}
+			
+			for(var i=0; i<grd_Active.getRowCount(); i++){
+        		grd_Active.setCellData(i, 1, (i+1)+nRownum);
+        	}
+        	
+			var nTotalCnt = FV_nMAXCNT;
+			if(FV_nMAXCNT == -1)	nTotalCnt = 0;
+			
+			parent.tab_SubList.setLabelText(0,"활동이력(" + nTotalCnt + ")");
+        }        
+		
+        fn_OnLoad();
+        ]]></script>
+    </head>
+    <body>
+    	<w2:grid autoFit="" baseNode="dataset" class="grid"
+    		evenRowBackgroundColor="#e1ebf5" focusMode="row" id="grd_Active"
+    		oddEvenColorDisplay="true" oddRowBackgroundColor="#ffffff"
+    		overflowX="hidden" overflowY="hidden"
+    		readOnly="true" repeatNode="record" resize=""
+    		style="position:absolute;height:185px;width:967px;left:4px;top:3px;">
+    		<w2:header class="gridHeaderTable"
+    			columnClass="gridHeaderTD1" id="header11" style="" width="840">
+    			<w2:row id="row24" style="">
+    				<w2:column hidden="" id="column371" inputType="text"
+    					style="height:26px" valueType="binary" width="40">
+    				</w2:column>
+    				<w2:column colSpan="" hidden="" id="column372"
+    					inputType="text" rowSpan="" style="height:26px;" value="No"
+    					valueType="binary" width="40">
+    				</w2:column>
+    				<w2:column colSpan="" hidden="" id="column373"
+    					inputType="text" rowSpan="" style="height:26px;" value="구분"
+    					valueType="binary" width="110">
+    				</w2:column>
+    				<w2:column hidden="" id="column374" inputType="text"
+    					style="height:26px;" value="일자" valueType="binary"
+    					width="120">
+    				</w2:column>
+    				<w2:column hidden="" id="column375" inputType="text"
+    					style="height:26px;" value="내용" valueType="binary"
+    					width="383">
+    				</w2:column>
+    				<w2:column hidden="" id="column376" inputType="text"
+    					style="height:26px" value="비고" valueType="binary"
+    					width="313">
+    				</w2:column>
+    			</w2:row>
+    		</w2:header>
+    		<w2:gBody class="gridBodyTable" columnClass="gridBodyTD"
+    			id="gBody11" style="" width="840">
+    			<w2:row id="row25" style="">
+    				<w2:column hidden="true" id="_T_CNT"
+    					inputType="text" style="height:21px" valueType="binary"
+    					width="40">
+    				</w2:column>
+    				<w2:column hidden="" id="column384" inputType="text"
+    					style="height:21px;" value="" valueType="binary" width="60" textAlign="left">
+    				</w2:column>
+    				<w2:column hidden="" id="ACTIVE_TYPE"
+    					inputType="text" style="height:21px;" textAlign="left" value=""
+    					valueType="binary" width="100">
+    				</w2:column>
+    				<w2:column hidden="" id="ACTIVE_DT" inputType="text"
+    					style="height:21px;" textAlign="center" value=""
+    					valueType="binary" width="90">
+    				</w2:column>
+    				<w2:column hidden="" id="CONTENTS" inputType="text"
+    					style="height:21px;" textAlign="left" value=""
+    					valueType="binary" width="450">
+    				</w2:column>
+    				<w2:column hidden="" id="REMARK" inputType="text"
+    					style="height:21px" valueType="binary" width="260" textAlign="left">
+    				</w2:column>
+    			</w2:row>
+    		</w2:gBody>
+    	</w2:grid>
+    	<w2:wframe id="wfrm_Page" mode="async"
+    		src="/mp/comm/Paging.xml"
+    		style="position: absolute ;left:275px;top:196px;width:443px;height:28px;">
+    	</w2:wframe>
+    </body>
+</html>

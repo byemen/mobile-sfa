@@ -1,0 +1,352 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?xml-stylesheet href="/mp/css/style.css" type="text/css"?>
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:ev="http://www.w3.org/2001/xml-events"
+    xmlns:w2="http://www.inswave.com/websquare" xmlns:xf="http://www.w3.org/2002/xforms">
+    <head>
+    	<w2:buildDate />
+    	<xf:model>
+    		<xf:instance>
+    			<data xmlns="" />
+    		</xf:instance>
+    		<xf:submission id="submissionList" ref="request" target="resList"
+        		action=""
+        		method="post" mediatype="application/xml" encoding="UTF-8" instance="" replace="instance"
+        		errorHandler="" customHandler="" mode="asynchronous"
+        		processMsg="">
+        		<script type="javascript" ev:event="xforms-submit-done"><![CDATA[
+            		grd_List.setXML(WebSquare.ModelUtil.findInstanceNode("resList/root/dataset[@id='ds_List']"));
+
+    				fn_AfterSearch();
+            	]]></script>
+        	</xf:submission>
+    		<xf:submission id="submissionDealer" ref="request"
+    			target="resDealer" action="" method="post"
+    			mediatype="application/xml" encoding="UTF-8" instance=""
+    			replace="instance" errorHandler="" customHandler=""
+    			mode="asynchronous" processMsg="">
+    			<script type="javascript" ev:event="xforms-submit-done"><![CDATA[     				
+        			cb_Dealer.setValue(GV_UP_GROUP_ID);
+    			]]></script>
+    		</xf:submission>
+    	</xf:model>
+    	<script type="javascript" src="/mp/js/common.js"></script>
+		<script type="javascript" src="/mp/js/WebSquare.js"></script>
+    	<script type="javascript"><![CDATA[
+     	var FV_SEARCH_CNT = 18;		// 조회 건수
+		var FV_nMAXCNT = -1;		// 전체 데이터 수		
+		
+		/****************************************************************
+		* 화면로드
+		* @param  : 없음
+		* @return : 없음
+		******************************************************************/
+        function fn_OnLoad(){
+	      	wfrm_Page.visible(false);
+        	// 딜러      	
+			setTitSendInfo("request", "", "", "mdms/mp/comm::CO_GROUP_S01");
+        	setSubmissison("submissionDealer");
+			
+			fn_VehicleOnLoad("111111");	
+			fn_Search();	
+        }        
+        /****************************************************************
+		* 조회
+		* @param  : 페이지번호
+		* @return : 없음
+		******************************************************************/ 
+        function fn_Search(pageNo){
+        	if(pageNo == null){
+				FV_nMAXCNT = -1;
+				pageNo = 1;
+				fn_InitPage();
+			}	
+        	
+        	var sSqlid = "mdms/mp/retn:S310203_W01_S01@" + pageNo + "/" + FV_SEARCH_CNT;
+        	
+        	setTitSendInfo("request", "", "", sSqlid);
+        	setInputParamData("DEALER_ID",cb_Dealer.getValue());
+        	setInputParamData("BRAND_CD", cb_Brand.getValue());
+        	setInputParamData("MODEL_CD", cb_Model.getValue());
+        	setInputParamData("VARIANT_CD", cb_Variant.getValue());
+        	setInputParamData("MY_CD", cb_Model_Year.getValue());
+        	setInputParamData("SFX_CD", cb_Sfx.getValue());
+        	setInputParamData("COL_COMBI_CD", cb_Color.getValue());   	
+        	
+    		setSubmissison("submissionList");
+        }
+        /****************************************************************
+		* callback (조회)
+		* @param  : 없음
+		* @return : 없음
+		******************************************************************/
+        function fn_AfterSearch(){
+        	if(FV_nCurrPage == -1 && grd_List.getRowCount() > 0){
+				FV_nMAXCNT = grd_List.getCellData(0,0);
+				fn_SetPageInfo(1,FV_nMAXCNT,FV_SEARCH_CNT);
+        	}
+        }
+        
+        fn_OnLoad();
+        ]]></script>
+    </head>
+    <body>
+
+    	<w2:grid baseNode="dataset" autoFit=""
+    		class="grid" resize=""
+    		id="grd_List" focusMode="row"
+    		style="position:absolute;height:463px;width:991px;left:1px;top:98px;"
+    		evenRowBackgroundColor="#e1ebf5" overflowX="hidden"
+    		overflowY="hidden" oddEvenColorDisplay="true"
+    		oddRowBackgroundColor="#ffffff" repeatNode="record"
+    		sortEvent="onclick" readOnly="true">
+    		<w2:header id="header7" style="" width="472"
+    			columnClass="gridHeaderTD1" class="gridHeaderTable">
+    			<w2:row id="row16" style="">
+    				<w2:column id="column358" style="height:40px"
+    					hidden="" inputType="text" width="30" valueType="binary"
+    					colSpan="" rowSpan="2">
+    				</w2:column>
+    				<w2:column id="column222" style="height:40px;"
+    					hidden="" width="80" inputType="text" value="딜러" rowSpan="2"
+    					valueType="binary" colSpan="">
+    				</w2:column>
+    				<w2:column id="column223" style="height:40px;"
+    					hidden="" width="79" inputType="text" value="모델"
+    					valueType="binary" colSpan="" rowSpan="2">
+    				</w2:column>
+    				<w2:column id="column224" style="height:40px;"
+    					hidden="" width="80" inputType="text" value="차종"
+    					valueType="binary" colSpan="" rowSpan="2">
+    				</w2:column>
+    				<w2:column id="column225" style="height:40px;"
+    					hidden="" width="50" inputType="text" value="연식"
+    					valueType="binary" colSpan="" rowSpan="2">
+    				</w2:column>
+    				<w2:column id="column226" style="height:40px;"
+    					hidden="" width="141" inputType="text" value="색상"
+    					valueType="binary" colSpan="" rowSpan="2">
+    				</w2:column>
+    				<w2:column id="column278" style="height:40px"
+    					hidden="" inputType="text" width="90" valueType="binary"
+    					value="Customer&amp;nbsp&lt;br&gt;&amp;nbspAllocation&amp;nbsp&lt;br&gt;&amp;nbspStock"
+    					colSpan="" rowSpan="2">
+    				</w2:column>
+    				<w2:column id="column284" style="height:20px"
+    					hidden="" inputType="text" width="370" valueType="binary"
+    					value="STOCK" colSpan="4" rowSpan="">
+    				</w2:column>
+    				<w2:column id="column322" style="height:40px"
+    					hidden="" inputType="text" width="100" valueType="binary"
+    					colSpan="" rowSpan="2" value="Total">
+    				</w2:column>
+    			</w2:row>
+    			<w2:row id="row18" style="">
+    				<w2:column id="column331" style="height:20px"
+    					hidden="" width="90" inputType="text" valueType="binary"
+    					value="정상재고">
+    				</w2:column>
+    				<w2:column id="column332" style="height:20px"
+    					hidden="" width="90" inputType="text" valueType="binary"
+    					value="전시차재고">
+    				</w2:column>
+    				<w2:column id="column333" style="height:20px"
+    					hidden="" width="100" inputType="text" valueType="binary"
+    					value="DEALER OPEN재고">
+    				</w2:column>
+    				<w2:column id="column334" style="height:20px"
+    					hidden="" width="90" inputType="text" valueType="binary"
+    					value="손망실">
+    				</w2:column>
+    			</w2:row>
+    		</w2:header>
+    		<w2:gBody id="gBody7" style="" columnClass="gridBodyTD"
+    			class="gridBodyTable">
+    			<w2:row id="row17" style="">
+    				<w2:column id="_T_CNT" style="height:22px"
+    					hidden="true" inputType="text" width="70" valueType="binary">
+    				</w2:column>
+    				<w2:column id="DEALER_ID" style="height:21px;"
+    					hidden="" width="80" inputType="select" value=""
+    					valueType="binary" colMerge="true" allOption=""
+    					chooseOption="">
+    					<w2:choices>
+    						<w2:itemset
+    							nodeset="resDealer/root/dataset[@id='ds_Dealer']">
+    							<w2:label ref="record/NAME"></w2:label>
+    							<w2:value ref="record/CODE"></w2:value>
+    						</w2:itemset>
+    					</w2:choices>
+    				</w2:column>
+    				<w2:column id="MODEL_NM" style="height:21px;"
+    					hidden="" width="79" inputType="text" value=""
+    					valueType="binary" colMerge="true">
+    				</w2:column>
+    				<w2:column id="VARIANT_NM" style="height:21px;"
+    					hidden="" width="80" inputType="text" value=""
+    					valueType="binary" colMerge="true">
+    				</w2:column>
+    				<w2:column id="MY_CD" style="height:21px;" hidden=""
+    					width="50" inputType="text" value="" valueType="binary"
+    					colMerge="true" upperColumn="VARIANT_NM">
+    				</w2:column>
+    				<w2:column id="COL_COMBI_NM" style="height:21px;"
+    					hidden="" width="141" inputType="text" value=""
+    					valueType="binary" textAlign="left">
+    				</w2:column>
+    				<w2:column id="CUSTOMER_ALLOCATION_STOCK"
+    					style="height:21px" hidden="" inputType="text" width="90"
+    					valueType="binary" textAlign="right">
+    				</w2:column>
+    				<w2:column id="STOCK_STATUS_01" style="height:21px"
+    					hidden="" inputType="text" width="90" valueType="binary"
+    					textAlign="right">
+    				</w2:column>
+    				<w2:column id="STOCK_STATUS_02" style="height:21px"
+    					hidden="" inputType="text" width="90" valueType="binary"
+    					textAlign="right">
+    				</w2:column>
+    				<w2:column id="STOCK_STATUS_97" style="height:21px"
+    					hidden="" inputType="text" width="100" valueType="binary"
+    					textAlign="right">
+    				</w2:column>
+    				<w2:column id="STOCK_STATUS_99" style="height:21px"
+    					hidden="" inputType="text" width="90" valueType="binary"
+    					textAlign="right">
+    				</w2:column>
+    				<w2:column id="TOTAL" style="height:21px" hidden=""
+    					inputType="text" width="100" valueType="binary"
+    					textAlign="right" expression="">
+    				</w2:column>
+    			</w2:row>
+    		</w2:gBody>
+    		<w2:footer id="footer1" style="">
+    			<w2:row id="row20" style="">
+    				<w2:column id="column361" style="height:20px"
+    					hidden="" inputType="text" width="70" valueType="binary">
+    				</w2:column>
+    				<w2:column id="column357" style="height:20px"
+    					hidden="" width="430" inputType="text" valueType="binary"
+    					colSpan="5" rowSpan="" value="Total">
+    				</w2:column>
+    				<w2:column id="column352" style="height:20px"
+    					hidden="" width="90" inputType="expression" valueType="binary"
+    					expression="SUM('CUSTOMER_ALLOCATION_STOCK')"
+    					textAlign="right">
+    				</w2:column>
+    				<w2:column id="column351" style="height:20px"
+    					hidden="" width="90" inputType="expression" valueType="binary"
+    					expression="SUM('STOCK_STATUS_01')" textAlign="right">
+    				</w2:column>
+    				<w2:column id="column350" style="height:20px"
+    					hidden="" width="90" inputType="expression" valueType="binary"
+    					expression="SUM('STOCK_STATUS_02')" textAlign="right">
+    				</w2:column>
+    				<w2:column id="column349" style="height:20px"
+    					hidden="" width="100" inputType="expression" valueType="binary"
+    					expression="SUM('STOCK_STATUS_97')" textAlign="right">
+    				</w2:column>
+    				<w2:column id="column348" style="height:20px"
+    					hidden="" width="90" inputType="expression" valueType="binary"
+    					expression="SUM('STOCK_STATUS_99')" textAlign="right">
+    				</w2:column>
+    				<w2:column id="column347" style="height:20px"
+    					hidden="" width="100" inputType="expression" valueType="binary"
+    					expression="SUM('TOTAL')" textAlign="right">
+    				</w2:column>
+    			</w2:row>
+    		</w2:footer>
+    	</w2:grid>
+    	<xf:image id="image42"
+    		src="/mp/images/smenu_bg.png"
+    		style="position: absolute ;height:36px;width:991px;left:0px;top:0px;">
+    	</xf:image>
+
+    	<xf:image id="image43"
+    		src="/mp/images/stitle_bg.png"
+    		style="position: absolute ;height:36px;width:172px;left:1px;top:0px;">
+    	</xf:image>
+    	<xf:output class="title" id="title" label=""
+    		style="position: absolute ;height:20px;width:149px;left:3px;top:11px;;text-align:center">
+    		<xf:label>재고조회</xf:label>
+    	</xf:output>
+    	<w2:roundRectangle arcsize="1" borderColor="#bbbdbe"
+    		borderWidth="1" id="roundRectangle2"
+    		style="position: absolute ;height:42px;width:991px;left:1px;top:45px;">
+    		<w2:gradient color1="#ffffff" color2="#c0c0c0"
+    			gradientType="top_bottom">
+    		</w2:gradient>
+    	</w2:roundRectangle>
+    	<w2:roundRectangle id="roundRectangle1"
+    		style="position: absolute ;height:40px;width:988px;left:3px;top:46px;"
+    		arcsize="1" borderWidth="1" borderColor="#FFFFFF">
+    		<w2:gradient gradientType="top_bottom" color2="#c5c8cc"
+    			color1="#ffffff">
+    		</w2:gradient>
+    	</w2:roundRectangle>
+    	<xf:select1 id="cb_Dealer" appearance="minimal"
+    		style="position: absolute ;height:22px;width:80px;left:55px;top:55px;"
+    		direction="auto" chooseOption="true" displayMode="label"
+    		allOption="" class="input_edit" disabled="false"
+    		submenuSize="auto" chooseOptionLabel="ALL">
+    		<xf:choices>
+    			<xf:itemset
+    				nodeset="resDealer/root/dataset[@id='ds_Dealer']">
+    				<xf:label ref="record/NAME"></xf:label>
+    				<xf:value ref="record/CODE"></xf:value>
+    			</xf:itemset>
+    		</xf:choices>
+    	</xf:select1>
+    	<xf:output class="if_lable" id="output50" label=""
+    		style="position: absolute ;height:22px;width:51px;left:141px;top:55px;">
+    		<xf:label>차량사양</xf:label>
+    	</xf:output>
+    	<xf:image id="image48"
+    		src="/mp/images/if_btn_seach.png"
+    		style="position: absolute ;cursor:pointer;height:25px;width:77px;left:892px;top:54px;">
+    		<script ev:event="onclick" type="javascript"><![CDATA[ 
+    			fn_Search();
+    		]]></script>
+    	</xf:image>
+    	<xf:trigger class="btn_s1" id="trigger1"
+    		style="position: absolute ;height:25px;width:88px;left:628px;top:6px;"
+    		type="image">
+    		<xf:label>계약조회</xf:label>
+    		<script ev:event="onclick" type="javascript"><![CDATA[ 
+    			parent.ifrm_Main.setSrc("/mp/retn/S310201_W01.xml");
+    		]]></script>
+    	</xf:trigger>
+    	<xf:trigger class="btn_s2" id="trigger2"
+    		style="position: absolute ;height:25px;width:88px;left:805px;top:6px;"
+    		type="image">
+    		<xf:label>가격조회</xf:label>
+    		<script ev:event="onclick" type="javascript"><![CDATA[ 
+    			parent.ifrm_Main.setSrc("/mp/retn/S310204_W01.xml");
+    		]]></script>
+    	</xf:trigger>
+    	<xf:trigger class="btn_s3" id="trigger3"
+    		style="position: absolute ;height:25px;width:88px;left:894px;top:6px;"
+    		type="image">
+    		<xf:label>계약등록</xf:label>
+    		<script ev:event="onclick" type="javascript"><![CDATA[ 
+    			parent.ifrm_Main.setSrc("/mp/retn/S310202_W01.xml");
+    		]]></script>
+    	</xf:trigger>
+    	<xf:trigger class="btn_on2" id="trigger4"
+    		style="position: absolute ;height:25px;width:88px;left:716px;top:6px;"
+    		type="image">
+    		<xf:label>재고조회</xf:label>
+    	</xf:trigger>
+    	<xf:output class="if_lable" id="output72" label=""
+    		style="position: absolute ;height:22px;width:41px;left:11px;top:55px;">
+    		<xf:label>딜러</xf:label>
+    	</xf:output>
+    	<w2:wframe id="wfrm_Vehic" mode="sync"
+    		src="/mp/comm/VehicleSpec.xml"
+    		style="position: absolute ;left:195px;top:55px;width:685px;height:22px;">
+    	</w2:wframe>
+    	<w2:wframe id="wfrm_Page" mode="sync"
+    		src="/mp/comm/Paging.xml"
+    		style="position: absolute ;left:286px;top:569px;width:443px;height:28px;">
+    	</w2:wframe>
+    </body>
+</html>

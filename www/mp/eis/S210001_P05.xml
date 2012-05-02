@@ -1,0 +1,113 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?xml-stylesheet href="/mp/css/frame.css" type="text/css"?>
+<html xmlns="http://www.w3.org/1999/xhtml"
+    xmlns:ev="http://www.w3.org/2001/xml-events"
+    xmlns:w2="http://www.inswave.com/websquare" xmlns:xf="http://www.w3.org/2002/xforms">
+    <head>
+        <w2:buildDate/>
+        <xf:model>
+            <xf:instance>
+                <data xmlns=""/>
+            </xf:instance>
+            <xf:submission id="submissionMax" ref="request" target="resMax"
+        		action=""
+        		method="post" mediatype="application/xml" encoding="UTF-8" instance="" replace="instance"
+        		errorHandler="" customHandler="" mode="asynchronous"
+        		processMsg="">
+        		<script type="javascript" ev:event="xforms-submit-done"><![CDATA[
+				   	FV_sMaxValue = WebSquare.ModelUtil.getInstanceValue("resMax/root/dataset[@id='ds_Max']/record/MAX_VALUE");
+				   	fn_Search();
+            	]]></script>
+        	</xf:submission>
+        </xf:model>
+        <script type="javascript" src="/mp/js/common.js"></script>
+        <script type="javascript" src="/mp/js/WebSquare.js"></script>
+        <script type="javascript"><![CDATA[
+			var FV_sShopCd = parent.FV_sShopCd;
+			var FV_sSvcNm = parent.FV_sSvcNm;
+			var FV_sToday = parent.FV_sToday;
+			var FV_sTerm_Type = parent.FV_sTerm_Type
+			var FV_sMaxValue = 0;	
+			var actionNm = "";
+			
+			if(FV_sSvcNm == "T"){
+				actionNm = "TOYOTAAction";
+			}
+			
+			
+			setTitSendInfo("request", actionNm, "", "mdms/mp/eis:S210013_W01_S08");
+        	setInputParamData("SHOP_CD", FV_sShopCd);
+        	setInputParamData("TODAY_DT", FV_sToday);
+        	setInputParamData("TERM_TYPE", FV_sTerm_Type);
+			setSubmissison("submissionMax");
+			
+			
+			function fn_Search() {
+				ifrm_1.setSrc("/mp/FusionCharts/Code/S210013_C02.jsp?SVC=CALL&MAX_VALUE="+FV_sMaxValue);		
+				ifrm_2.setSrc("/mp/FusionCharts/Code/S210013_C02.jsp?SVC=VISIT&MAX_VALUE="+FV_sMaxValue);			
+				ifrm_3.setSrc("/mp/FusionCharts/Code/S210013_C02.jsp?SVC=DRIVE&MAX_VALUE="+FV_sMaxValue);			
+				ifrm_4.setSrc("/mp/FusionCharts/Code/S210013_C02.jsp?SVC=CONTRACT&MAX_VALUE="+FV_sMaxValue);			
+				ifrm_5.setSrc("/mp/FusionCharts/Code/S210013_C02.jsp?SVC=SALES&MAX_VALUE="+FV_sMaxValue);		
+				ifrm_6.setSrc("/mp/FusionCharts/Code/S210013_C02.jsp?SVC=BOC&MAX_VALUE="+FV_sMaxValue);
+			}			
+        ]]></script>
+    </head>
+    <body>
+    	<w2:textbox id="output32"
+    		style="position: absolute ;height:544px;width:980px;background-color:#b0b0b0;left:0px;top:0px;"
+    		label="">
+    	</w2:textbox>
+    	<xf:image id="image21"
+    		src="/mp/images/eis/p_im_top_bg.png"
+    		style="position: absolute ;height:36px;width:980px;left:0px;top:0px;">
+    	</xf:image>
+    	<xf:image id="logout"
+    		style="position: absolute ;cursor:pointer;height:36px;width:41px;left:939px;top:0px;"
+    		src="/mp/images/eis/p_bt_close.png">
+    		<script ev:event="onclick" type="javascript"><![CDATA[ 
+    			parent.fn_PopupClose();
+    		]]></script>
+    	</xf:image>
+
+    	<w2:textbox id="output31"
+    		style="position: absolute ;height:30px;width:416px;left:0px;top:0px;"
+    		label="Sales Process Report" class="title_p">
+    	</w2:textbox>
+    	<w2:iframe id="ifrm_1" scrolling="no" src=""
+    		style="position: absolute ;left:4px;top:73px;width:160px;height:466px;">
+    	</w2:iframe>
+    	<w2:iframe id="ifrm_2" scrolling="no" src=""
+    		style="position: absolute ;left:166px;top:73px;width:160px;height:466px;">
+    	</w2:iframe>
+    	<w2:iframe id="ifrm_4" scrolling="no" src=""
+    		style="position: absolute ;left:490px;top:73px;width:160px;height:466px;">
+    	</w2:iframe>
+    	<w2:iframe id="ifrm_3" scrolling="no" src=""
+    		style="position: absolute ;left:328px;top:73px;width:160px;height:466px;">
+    	</w2:iframe>
+    	<w2:iframe id="ifrm_5" scrolling="no" src=""
+    		style="position: absolute ;left:652px;top:73px;width:160px;height:466px;">
+    	</w2:iframe>
+    	<w2:iframe id="ifrm_6" scrolling="no" src=""
+    		style="position: absolute ;left:814px;top:73px;width:160px;height:466px;">
+    	</w2:iframe>
+    	<w2:textbox id="txt_2" label="- Visit -"
+    		style="position: absolute ;height:16px;color:#ffffff;text-align:center;width:161px;left:166px;top:50px;">
+    	</w2:textbox>
+    	<w2:textbox id="txt_6" label="- BOC -"
+    		style="position: absolute ;height:16px;color:#ffffff;text-align:center;width:161px;left:815px;top:50px;">
+    	</w2:textbox>
+    	<w2:textbox id="txt_1" label="- Call -"
+    		style="position: absolute ;height:16px;color:#ffffff;text-align:center;width:161px;left:4px;top:50px;">
+    	</w2:textbox>
+    	<w2:textbox id="txt_3" label="- TestDriving -"
+    		style="position: absolute ;height:16px;color:#ffffff;text-align:center;width:161px;left:328px;top:50px;">
+    	</w2:textbox>
+    	<w2:textbox id="txt_5" label="- Sales -"
+    		style="position: absolute ;height:16px;color:#ffffff;text-align:center;width:161px;left:652px;top:50px;">
+    	</w2:textbox>
+    	<w2:textbox id="txt_4" label="- Contract -"
+    		style="position: absolute ;height:16px;color:#ffffff;text-align:center;width:161px;left:490px;top:50px;">
+    	</w2:textbox>
+    </body>
+</html>

@@ -1,0 +1,1478 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?xml-stylesheet href="/mp/css/style.css" type="text/css"?>
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:ev="http://www.w3.org/2001/xml-events"
+    xmlns:w2="http://www.inswave.com/websquare" xmlns:xf="http://www.w3.org/2002/xforms">
+    <head>
+    	<w2:buildDate />
+    	<xf:model>
+    		<xf:instance>
+    			<data xmlns="" />
+    		</xf:instance>
+    		<xf:submission id="submissionMaster" ref="request"
+    			target="resMaster" action="" method="post"
+    			mediatype="application/xml" encoding="UTF-8" instance=""
+    			replace="instance" errorHandler="" customHandler=""
+    			mode="synchronous" processMsg="">
+        		<script type="javascript" ev:event="xforms-submit-done"><![CDATA[ 
+					if(!FV_IS_NEW){
+						FV_VEHIC_PRICE = WebSquare.ModelUtil.getInstanceValue("resMaster/root/dataset[@id='ds_Master']/record/VEHIC_PRICE");
+						FV_VEHIC_VAT = WebSquare.ModelUtil.getInstanceValue("resMaster/root/dataset[@id='ds_Master']/record/VEHIC_VAT");
+						FV_VEHIC_DISCOUNT_AMT = WebSquare.ModelUtil.getInstanceValue("resMaster/root/dataset[@id='ds_Master']/record/VEHIC_DISCOUNT_AMT");
+						FV_VEHIC_TOTAL_AMT = WebSquare.ModelUtil.getInstanceValue("resMaster/root/dataset[@id='ds_Master']/record/VEHIC_TOTAL_AMT");
+						FV_SALES_TYPE = WebSquare.ModelUtil.getInstanceValue("resMaster/root/dataset[@id='ds_Master']/record/SALES_TYPE");
+					}
+					fn_AfterSearch();
+        		]]></script>
+    		</xf:submission>
+        	<xf:submission id="submissionLease" ref="request" target="resLease"
+        		action=""
+        		method="post" mediatype="application/xml" encoding="UTF-8" instance="" replace="instance"
+        		errorHandler="" customHandler="" mode="synchronous"
+        		processMsg="">
+        	</xf:submission>
+        	<xf:submission id="submissionCustoms" ref="request" target="resCustoms"
+        		action=""
+        		method="post" mediatype="application/xml" encoding="UTF-8" instance="" replace="instance"
+        		errorHandler="" customHandler="" mode="synchronous"
+        		processMsg="">
+        	</xf:submission>
+        	<xf:submission id="submissionCode" ref="request" target="resCode"
+        		action=""
+        		method="post" mediatype="application/xml" encoding="UTF-8" instance="" replace="instance"
+        		errorHandler="" customHandler="" mode="asynchronous"
+        		processMsg="">
+        		<script type="javascript" ev:event="xforms-submit-done"><![CDATA[ 
+					if(!gfn_IsNullVal(parent.FV_sContractNo)){
+						FV_IS_NEW = false;
+						trigger1.hide();
+						trigger2.hide();
+						trigger3.hide();
+						edt_ContractNo.setValue(parent.FV_sContractNo);
+						fn_Search();
+					} else{
+						parent.parent.fn_SpinnerHide();
+						btn_Close.hide();
+						rd_Place.setValue("01");
+						rd_Plate.setValue("01");
+					}
+        		]]></script>
+        	</xf:submission>
+        	<xf:submission id="submissionRetail" ref="request"
+        		target="resRetail" action="" method="post"
+        		mediatype="application/xml" encoding="UTF-8" instance=""
+        		replace="instance" errorHandler="" customHandler=""
+        		mode="asynchronous" processMsg="">
+        		<script type="javascript" ev:event="xforms-submit-done"><![CDATA[ 
+        			fn_AfterRetail();
+        		]]></script>
+        	</xf:submission>
+        	<xf:submission id="submissionSave" ref="request"
+        		target="resSave" action="" method="post"
+        		mediatype="application/xml" encoding="UTF-8" instance=""
+        		replace="instance" errorHandler="" customHandler=""
+        		mode="asynchronous" processMsg="">
+        		<script type="javascript" ev:event="xforms-submit-done"><![CDATA[ 
+        			fn_AfterSave();
+        		]]></script>
+        	</xf:submission>
+        	<xf:submission id="submissionChk" ref="request"
+        		target="resChk" action="" method="post"
+        		mediatype="application/xml" encoding="UTF-8" instance=""
+        		replace="instance" errorHandler="" customHandler=""
+        		mode="asynchronous" processMsg="">
+        		<script type="javascript" ev:event="xforms-submit-done"><![CDATA[ 
+        			fn_AfterChk();
+        		]]></script>
+        	</xf:submission>
+    	</xf:model>
+    	<script type="text/javascript" src="/mp/js/common.js"></script>
+		<script type="text/javascript" src="/mp/js/WebSquare.js"></script>
+    	<script language="javascript"><![CDATA[
+    	var FV_sCustNm = "";
+		var FV_sDealerId = "";
+		var FV_sCustType = "";
+    	var FV_sGb = true;
+    	var FV_sUpdateType = "";
+		var FV_VEHIC_PRICE = 0;
+		var FV_VEHIC_VAT = 0;
+		var FV_VEHIC_DISCOUNT_AMT = 0;
+		var FV_VEHIC_TOTAL_AMT = 0;
+		var FV_SALES_TYPE = "";
+		var FV_IS_NEW = true;
+		var FV_FOLLOWUP_ID = "";
+     	/****************************************************************
+		* 화면로드
+		* @param  : 없음
+		* @return : 없음
+		******************************************************************/
+        function fn_OnLoad(){
+        	// 공통코드
+       		setTitSendInfo("request", "", "", "mdms/mp/comm::CO_ACNT_VAT_TAX_S01,mdms/mp/comm::CO_CODE_S01");
+       		setInputParamData("COND1", GV_UP_GROUP_ID);
+			setInputParamData("CD_KND", "'SA0101'");	//판매유형
+			setSubmissison("submissionCode");
+
+			FV_sDisplayStyle = "Input";
+			fn_VehicleOnLoad("111111");
+
+			if(GV_BRAND_CD == "L"){
+				rd_OwnType.show();
+				rd_OwnType.setValue("01");
+			}
+        }
+        /****************************************************************
+		* 조회
+		* @param  : 없음
+		* @return : 없음
+		******************************************************************/ 
+        function fn_Search(){
+        	FV_sGb = false;
+
+        	var sSqlid = "mdms/mp/retn:S310202_W01_S01";
+
+        	setTitSendInfo("request", "", "", sSqlid);
+        	setInputParamData("CONTRACT_NO", edt_ContractNo.getValue()); 	
+    		setSubmissison("submissionMaster");
+        }
+        /****************************************************************
+		* 저장
+		* @param  : 없음
+		* @return : 없음
+		******************************************************************/ 
+        function fn_Save(){ 
+        	fn_SetDsOwnerType();
+
+			if(GV_BRAND_CD == "L"){
+				if(!fn_DoesCustomerHaveRelCust()){
+					alert("해당 고객은 관계 법인이 설정되어있지 않아\n법인명의로 계약등록이 불가능 합니다.");
+					rd_OwnType.focus();
+					return;
+				}
+			}
+
+        	if(!gfn_IsNullVal(edt_ContractNo.getValue()) && edt_ConStatCd.getValue().substring(0,1) != "C"){
+        		alert("계약승인 이후의 단계에서는 수정을 할 수 없습니다.");
+        		return;
+        	}
+
+        	if(gfn_IsNullVal(edt_DlrConNo.getValue())){
+				alert("딜러계약번호 항목에 값이 누락되었습니다.\n확인하여 주십시오.");
+				edt_DlrConNo.focus();
+				return;
+			}
+			if(gfn_IsNullVal(edt_CustNm.getValue())){
+				alert("고객명 항목에 값이 누락되었습니다.\n확인하여 주십시오.");
+				edt_CustNm.focus();
+				return;
+			}
+			
+			if(edt_OwnerType.getValue() == "01"){
+				if(gfn_IsNullVal(edt_TaxpayNo.getValue())){
+					alert("주민등록번호 항목에 값이 누락되었습니다.\n확인하여 주십시오.");
+					edt_TaxpayNo.focus();
+					return;
+				}
+			} else{
+				if(gfn_IsNullVal(edt_CompNo.getValue())){
+					alert("사업자번호 항목에 값이 누락되었습니다.\n확인하여 주십시오.");
+					edt_CompNo.focus();
+					return;
+				}
+			}
+			
+			if(gfn_IsNullVal(cb_Brand.getValue())){
+				alert("차량 브랜드 항목에 값이 누락되었습니다.\n확인하여 주십시오.");
+				cb_Brand.focus();
+				return;
+			}
+			if(gfn_IsNullVal(cb_Model.getValue())){
+				alert("차량 모델 항목에 값이 누락되었습니다.\n확인하여 주십시오.");
+				cb_Model.focus();
+				return;
+			}
+			if(gfn_IsNullVal(cb_Variant.getValue())){
+				alert("차량 차종 항목에 값이 누락되었습니다.\n확인하여 주십시오.");
+				cb_Variant.focus();
+				return;
+			}
+			if(gfn_IsNullVal(cb_Model_Year.getValue())){
+				alert("차종 연식 항목에 값이 누락되었습니다.\n확인하여 주십시오.");
+				cb_Model_Year.focus();
+				return;
+			}
+			if(gfn_IsNullVal(cb_Sfx.getValue())){
+				alert("차량 SFX 항목에 값이 누락되었습니다.\n확인하여 주십시오.");
+				cb_Sfx.focus();
+				return;
+			}
+			if(gfn_IsNullVal(cb_Color.getValue())){
+				alert("차량 색상 항목에 값이 누락되었습니다.\n확인하여 주십시오.");
+				cb_Color.focus();
+				return;
+			}
+			if(gfn_IsNullVal(edt_VehicPrice.getValue()) || gfn_IsNullVal(edt_VehicTax.getValue())){
+				alert("차량 가격 항목에 값이 누락되었습니다.\n확인하여 주십시오.");
+				return;
+			}
+			if(gfn_IsNullVal(cb_SaleType.getValue())){
+				alert("판매유형 항목에 값이 누락되었습니다.\n확인하여 주십시오.");
+				cb_SaleType.focus();
+				return;
+			}
+			if(gfn_IsNullVal(edt_SalePrice.getValue()) || gfn_IsNullVal(edt_Total.getValue())){
+				alert("판매가격 항목에 값이 누락되었습니다.\n확인하여 주십시오.");
+				return;
+			}
+			if(gfn_IsNullVal(cb_PayType.getValue())){
+				alert("지불유형 항목에 값이 누락되었습니다.\n확인하여 주십시오.");
+				cb_PayType.focus();
+				return;
+			}
+			if(cb_PayType.getValue() == "04"){
+				if(gfn_IsNullVal(cb_LeaseComp.getValue())){
+					alert("등록된 할부사 정보가 없습니다. 등록 후 계약을 등록해주세요.");
+					cb_LeaseComp.focus();
+					return;
+				}
+			} else if(cb_PayType.getValue() == "05"){
+				if(gfn_IsNullVal(cb_LeaseComp.getValue())){
+					alert("등록된 리스사 정보가 없습니다. 등록 후 계약을 등록해주세요.");
+					cb_LeaseComp.focus();
+					return;
+				}
+			}
+			if(gfn_IsNullVal(cb_TaxType.getValue())){
+				alert("과세구분 항목에 값이 누락되었습니다.\n확인하여 주십시오.");
+				cb_TaxType.focus();
+				return;
+			}
+			if(gfn_IsNullVal(edt_TakeAmt.getValue()) || gfn_IsNullVal(cb_TakeType.getValue())){
+				alert("계약금 항목에 값이 누락되었습니다.\n확인하여 주십시오.");
+				return;
+			}
+			if(gfn_IsNullVal(rd_Place.getValue())){
+				alert("인도장소 항목에 값이 누락되었습니다.\n확인하여 주십시오.");
+				return;
+			}
+			if(FV_IS_NEW){
+    			parent.parent.fn_SpinnerShow();
+				fn_ContractChk();
+			}else{
+    			parent.parent.fn_SpinnerShow();
+				fn_AfterChk();
+			}
+        }
+        /****************************************************************
+		* callback (조회)
+		* @param  : 없음
+		* @return : 없음
+		******************************************************************/
+        function fn_AfterSearch(){
+  			FV_sGb = true;
+  			var master = WebSquare.ModelUtil.findInstanceNodes("resMaster/root/dataset[@id='ds_Master']/record");
+
+  			if(master.length > 0){
+  				cb_Brand.setValue(WebSquare.xml.getValue(master[0],"BRAND_CD"));
+  				cb_Model.setValue(WebSquare.xml.getValue(master[0],"MODEL_CD"));
+  				cb_Variant.setValue(WebSquare.xml.getValue(master[0],"VARIANT_CD"));
+  				cb_Model_Year.setValue(WebSquare.xml.getValue(master[0],"MY_CD"));
+  				cb_Sfx.setValue(WebSquare.xml.getValue(master[0],"SFX_CD"));
+  				cb_Color.setValue(WebSquare.xml.getValue(master[0],"COL_COMBI_CD"));
+
+  				if(GV_BRAND_CD == "L"){
+					rd_OwnType.setValue(WebSquare.xml.getValue(master[0],"OWNER_TYPE"));
+				}
+  			}
+
+  			if(gfn_IsNullVal(cb_Customs.getValue()))
+  				cb_Customs.setDisabled(true);
+
+			cb_SaleType.setValue(FV_SALES_TYPE);
+			edt_VehicTax.setValue(FV_VEHIC_VAT);
+			edt_VehicPrice.setValue(FV_VEHIC_PRICE);
+			if(FV_VEHIC_DISCOUNT_AMT==0){
+				edt_Discount.setValue("");
+			}else{
+				edt_Discount.setValue(FV_VEHIC_DISCOUNT_AMT);
+			}
+			edt_Total.setValue(FV_VEHIC_TOTAL_AMT);
+			edt_SalePrice.setValue(parseInt(FV_VEHIC_TOTAL_AMT)+parseInt(FV_VEHIC_DISCOUNT_AMT));
+//			edt_Total.setValue(edt_SalePrice.getValue() - edt_Discount.getValue());
+
+        }
+        /****************************************************************
+		* callback (조회)
+		* @param  : 없음
+		* @return : 없음
+		******************************************************************/
+        function fn_AfterChk(){
+        	var arrChk = WebSquare.ModelUtil.findInstanceNodes("resChk/root/dataset[@id='ds_Chk']/record");
+
+			if(arrChk.length != 0&&FV_IS_NEW){
+				var sGroupNm = WebSquare.xml.getValue(arrChk[0],"GROUP_NAME");
+				var sContractDt = WebSquare.xml.getValue(arrChk[0],"CONTRACT_DT");
+
+				var cfmMsg = "해당 고객의 유효 계약이 "+sGroupNm+"에 "+sContractDt+"에 등록되어 있습니다.\n계약 등록을 진행하시겠습니까?";
+
+				if(!confirm(cfmMsg))
+					return;
+			}
+			var sCustomsSeq = cb_Customs.getValue();
+			if(gfn_IsNullVal(sCustomsSeq))
+				sCustomsSeq = "";			
+
+			if(!gfn_IsNullVal(edt_ContractNo.getValue()))
+				FV_sUpdateType = "UPDATE";
+			else
+				FV_sUpdateType = "INSERT";
+
+        	setTitSendInfo("request", "S310202_W01Action", "save", "");
+
+			setInputParamData("CONTRACT_NO",edt_ContractNo.getValue());
+			setInputParamData("DLR_CONTRACT_NO",edt_DlrConNo.getValue());
+			setInputParamData("CONTRACT_DT","");
+			setInputParamData("CONTRACT_STAT_CD",edt_ConStatCd.getValue());
+			setInputParamData("DEALER_ID",GV_UP_GROUP_ID);
+			setInputParamData("SHOP_CD",GV_GROUP_ID);
+			setInputParamData("USER_ID",GV_USER_ID);
+			setInputParamData("OWNER_TYPE",edt_OwnerType.getValue());
+			setInputParamData("CUST_SEQ",edt_CustSeq.getValue());
+			setInputParamData("COMP_SEQ",edt_CompSeq.getValue());
+			setInputParamData("OWNER_SEQ","");
+			setInputParamData("CUSTOMS_SEQ",sCustomsSeq);
+			setInputParamData("BRAND_CD",cb_Brand.getValue());
+			setInputParamData("MODEL_CD",cb_Model.getValue());
+			setInputParamData("VARIANT_CD",cb_Variant.getValue());
+			setInputParamData("MY_CD",cb_Model_Year.getValue());
+			setInputParamData("SFX_CD",cb_Sfx.getValue());
+			setInputParamData("COL_COMBI_CD",cb_Color.getValue());
+			setInputParamData("OPTION_CD","");
+			setInputParamData("VEHIC_MAGIC",edt_VehicMagic.getValue());
+			setInputParamData("VEHIC_PRICE",edt_VehicPrice.getValue());
+			setInputParamData("VEHIC_VAT",edt_VehicTax.getValue());
+			setInputParamData("VEHIC_OPTION_PRICE","");	
+			if(gfn_IsNullVal(edt_Discount.getValue())){
+				setInputParamData("VEHIC_DISCOUNT_AMT","0");
+			}else{
+				setInputParamData("VEHIC_DISCOUNT_AMT",edt_Discount.getValue());
+			}
+			setInputParamData("VEHIC_TOTAL_AMT",edt_Total.getValue());
+			setInputParamData("SALES_TYPE",cb_SaleType.getValue());
+			setInputParamData("PAY_TYPE",cb_PayType.getValue());
+			setInputParamData("TAX_TYPE",cb_TaxType.getValue());
+			setInputParamData("LEASE_COMP_SEQ",cb_LeaseComp.getValue());
+			setInputParamData("TAKE_CONTRACT_AMT",edt_TakeAmt.getValue());
+			setInputParamData("LEASE_MONTH_AMT",edt_LeaseAmt.getValue());
+			setInputParamData("LEASE_RATE","");
+			setInputParamData("LEASE_TERM_DT",cal_LeaseTermDt.getValue());
+			setInputParamData("TAKE_DEPOSITER_NM",edt_TakeNm.getValue());
+			setInputParamData("TAKE_DEPOSIT_CD",cb_TakeType.getValue());
+			setInputParamData("TAKE_DELIVERY_AMT","");
+			setInputParamData("DELIVERY_PLACE_CD",rd_Place.getValue());
+			setInputParamData("DELIVERY_PLAN2_DT","");
+			setInputParamData("DELIVERY_ACTUAL_DT",cal_DeliDt.getValue());
+			setInputParamData("DELIVERY_ACTUAL_HOUR",cb_DeliTime.getValue());
+			setInputParamData("DELIVERY_PLATE_CD",rd_Plate.getValue());
+			setInputParamData("DELIVERY_PLAN_DT",cal_DeliPlan.getValue());
+			setInputParamData("CONTRACT_MSG",edt_Msg.getValue());
+			setInputParamData("MOD_CD","");
+			setInputParamData("REG_PLAN_DT",cal_RegPlan.getValue());
+			setInputParamData("MOD_MSG","");
+			setInputParamData("UPDATE_TYPE","INSERT");
+			setInputParamData("MENU_ID","S310202_W01");		//메뉴아이디
+			if(GV_SPM_USE_YN == "Y"){
+				setInputParamData("FOLLOWUP_ID",FV_FOLLOWUP_ID);
+			}else{
+				setInputParamData("FOLLOWUP_ID","");
+			}
+
+  			setSubmissison("submissionSave");      
+        }
+        /****************************************************************
+		* callback(저장)
+		* @param  : 없음
+		* @return : 없음
+		******************************************************************/ 
+        function fn_AfterSave(){
+        	var errCode = WebSquare.ModelUtil.getInstanceValue("resSave/root/params/param[@id='ErrorCode']");
+
+        	if(errCode == 0){
+        		if(FV_sUpdateType == "INSERT"){
+        			alert("계약이 등록되었습니다.");
+					parent.parent.fn_SpinnerHide();
+        			fn_NewCon();
+        		} else{
+        			alert("계약이 저장되었습니다.");
+					parent.parent.fn_SpinnerHide();
+        		}
+        	} 
+        }
+        /****************************************************************
+		* 신규계약
+		* @param  : 없음
+		* @return : 없음
+		******************************************************************/ 
+        function fn_NewCon(){
+			FV_sCustNm = "";
+			FV_sDealerId = "";
+			FV_sCustType = "";
+			FV_sGb = true;
+			FV_sUpdateType = "";
+			FV_VEHIC_PRICE = 0;
+			FV_VEHIC_VAT = 0;
+			FV_VEHIC_DISCOUNT_AMT = 0;
+			FV_VEHIC_TOTAL_AMT = 0;
+			FV_SALES_TYPE = "";
+			FV_IS_NEW = true;
+			cb_Brand.setValue("");
+			cb_Model.setValue("");
+			cb_Variant.setValue("");
+			cb_Model_Year.setValue("");
+			cb_Sfx.setValue("");
+			cb_Color.setValue("");
+			cb_SaleType.setValue("");
+        	setTitSendInfo("request", "", "", "mdms/mp/retn:S310202_W01_S01");
+        	setInputParamData("CONTRACT_NO", ""); 	
+    		setSubmissison("submissionMaster");
+			edt_VehicTax.setValue("");
+			edt_VehicPrice.setValue("");
+			edt_Discount.setValue("");
+			edt_Total.setValue("");
+			edt_SalePrice.setValue("");
+ /*       	cb_SaleType.setSelectedIndex(0);
+        	cb_Customs.setText("");
+ 			edt_Total.setValue("");
+ 			cal_RegPlan.setValue("");
+ 			cal_DeliPlan.setValue("");
+ 			cal_DeliDt.setValue("");*/
+        	rd_Place.setValue("01");
+        	rd_Plate.setValue("01");
+        	
+			FV_sDisplayStyle = "Input";
+			fn_VehicleOnLoad("111111");
+        }
+        /****************************************************************
+		* 고객정보 검색
+		* @param  : 없음
+		* @return : 없음
+		******************************************************************/
+        function fn_CustSearch(){
+        	FV_sCustNm = edt_CustNm.getValue();
+			FV_sDealerId = GV_UP_GROUP_ID;
+			
+			if(GV_BRAND_CD == "L")
+				FV_sCustType = "P";
+			else 
+				FV_sCustType = "A";			
+
+			edt_CustNm.setValue("");
+			edt_TaxpayNo.setValue("");
+			edt_CompNm.setValue("");
+			edt_CompNo.setValue("");
+			edt_TelNo.setValue("");
+			edt_HpNo.setValue("");
+			edt_Zip.setValue("");
+			edt_Addr.setValue("");
+			edt_AddrNo.setValue("");
+			edt_OffTelNo.setValue("");
+			edt_FaxNo.setValue("");
+			edt_CompZip.setValue("");
+			edt_CoAddr.setValue("");
+			edt_CoAddrNo.setValue("");
+
+
+			//alert(WebSquare.session.getAttribute("SPM_USE_YN"));
+			if(WebSquare.session.getAttribute("SPM_USE_YN") == "N"){
+				gfn_OpenPopup("/mp/comm/CustSearch.xml","고객기본정보검색",814,456,90,46);
+			}
+			else{
+				gfn_OpenPopup("/mp/act/S310304_P01.xml","고객기본정보검색",814,456,90,46);
+			}
+        }
+        /****************************************************************
+		* 고객정보 검색
+		* @param  : 없음
+		* @return : 없음
+		******************************************************************/
+        function fn_CustParams(arrRst){
+        	gfn_PopupClose();
+
+        	if(arrRst != null){
+        		if(GV_BRAND_CD == "L"){
+        			edt_OwnerType.setValue(rd_OwnType.getValue());
+        			edt_TaxpayNo.setValue(arrRst[3]);
+        			edt_CompNm.setValue(arrRst[14]);
+        			edt_CompSeq.setValue(arrRst[15]);
+        			edt_CompNo.setValue(arrRst[16]);
+        		} else{
+	        		if(arrRst[2] == "01" || arrRst[2] == "04" || arrRst[2] == "05"){
+	        			edt_OwnerType.setValue("01");
+	        			edt_TaxpayNo.setValue(arrRst[3]);
+	        			edt_CompSeq.setValue("");
+
+	        		} else if(arrRst[2] == "02" || arrRst[2] == "03"){
+	        			edt_OwnerType.setValue("02");
+	        			edt_CompSeq.setValue(arrRst[0]);
+	        			edt_CompNm.setValue(arrRst[1]);
+	        			edt_CompNo.setValue(arrRst[3]);
+	        		}
+	       		}
+
+	       		edt_CustSeq.setValue(arrRst[0]);
+        		edt_CustNm.setValue(arrRst[1]);
+        		edt_HpNo.setValue(arrRst[5]);
+       			edt_TelNo.setValue(arrRst[4]);
+       			edt_FaxNo.setValue(arrRst[6]);
+       			edt_OffTelNo.setValue(arrRst[7]);
+       			edt_Zip.setValue(arrRst[8]);
+       			edt_Addr.setValue(arrRst[9]);
+       			edt_AddrNo.setValue(arrRst[10]);
+       			edt_CompZip.setValue(arrRst[11]);
+       			edt_CoAddr.setValue(arrRst[12]);
+       			edt_CoAddrNo.setValue(arrRst[13]);
+       			FV_FOLLOWUP_ID = arrRst[19];	
+       			
+       			//alert(FV_FOLLOWUP_ID);
+        	}
+        }
+		/****************************************************************
+		* 지불유형 변경시 리스회사 조회
+		* @param  : 없음
+		* @return : 없음
+		******************************************************************/
+		function fn_PayTypeChange(){
+			var sPayType = cb_PayType.getValue();
+			if(!gfn_IsNullVal(sPayType)){
+				var sPayType = cb_PayType.getValue();
+				// 리스회사
+	        	setTitSendInfo("request", "", "", "mdms/mp/comm::CU_BASE_S02");
+	        	setInputParamData("COND1", GV_UP_GROUP_ID);
+	        	setInputParamData("COND2", sPayType);
+	        	setSubmissison("submissionLease");
+
+	        	if(cb_LeaseComp.getItemCount() == 1){
+	        		cb_LeaseComp.setDisabled(true);
+
+	        		if(sPayType == "04" || sPayType == "05"){
+	        			alert("등록된 할부/리스사 정보가 없습니다. 등록 후 계약을 등록해주세요.");
+	        			return;
+	        		}
+	        	} else{
+	        		cb_LeaseComp.setDisabled(false);
+
+	        		var master = WebSquare.ModelUtil.findInstanceNodes("resMaster/root/dataset[@id='ds_Master']/record");
+
+		  			if(master.length > 0){
+		  				cb_LeaseComp.setValue(WebSquare.xml.getValue(master[0],"LEASE_COMP_SEQ"));
+		  			}
+	        	}
+	        } else{
+	        	cb_LeaseComp.removeAll();	
+	        	cb_LeaseComp.setDisabled(true);
+	        }
+		}
+		/****************************************************************
+		* 판매유형 변경시 관세청 조회
+		* @param  : 없음
+		* @return : 없음
+		******************************************************************/
+		function fn_SalesTypeChange(){
+			if(FV_sGb){
+				// 관세청
+	        	setTitSendInfo("request", "", "", "mdms/mp/comm::CU_BASE_S01");
+	        	setInputParamData("COND1", GV_UP_GROUP_ID);
+	        	setInputParamData("COND2", cb_SaleType.getValue());
+	        	setSubmissison("submissionCustoms");
+
+	        	if(cb_Customs.getItemCount() == 0){
+	        		cb_Customs.setDisabled(true);
+	        	} else{
+	        		cb_Customs.setDisabled(false);
+	        	}
+
+	        	edt_VehicPrice.setValue("");
+				edt_VehicTax.setValue("");
+				edt_SalePrice.setValue("");
+				edt_Discount.setValue("");
+				edt_Total.setValue("");
+
+				if(cb_SaleType.getValue().length != 0){
+					if(gfn_IsNullVal(cb_Model.getValue())){
+						alert("Model 항목에 값이 누락되었습니다.\n확인하여 주십시오.");
+						return;
+					}
+					if(gfn_IsNullVal(cb_Variant.getValue())){
+						alert("Variant 항목에 값이 누락되었습니다.\n확인하여 주십시오.");
+						return;
+					}
+					if(gfn_IsNullVal(cb_Model_Year.getValue())){
+						alert("My 항목에 값이 누락되었습니다.\n확인하여 주십시오.");
+						return;
+					}
+					if(gfn_IsNullVal(cb_Sfx.getValue())){
+						alert("Suffix 항목에 값이 누락되었습니다.\n확인하여 주십시오.");
+						return;
+					}
+					fn_GetPrice();
+				}
+			}
+		}
+		/****************************************************************
+		* 가격조회
+		* @param  : 없음
+		* @return : 없음
+		******************************************************************/
+		function fn_GetPrice(){
+			var sSaleType = cb_SaleType.getValue();
+
+			if(!gfn_IsNullVal(sSaleType)){
+
+				setTitSendInfo("request", "", "", "mdms/mp/retn::S310202_W01_S02");
+	        	setInputParamData("BRAND_CD", cb_Brand.getValue());
+	        	setInputParamData("MODEL_CD", cb_Model.getValue());
+	        	setInputParamData("VARIANT_CD", cb_Variant.getValue());
+	        	setInputParamData("MY_CD", cb_Model_Year.getValue());
+	        	setInputParamData("SFX_CD", cb_Sfx.getValue());
+
+	        	if(sSaleType == "01"){
+	        		setInputParamData("SALES_TYPE", "11");
+	        	} else{
+	        		setInputParamData("SALES_TYPE", sSaleType);
+	        	}
+
+	        	setSubmissison("submissionRetail");
+	        }
+		}
+		/****************************************************************
+		* callback(가격조회)
+		* @param  : 없음
+		* @return : 없음
+		******************************************************************/
+		function fn_AfterRetail(){
+			var arrRetail = WebSquare.ModelUtil.findInstanceNodes("resRetail/root/dataset[@id='ds_Retail']/record");
+			
+			if(arrRetail.length != 0){
+				edt_SalePrice.setReadOnly(true);
+				
+				var nRetailCost = WebSquare.xml.getValue(arrRetail[0],"RETAIL_COST");
+				var nRetailVat = WebSquare.xml.getValue(arrRetail[0],"RETAIL_VAT");
+				var nRetailPrice = WebSquare.xml.getValue(arrRetail[0],"RETAIL_PRICE");
+
+				if(gfn_IsNullVal(edt_Discount.getValue()))
+					edt_Discount.setValue("");
+					
+				if(gfn_IsNullVal(edt_Total.getValue()) || edt_VehicPrice.getValue() != nRetailCost){
+					edt_VehicPrice.setValue(nRetailCost);
+					edt_VehicTax.setValue(nRetailVat);
+					edt_SalePrice.setValue(nRetailPrice);
+				}
+				
+				fn_DiscountChange();
+			//	edt_Total.setValue(edt_SalePrice.getValue() - edt_Discount.getValue());
+			//	edt_VehicPrice.setReadOnly(true);
+			//	edt_VehicTax.setReadOnly(true);
+				
+			} else{
+				edt_SalePrice.setReadOnly(false);
+				
+				if(edt_Discount.getValue().length == 0){
+					edt_Discount.setValue("");
+				}
+				
+/*				if(cb_SaleType.getValue() > 90){
+					edt_VehicPrice.setReadOnly(false);
+					edt_VehicTax.setReadOnly(false);
+				} else{
+					if(cb_Sfx.getValue.length != 0){
+						edt_VehicPrice.setValue(0);
+						edt_VehicTax.setValue(0);
+						edt_SalePrice.setValue(0);
+						edt_Discount.setValue(0);
+						edt_Total.setValue(0);
+						
+						alert("해당 차량가격을 TMKR에 문의하여 주시기 바랍니다.");
+						return;
+					}
+					edt_VehicPrice.setReadOnly(true);
+					edt_VehicTax.setReadOnly(true);					
+				}*/
+			}			
+		}
+		/****************************************************************
+		* 차량가격 입력 시 계산
+		* @param  : 없음
+		* @return : 없음
+		******************************************************************/
+		function fn_VehicChange(){
+			if(cb_SaleType.getValue() > 90){
+				var nPrice = parseInt(edt_VehicPrice.getValue()) + parseInt(edt_VehicTax.getValue());
+				edt_SalePrice.setValue(nPrice);
+				edt_Total.setValue(nPrice);
+				edt_Discount.setValue("");
+			}
+		}
+		/****************************************************************
+		* 판매(할인)가격 계산
+		* @param  : 없음
+		* @return : 없음
+		******************************************************************/
+		function fn_DiscountChange(){
+			if(edt_Discount.getValue() == 0 || edt_Discount.getValue() == "" || gfn_IsNullVal(edt_Discount.getValue())){
+				fn_GetPrice();
+				edt_Total.setValue(edt_SalePrice.getValue() - edt_Discount.getValue());
+				return;
+			}else{
+				edt_Total.setValue(edt_SalePrice.getValue() - edt_Discount.getValue());
+				edt_VehicTax.setValue(Math.floor(parseInt(edt_Total.getValue()) / 11));
+				edt_VehicPrice.setValue(parseInt(edt_Total.getValue()) - parseInt(edt_VehicTax.getValue()));
+				return;
+			}
+		}
+		/****************************************************************
+		* 렉서스인 경우, 명의에 선택된 값을 데이터셋에 매칭시켜준다.
+		* @param  : 없음
+		* @return : 없음
+		******************************************************************/
+		function fn_SetDsOwnerType(){
+			if(GV_BRAND_CD == "L"){
+				edt_OwnerType.setValue(rd_OwnType.getValue());
+			}
+		}
+		/****************************************************************
+		* 렉서스인 경우, 계약하려는 고객의 관계법인이 설정되있지 않을경우, 법인명의로 출고가 불가능 하다.
+		* @param  : 없음
+		* @return : 없음
+		******************************************************************/
+		function fn_DoesCustomerHaveRelCust(){
+			if(gfn_IsNullVal(edt_CompSeq.getValue()) && edt_OwnerType.getValue() == "02"){
+				return false;
+			}else{
+				return true;
+			}
+		}
+        fn_OnLoad();
+
+		/****************************************************************
+		* 차종 변경시 차량 가격 초기화
+		* @param  : 없음
+		* @return : 없음
+		******************************************************************/
+		function fn_InitPrice(){
+			edt_SalePrice.setValue("");
+			edt_Discount.setValue("");
+			edt_Total.setValue("");
+			edt_VehicTax.setValue("");
+			edt_VehicPrice.setValue("");
+			cb_SaleType.setValue("");
+		}
+		/****************************************************************
+		* 중복계약 조회
+		* @param  : 없음
+		* @return : 없음
+		******************************************************************/
+        function fn_ContractChk(){
+			// 계약 중복 체크
+			setTitSendInfo("request", "", "", "mdms/mp/retn::S310202_W01_S03");
+
+			if(gfn_IsNullVal(edt_TaxpayNo.getValue())){
+				setInputParamData("TAXPAY_NO", edt_CompNo.getValue());
+			} else{
+				setInputParamData("TAXPAY_NO", edt_TaxpayNo.getValue());
+			}
+			setSubmissison("submissionChk");
+		}
+        ]]></script>
+    </head>
+    <body>
+    	<w2:textbox class="se_box" id="output105" label=""
+    		style="position: absolute ;height:30px;width:978px;left:0px;top:258px;">
+    	</w2:textbox>
+    	<w2:textbox class="se_box" id="output109" label=""
+    		style="position: absolute ;height:30px;width:978px;left:0px;top:73px;">
+    	</w2:textbox>
+    	<w2:textbox class="se_box" id="output112" label=""
+    		style="position: absolute ;height:30px;width:978px;left:0px;top:330px;">
+    	</w2:textbox>
+    	<w2:textbox class="se_box" id="output119" label=""
+    		style="position: absolute ;height:30px;width:978px;left:0px;top:155px;">
+    	</w2:textbox>
+    	<w2:textbox class="se_box" id="output120" label=""
+    		style="position: absolute ;height:30px;width:978px;left:0px;top:299px;">
+    	</w2:textbox>
+    	<w2:textbox class="se_box" id="output126" label=""
+    		style="position: absolute ;height:30px;width:978px;left:0px;top:227px;">
+    	</w2:textbox>
+    	<w2:textbox class="se_box" id="output128" label=""
+    		style="position: absolute ;height:30px;width:978px;left:0px;top:186px;">
+    	</w2:textbox>
+    	<xf:image id="image42" src="/mp/images/smenu_bg.png"
+    		style="position: absolute ;height:36px;width:980px;left:0px;top:0px;">
+    	</xf:image>
+
+    	<xf:image id="image43" src="/mp/images/stitle_bg.png"
+    		style="position: absolute ;height:36px;width:172px;left:1px;top:0px;">
+    	</xf:image>
+    	<w2:textbox class="title" id="title" label="계약등록"
+    		style="position: absolute ;height:20px;width:149px;left:3px;top:11px;;text-align:center">
+    	</w2:textbox>
+    	<xf:trigger class="btn_s1" id="trigger1"
+    		style="position: absolute ;height:25px;width:88px;left:706px;top:6px;"
+    		type="image">
+    		<xf:label>계약조회</xf:label>
+    		<script ev:event="onclick" type="javascript"><![CDATA[ 
+    			parent.parent.fn_SpinnerShow();
+    			parent.ifrm_Main.setSrc("/mp/retn/S310201_W01.xml");
+    		]]></script>
+    	</xf:trigger>
+    	<xf:trigger class="btn_s2" id="trigger2"
+    		style="position: absolute ;height:25px;width:88px;left:795px;top:6px;"
+    		type="image">
+    		<xf:label>가격조회</xf:label>
+    		<script ev:event="onclick" type="javascript"><![CDATA[ 
+    			parent.parent.fn_SpinnerShow();
+    			parent.ifrm_Main.setSrc("/mp/retn/S310204_W01.xml");
+    		]]></script>
+    	</xf:trigger>
+    	<xf:trigger class="btn_on3" id="trigger3"
+    		style="position: absolute ;height:25px;width:88px;left:884px;top:6px;"
+    		type="image">
+    		<xf:label>계약등록</xf:label>
+    		<script ev:event="onclick" type="javascript"><![CDATA[ 
+    			parent.parent.fn_SpinnerShow();
+    			parent.ifrm_Main.setSrc("/mp/retn/S310202_W01.xml");
+    		]]></script>
+    	</xf:trigger>
+    	<w2:textbox class="se_m" id="output104" label="판매유형"
+    		style="position: absolute ;height:22px;width:100px;left:56px;top:299px;">
+    	</w2:textbox>
+
+    	<xf:trigger class="btn_n" id="btn_NewCon"
+    		style="position: absolute ;height:30px;width:92px;left:887px;top:44px;"
+    		type="image">
+    		<xf:label>신규계약</xf:label>
+    		<script ev:event="onclick" type="javascript"><![CDATA[ 
+    			fn_NewCon();
+    		]]></script>
+    	</xf:trigger>
+    	<w2:textbox class="se_m" id="output106" label="지불유형"
+    		style="position: absolute ;height:22px;width:100px;left:56px;top:330px;">
+    	</w2:textbox>
+    	<xf:trigger class="btn_n" id="btn_Save"
+    		style="position: absolute ;height:30px;width:71px;left:820px;top:44px;"
+    		type="image">
+    		<xf:label>저장</xf:label>
+    		<script ev:event="onclick" type="javascript"><![CDATA[ 
+    			fn_Save();
+    		]]></script>
+    	</xf:trigger>
+
+    	<w2:textbox class="se_m" id="output110" label="차량가격(부과세)"
+    		style="position: absolute ;height:22px;width:100px;left:56px;top:258px;">
+    	</w2:textbox>
+    	<w2:textbox class="se_box" id="output111" label=""
+    		style="position: absolute ;height:30px;width:978px;left:0px;top:124px;">
+    	</w2:textbox>
+    	<w2:textbox class="se_lable" id="output114" label="전화번호"
+    		style="position: absolute ;height:22px;width:100px;left:56px;top:155px;">
+    	</w2:textbox>
+
+    	<w2:textbox class="se_m" id="output121" label="고객명"
+    		style="position: absolute ;height:22px;width:100px;left:56px;top:124px;">
+    	</w2:textbox>
+    	<w2:textbox class="se_m" id="output123" label="차종"
+    		style="position: absolute ;height:22px;width:100px;left:56px;top:227px;">
+    	</w2:textbox>
+    	<w2:textbox class="se_m" id="output127" label="딜러계약번호"
+    		style="position: absolute ;height:22px;width:98px;left:0px;top:73px;">
+    	</w2:textbox>
+    	<w2:textbox class="se_lable" id="output129" label="회사전화번호"
+    		style="position: absolute ;height:22px;width:100px;left:56px;top:186px;">
+    	</w2:textbox>
+    	<w2:textbox id="output131"
+    		style="position: absolute ;height:30px;width:978px;left:0px;top:392px;"
+    		class="se_box" label="">
+    	</w2:textbox>
+    	<w2:textbox id="output132"
+    		style="position: absolute ;height:30px;width:978px;left:0px;top:361px;"
+    		class="se_box" label="">
+    	</w2:textbox>
+    	<w2:textbox id="output133"
+    		style="position: absolute ;height:22px;width:100px;left:56px;top:361px;"
+    		class="se_lable" label="입금(등록)예정일">
+    	</w2:textbox>
+    	<w2:textbox id="output134"
+    		style="position: absolute ;height:22px;width:100px;left:56px;top:392px;"
+    		class="se_lable" label="할부원금(원)">
+    	</w2:textbox>
+    	<w2:textbox id="output135"
+    		style="position: absolute ;height:30px;width:978px;left:0px;top:464px;"
+    		class="se_box" label="">
+    	</w2:textbox>
+    	<w2:textbox id="output136"
+    		style="position: absolute ;height:30px;width:978px;left:0px;top:433px;"
+    		class="se_box" label="">
+    	</w2:textbox>
+    	<w2:textbox id="output137"
+    		style="position: absolute ;height:22px;width:100px;left:56px;top:433px;"
+    		class="se_m" label="계약금">
+    	</w2:textbox>
+    	<w2:textbox id="output138"
+    		style="position: absolute ;height:22px;width:100px;left:56px;top:464px;"
+    		class="se_lable" label="특이사항">
+    	</w2:textbox>
+    	<w2:textbox id="output139"
+    		style="position: absolute ;height:30px;width:978px;left:0px;top:505px;"
+    		class="se_box" label="">
+    	</w2:textbox>
+    	<w2:textbox id="output140"
+    		style="position: absolute ;height:22px;width:100px;left:56px;top:505px;"
+    		class="se_m" label="인도장소">
+    	</w2:textbox>
+    	<xf:input class="input_edit" id="edt_DlrConNo"
+    		style="position: absolute ;height:22px;width:147px;left:109px;top:77px;"
+    		ref="resMaster/root/dataset[@id='ds_Master']/record/DLR_CONTRACT_NO">
+    	</xf:input>
+    	<w2:textbox class="se_g_lable" id="output141"
+    		label="고객&lt;br&gt;정보"
+    		style="position: absolute ;padding-top:32px;height:60px;width:49px;left:0px;top:124px;">
+    	</w2:textbox>
+    	<w2:textbox class="se_g_lable" id="output142"
+    		label="차량&lt;br&gt;정보"
+    		style="position: absolute ;padding-top:16px;height:45px;width:49px;left:0px;top:227px;">
+    	</w2:textbox>
+    	<w2:textbox class="se_g_lable" id="output143"
+    		label="계약금&lt;br&gt;정보"
+    		style="position: absolute ;padding-top:16px;height:45px;width:49px;left:0px;top:433px;">
+    	</w2:textbox>
+    	<w2:textbox id="output144"
+    		style="position: absolute ;padding-top:8px;height:22px;width:49px;left:0px;top:505px;"
+    		class="se_g_lable" label="인도정보">
+    	</w2:textbox>
+    	<w2:textbox class="se_g_lable" id="output145"
+    		label="판매&lt;br&gt;유형"
+    		style="position: absolute ;padding-top:48px;height:75px;width:49px;left:0px;top:299px;">
+    	</w2:textbox>
+    	<xf:input class="input_edit" id="edt_VehicPrice"
+    		style="position: absolute ;height:22px;width:131px;left:167px;top:262px;"
+    		readOnlyClass="input_mask_readonly" readOnly="true"
+    		dataType="number" displayFormat="#,###"
+    		ref="resMaster/root/dataset[@id='ds_Master']/record/VEHIC_PRICE">
+    		<script ev:event="onblur" type="javascript"><![CDATA[ 
+    			fn_VehicChange();
+    		]]></script>
+    	</xf:input>
+    	<xf:input class="input_edit" id="edt_VehicTax"
+    		style="position: absolute ;height:22px;width:131px;left:307px;top:262px;"
+    		readOnly="true" readOnlyClass="input_mask_readonly"
+    		dataType="number"
+    		ref="resMaster/root/dataset[@id='ds_Master']/record/VEHIC_VAT"
+    		displayFormat="#,###">
+    		<script ev:event="onblur" type="javascript"><![CDATA[ 
+    			fn_VehicChange();
+    		]]></script>
+    	</xf:input>
+    	<w2:textbox id="output146"
+    		style="position: absolute ;height:22px;width:98px;left:340px;top:124px;"
+    		class="se_m" label="주민등록번호">
+    	</w2:textbox>
+    	<w2:textbox id="output147"
+    		style="position: absolute ;height:22px;width:91px;left:552px;top:124px;"
+    		class="se_lable" label="사업자명">
+    	</w2:textbox>
+    	<w2:textbox id="output148"
+    		style="position: absolute ;height:22px;width:88px;left:767px;top:124px;"
+    		class="se_lable" label="사업자번호">
+    	</w2:textbox>
+    	<w2:textbox id="output149"
+    		style="position: absolute ;height:22px;width:53px;left:280px;top:155px;"
+    		class="se_lable" label="HP">
+    	</w2:textbox>
+    	<w2:textbox id="output150"
+    		style="position: absolute ;height:22px;width:100px;left:445px;top:155px;"
+    		class="se_lable" label="등록주소">
+    	</w2:textbox>
+    	<w2:textbox id="output151"
+    		style="position: absolute ;height:22px;width:53px;left:280px;top:186px;"
+    		class="se_lable" label="FAX">
+    	</w2:textbox>
+    	<w2:textbox id="output152"
+    		style="position: absolute ;height:22px;width:100px;left:445px;top:186px;"
+    		class="se_lable" label="법인주소">
+    	</w2:textbox>
+    	<xf:input class="input_edit" id="edt_CustNm"
+    		style="position: absolute ;height:22px;width:103px;left:167px;top:128px;"
+    		ref="resMaster/root/dataset[@id='ds_Master']/record/CUST_NM">
+    	</xf:input>
+    	<xf:image id="btn_CustSearch"
+    		src="/mp/images/btn_search.png"
+    		style="position: absolute ;cursor:hand;height:26px;width:31px;left:278px;top:127px;">
+    		<script ev:event="onclick" type="javascript"><![CDATA[ 
+    			fn_CustSearch();
+    		]]></script>
+    	</xf:image>
+    	<xf:input class="input_edit" id="edt_TelNo"
+    		style="position: absolute ;height:22px;width:103px;left:167px;top:159px;"
+    		ref="resMaster/root/dataset[@id='ds_Master']/record/TEL_NO"
+    		readOnlyClass="input_readonly" readOnly="true">
+    	</xf:input>
+    	<xf:input class="input_edit" id="edt_TaxpayNo"
+    		style="position: absolute ;height:22px;width:93px;left:449px;top:128px;"
+    		ref="resMaster/root/dataset[@id='ds_Master']/record/P_TAXPAY"
+    		readOnlyClass="input_readonly" readOnly="true">
+    	</xf:input>
+    	<xf:input id="edt_OffTelNo"
+    		style="position: absolute ;height:22px;width:103px;left:167px;top:190px;"
+    		class="input_edit" readOnly="true" readOnlyClass="input_readonly"
+    		ref="resMaster/root/dataset[@id='ds_Master']/record/OFFICE_TEL_NO">
+    	</xf:input>
+    	<xf:input id="edt_CompNm"
+    		style="position: absolute ;height:22px;width:102px;left:654px;top:128px;"
+    		class="input_edit"
+    		ref="resMaster/root/dataset[@id='ds_Master']/record/COMP_NM"
+    		readOnlyClass="input_readonly" readOnly="true">
+    	</xf:input>
+    	<xf:input id="edt_CompNo"
+    		style="position: absolute ;height:22px;width:102px;left:866px;top:128px;"
+    		class="input_edit"
+    		ref="resMaster/root/dataset[@id='ds_Master']/record/C_TAXPAY"
+    		readOnlyClass="input_readonly" readOnly="true">
+    	</xf:input>
+    	<xf:input id="edt_HpNo"
+    		style="position: absolute ;height:22px;width:91px;left:344px;top:159px;"
+    		class="input_edit"
+    		ref="resMaster/root/dataset[@id='ds_Master']/record/HP_NO"
+    		readOnlyClass="input_readonly" readOnly="true">
+    	</xf:input>
+    	<xf:input id="edt_FaxNo"
+    		style="position: absolute ;height:22px;width:91px;left:344px;top:190px;"
+    		class="input_edit" readOnly="true" readOnlyClass="input_readonly"
+    		ref="resMaster/root/dataset[@id='ds_Master']/record/FAX_NO">
+    	</xf:input>
+    	<xf:input class="input_edit" id="edt_Zip"
+    		style="position: absolute ;height:22px;width:55px;left:556px;top:159px;"
+    		ref="resMaster/root/dataset[@id='ds_Master']/record/P_ZIP_REG"
+    		readOnlyClass="input_readonly" readOnly="true">
+    	</xf:input>
+    	<xf:input class="input_edit" id="edt_CompZip"
+    		style="position: absolute ;height:22px;width:55px;left:556px;top:190px;"
+    		ref="resMaster/root/dataset[@id='ds_Master']/record/C_ZIP_REG"
+    		readOnlyClass="input_readonly" readOnly="true">
+    	</xf:input>
+    	<xf:input id="edt_CoAddr"
+    		style="position: absolute ;height:22px;width:168px;left:620px;top:190px;"
+    		class="input_edit"
+    		ref="resMaster/root/dataset[@id='ds_Master']/record/C_ADDR_REG"
+    		readOnlyClass="input_readonly" readOnly="true">
+    	</xf:input>
+    	<xf:input id="edt_Addr"
+    		style="position: absolute ;height:22px;width:168px;left:620px;top:159px;"
+    		class="input_edit"
+    		ref="resMaster/root/dataset[@id='ds_Master']/record/P_ADDR_REG"
+    		readOnlyClass="input_readonly" readOnly="true">
+    	</xf:input>
+    	<xf:input id="edt_CoAddrNo"
+    		style="position: absolute ;height:22px;width:172px;left:797px;top:190px;"
+    		class="input_edit"
+    		ref="resMaster/root/dataset[@id='ds_Master']/record/C_ADDR_NO_REG"
+    		readOnlyClass="input_readonly" readOnly="true">
+    	</xf:input>
+    	<xf:input id="edt_AddrNo"
+    		style="position: absolute ;height:22px;width:172px;left:797px;top:159px;"
+    		class="input_edit"
+    		ref="resMaster/root/dataset[@id='ds_Master']/record/P_ADDR_NO_REG"
+    		readOnlyClass="input_readonly" readOnly="true">
+    	</xf:input>
+    	<xf:select1 allOption="" appearance="minimal"
+    		chooseOption="true" class="input_edit" direction="auto"
+    		disabled="false" displayMode="label" id="cb_SaleType"
+    		style="position: absolute ;height:22px;width:164px;left:167px;top:303px;"
+    		submenuSize="auto" chooseOptionLabel="select"
+    		ref="resMaster/root/dataset[@id='ds_Master']/record/SALES_TYPE"
+    		visibleRowNum="50">
+    		<xf:choices>
+    			<xf:itemset
+    				nodeset="resCode/root/dataset[@id='ds_Code']/record[CD_KND='SA0101']">
+    				<xf:label ref="NAME"></xf:label>
+    				<xf:value ref="CODE"></xf:value>
+    			</xf:itemset>
+    		</xf:choices>
+    		<script ev:event="onchange" type="javascript"><![CDATA[ 
+    			fn_SalesTypeChange();
+    		]]></script>
+    	</xf:select1>
+    	<w2:textbox id="output158"
+    		style="position: absolute ;height:22px;width:100px;left:445px;top:392px;"
+    		class="se_m" label="과세구분">
+    	</w2:textbox>
+    	<w2:textbox id="output159"
+    		style="position: absolute ;height:22px;width:100px;left:445px;top:361px;"
+    		class="se_lable" label="할부기간(만기일)">
+    	</w2:textbox>
+    	<w2:textbox id="output160"
+    		style="position: absolute ;height:22px;width:100px;left:445px;top:330px;"
+    		class="se_lable" label="총입금액">
+    	</w2:textbox>
+    	<w2:textbox id="output161"
+    		style="position: absolute ;height:22px;width:100px;left:445px;top:299px;"
+    		class="se_lable" label="판매(할인)가격">
+    	</w2:textbox>
+    	<w2:textbox id="output162"
+    		style="position: absolute ;height:22px;width:100px;left:445px;top:433px;"
+    		class="se_lable" label="입금자명">
+    	</w2:textbox>
+    	<xf:input id="edt_Msg"
+    		style="position: absolute ;height:22px;width:802px;left:167px;top:468px;"
+    		class="input_edit"
+    		ref="resMaster/root/dataset[@id='ds_Master']/record/CONTRACT_MSG">
+    	</xf:input>
+    	<xf:input class="input_mask" id="edt_SalePrice"
+    		style="position: absolute ;height:22px;width:132px;left:556px;top:303px;"
+    		ref="" displayFormat="#,###" dataType="number"
+    		readOnlyClass="input_mask_readonly" readOnly="true">
+    	</xf:input>
+    	<xf:input id="edt_Discount"
+    		style="position: absolute ;height:22px;width:131px;left:697px;top:303px;"
+    		class="input_mask"
+    		ref="resMaster/root/dataset[@id='ds_Master']/record/VEHIC_DISCOUNT_AMT"
+    		dataType="number" displayFormat="#,###">
+    		<script ev:event="onblur" type="javascript"><![CDATA[ 
+    			fn_DiscountChange();
+    		]]></script>
+    	</xf:input>
+    	<xf:input id="edt_Total"
+    		style="position: absolute ;height:22px;width:132px;left:837px;top:303px;"
+    		class="input_edit"
+    		ref="resMaster/root/dataset[@id='ds_Master']/record/VEHIC_TOTAL_AMT"
+    		displayFormat="#,###" dataType="number"
+    		readOnlyClass="input_mask_readonly" readOnly="true">
+    	</xf:input>
+    	<xf:input id="edt_Deposit"
+    		style="position: absolute ;height:22px;width:132px;left:556px;top:334px;"
+    		class="input_mask"
+    		ref="resMaster/root/dataset[@id='ds_Master']/record/DEPOSIT_AMT"
+    		dataType="number" displayFormat="#,###"
+    		readOnlyClass="input_mask_readonly" readOnly="true">
+    	</xf:input>
+    	<w2:inputCalendar calendarValueType="yearMonthDate"
+    		class=" input_edit" id="cal_LeaseTermDt"
+    		style="position: absolute ;height:24px;width:139px;left:556px;top:365px;"
+    		ref="resMaster/root/dataset[@id='ds_Master']/record/LEASE_TERM_DT">
+    	</w2:inputCalendar>
+    	<xf:input id="edt_TakeNm"
+    		style="position: absolute ;height:22px;width:132px;left:556px;top:438px;"
+    		class="input_edit"
+    		ref="resMaster/root/dataset[@id='ds_Master']/record/TAKE_DEPOSITER_NM">
+    	</xf:input>
+    	<xf:select1 allOption="" appearance="minimal"
+    		chooseOption="true" class="input_edit" direction="auto"
+    		disabled="false" displayMode="label" id="cb_TaxType"
+    		style="position: absolute ;height:22px;width:136px;left:556px;top:396px;"
+    		submenuSize="auto" chooseOptionLabel="과세구분선택"
+    		ref="resMaster/root/dataset[@id='ds_Master']/record/TAX_TYPE">
+    		<xf:choices>
+    			<xf:itemset
+    				nodeset="resCode/root/dataset[@id='ds_TaxType']">
+    				<xf:label ref="record/NAME"></xf:label>
+    				<xf:value ref="record/CODE"></xf:value>
+    			</xf:itemset>
+    		</xf:choices>
+    	</xf:select1>
+    	<xf:input class="input_mask" id="edt_TakeAmt"
+    		style="position: absolute ;height:22px;width:131px;left:167px;top:437px;"
+    		ref="resMaster/root/dataset[@id='ds_Master']/record/TAKE_CONTRACT_AMT"
+    		displayFormat="#,###" dataType="number"
+    		readOnlyClass="input_mask">
+    	</xf:input>
+    	<xf:input id="edt_LeaseAmt"
+    		style="position: absolute ;height:22px;width:131px;left:167px;top:396px;"
+    		class="input_mask"
+    		ref="resMaster/root/dataset[@id='ds_Master']/record/LEASE_MONTH_AMT"
+    		dataType="number" displayFormat="#,###">
+    	</xf:input>
+    	<xf:select1 id="cb_TakeType" appearance="minimal"
+    		style="position: absolute ;height:22px;width:85px;left:307px;top:437px;"
+    		direction="auto" chooseOption="true" displayMode="label"
+    		class="input_edit" allOption="" submenuSize="auto"
+    		disabled="false" chooseOptionLabel="select"
+    		ref="resMaster/root/dataset[@id='ds_Master']/record/TAKE_DEPOSIT_CD">
+    		<xf:choices>
+    			<xf:item>
+    				<xf:label>현금</xf:label>
+    				<xf:value>01</xf:value>
+    			</xf:item>
+    			<xf:item>
+    				<xf:label>카드</xf:label>
+    				<xf:value>02</xf:value>
+    			</xf:item>
+    			<xf:item>
+    				<xf:label>계좌이체</xf:label>
+    				<xf:value>03</xf:value>
+    			</xf:item>
+    			<xf:item>
+    				<xf:label>기타</xf:label>
+    				<xf:value>04</xf:value>
+    			</xf:item>
+    		</xf:choices>
+    	</xf:select1>
+    	<w2:inputCalendar id="cal_RegPlan"
+    		calendarValueType="yearMonthDate"
+    		style="position: absolute ;height:24px;width:129px;left:167px;top:365px;"
+    		class=" input_edit"
+    		ref="resMaster/root/dataset[@id='ds_Master']/record/REG_PLAN_DT">
+    	</w2:inputCalendar>
+    	<w2:inputCalendar id="cal_DeliPlan"
+    		calendarValueType="yearMonthDate"
+    		style="position: absolute ;height:24px;width:129px;left:312px;top:365px;"
+    		class=" input_edit"
+    		ref="resMaster/root/dataset[@id='ds_Master']/record/DELIVERY_PLAN_DT">
+    	</w2:inputCalendar>
+    	<w2:textbox class="txt1" id="output163" label="/"
+    		style="position: absolute ;height:21px;text-align:center;width:14px;left:297px;top:364px;">
+    	</w2:textbox>
+    	<xf:select1 id="cb_Customs" appearance="minimal"
+    		style="position: absolute ;height:22px;width:104px;left:336px;top:303px;"
+    		direction="auto" chooseOption="" displayMode="label"
+    		class="input_edit" allOption="" submenuSize="auto"
+    		disabled="false"
+    		ref="resMaster/root/dataset[@id='ds_Master']/record/CUSTOMS_SEQ"
+    		visibleRowNum="30">
+    		<xf:choices>
+    			<xf:itemset
+    				nodeset="resCustoms/root/dataset[@id='ds_Customs']">
+    				<xf:label ref="record/NAME"></xf:label>
+    				<xf:value ref="record/CODE"></xf:value>
+    			</xf:itemset>
+    		</xf:choices>
+    	</xf:select1>
+    	<xf:select1 id="cb_PayType" appearance="minimal"
+    		style="position: absolute ;height:22px;width:61px;left:167px;top:334px;"
+    		direction="auto" chooseOption="true" allOption=""
+    		class="input_edit" displayMode="label" disabled="false"
+    		submenuSize="auto" chooseOptionLabel="select"
+    		ref="resMaster/root/dataset[@id='ds_Master']/record/PAY_TYPE"
+    		visibleRowNum="10">
+    		<script ev:event="onchange" type="javascript"><![CDATA[ 
+    			fn_PayTypeChange();
+    		]]></script>
+    		<xf:choices>
+    			<xf:item>
+    				<xf:label>현금</xf:label>
+    				<xf:value>01</xf:value>
+    			</xf:item>
+    			<xf:item>
+    				<xf:label>카드</xf:label>
+    				<xf:value>02</xf:value>
+    			</xf:item>
+    			<xf:item>
+    				<xf:label>어음</xf:label>
+    				<xf:value>03</xf:value>
+    			</xf:item>
+    			<xf:item>
+    				<xf:label>할부</xf:label>
+    				<xf:value>04</xf:value>
+    			</xf:item>
+    			<xf:item>
+    				<xf:label>리스</xf:label>
+    				<xf:value>05</xf:value>
+    			</xf:item>
+    			<xf:item>
+    				<xf:label>렌트</xf:label>
+    				<xf:value>06</xf:value>
+    			</xf:item>
+    		</xf:choices>
+    	</xf:select1>
+    	<xf:select1 allOption="" appearance="minimal"
+    		chooseOption="true" class="input_edit" direction="auto"
+    		disabled="false" displayMode="label" id="cb_LeaseComp"
+    		style="position: absolute ;height:22px;width:205px;left:233px;top:334px;"
+    		submenuSize="auto" chooseOptionLabel="select" ref=""
+    		visibleRowNum="50">
+    		<xf:choices>
+    			<xf:itemset
+    				nodeset="resLease/root/dataset[@id='ds_Lease']">
+    				<xf:label ref="record/NAME"></xf:label>
+    				<xf:value ref="record/CODE"></xf:value>
+    			</xf:itemset>
+    		</xf:choices>
+    	</xf:select1>
+    	<w2:textbox id="output164"
+    		style="position: absolute ;height:22px;width:100px;left:445px;top:505px;"
+    		class="se_lable" label="인도 예정일자">
+    	</w2:textbox>
+    	<xf:select1 appearance="full" cols="3" id="rd_Place" rows=""
+    		selectedIndex="-1"
+    		style="position: absolute ;height:24px;width:272px;left:167px;top:509px;"
+    		ref="resMaster/root/dataset[@id='ds_Master']/record/DELIVERY_PLACE_CD">
+    		<xf:choices>
+    			<xf:item>
+    				<xf:label>딜러인도</xf:label>
+    				<xf:value>01</xf:value>
+    			</xf:item>
+    			<xf:item>
+    				<xf:label>고객주소인도</xf:label>
+    				<xf:value>02</xf:value>
+    			</xf:item>
+    			<xf:item>
+    				<xf:label>기타</xf:label>
+    				<xf:value>03</xf:value>
+    			</xf:item>
+    		</xf:choices>
+    	</xf:select1>
+    	<w2:inputCalendar id="cal_DeliDt"
+    		calendarValueType="yearMonthDate"
+    		style="position: absolute ;height:24px;width:134px;left:556px;top:509px;"
+    		class=" input_edit"
+    		ref="resMaster/root/dataset[@id='ds_Master']/record/DELIVERY_ACTUAL_DT">
+    	</w2:inputCalendar>
+    	<xf:select1 id="cb_DeliTime" appearance="minimal"
+    		style="position: absolute ;height:22px;width:49px;left:692px;top:509px;"
+    		direction="auto" chooseOption="" displayMode="label"
+    		class="input_edit" allOption="" submenuSize="auto"
+    		disabled="false"
+    		ref="resMaster/root/dataset[@id='ds_Master']/record/DELIVERY_ACTUAL_HOUR"
+    		visibleRowNum="20">
+    		<xf:choices>
+    			<xf:item>
+    				<xf:label></xf:label>
+    				<xf:value></xf:value>
+    			</xf:item>
+    			<xf:item>
+    				<xf:label>07</xf:label>
+    				<xf:value>07</xf:value>
+    			</xf:item>
+    			<xf:item>
+    				<xf:label>08</xf:label>
+    				<xf:value>08</xf:value>
+    			</xf:item>
+    			<xf:item>
+    				<xf:label>09</xf:label>
+    				<xf:value>09</xf:value>
+    			</xf:item>
+    			<xf:item>
+    				<xf:label>10</xf:label>
+    				<xf:value>10</xf:value>
+    			</xf:item>
+    			<xf:item>
+    				<xf:label>11</xf:label>
+    				<xf:value>11</xf:value>
+    			</xf:item>
+    			<xf:item>
+    				<xf:label>12</xf:label>
+    				<xf:value>12</xf:value>
+    			</xf:item>
+    			<xf:item>
+    				<xf:label>13</xf:label>
+    				<xf:value>13</xf:value>
+    			</xf:item>
+    			<xf:item>
+    				<xf:label>14</xf:label>
+    				<xf:value>14</xf:value>
+    			</xf:item>
+    			<xf:item>
+    				<xf:label>15</xf:label>
+    				<xf:value>15</xf:value>
+    			</xf:item>
+    			<xf:item>
+    				<xf:label>16</xf:label>
+    				<xf:value>16</xf:value>
+    			</xf:item>
+    			<xf:item>
+    				<xf:label>17</xf:label>
+    				<xf:value>17</xf:value>
+    			</xf:item>
+    			<xf:item>
+    				<xf:label>18</xf:label>
+    				<xf:value>18</xf:value>
+    			</xf:item>
+    			<xf:item>
+    				<xf:label>19</xf:label>
+    				<xf:value>19</xf:value>
+    			</xf:item>
+    			<xf:item>
+    				<xf:label>20</xf:label>
+    				<xf:value>20</xf:value>
+    			</xf:item>
+    		</xf:choices>
+    	</xf:select1>
+    	<w2:textbox id="output166"
+    		style="position: absolute ;height:22px;width:50px;left:746px;top:505px;"
+    		class="se_lable" label="번호판">
+    	</w2:textbox>
+    	<xf:select1 id="rd_Plate" selectedIndex="-1" cols="3"
+    		appearance="full"
+    		style="position: absolute ;height:24px;width:169px;left:806px;top:509px;"
+    		rows=""
+    		ref="resMaster/root/dataset[@id='ds_Master']/record/DELIVERY_PLATE_CD">
+    		<xf:choices>
+    			<xf:item>
+    				<xf:label>임판</xf:label>
+    				<xf:value>01</xf:value>
+    			</xf:item>
+    			<xf:item>
+    				<xf:label>짝수</xf:label>
+    				<xf:value>02</xf:value>
+    			</xf:item>
+    			<xf:item>
+    				<xf:label>홀수</xf:label>
+    				<xf:value>03</xf:value>
+    			</xf:item>
+    		</xf:choices>
+    	</xf:select1>
+    	<w2:wframe id="wframe1" mode="sync"
+    		src="/mp/comm/VehicleSpec.xml"
+    		style="position: absolute ;left:167px;top:232px;width: 704px;height: 22px;">
+    	</w2:wframe>
+    	<xf:input class="input_edit" id="edt_CustSeq"
+    		ref="resMaster/root/dataset[@id='ds_Master']/record/CUST_SEQ"
+    		style="position: absolute ;height:22px;visibility:hidden;width:22px;left:310px;top:128px;"
+    		disabled="">
+    	</xf:input>
+    	<xf:input class="input_edit" disabled="" id="edt_OwnerType"
+    		ref="resMaster/root/dataset[@id='ds_Master']/record/OWNER_TYPE"
+    		style="position: absolute ;height:22px;visibility:hidden;width:24px;left:8px;top:45px;">
+    	</xf:input>
+    	<xf:input class="input_edit" disabled="" id="edt_CompSeq"
+    		ref="resMaster/root/dataset[@id='ds_Master']/record/COMP_SEQ"
+    		style="position: absolute ;height:22px;visibility:hidden;width:24px;left:41px;top:45px;">
+    	</xf:input>
+    	<xf:input class="input_edit" disabled="" id="edt_ContractNo"
+    		ref="resMaster/root/dataset[@id='ds_Master']/record/CONTRACT_NO"
+    		style="position: absolute ;height:22px;visibility:hidden;width:24px;left:272px;top:47px;">
+    	</xf:input>
+    	<xf:input class="input_edit" disabled="" id="edt_ConStatCd"
+    		ref="resMaster/root/dataset[@id='ds_Master']/record/CONTRACT_STAT_CD"
+    		style="position: absolute ;height:22px;visibility:hidden;width:24px;left:305px;top:47px;">
+    	</xf:input>
+    	<xf:input class="input_edit" disabled="" id="edt_DealerId"
+    		ref="resMaster/root/dataset[@id='ds_Master']/record/DEALER_ID"
+    		style="position: absolute ;height:22px;visibility:hidden;width:24px;left:74px;top:45px;">
+    	</xf:input>
+    	<xf:input class="input_edit" disabled="" id="edt_VehicMagic"
+    		ref="resMaster/root/dataset[@id='ds_Master']/record/VEHIC_MAGIC"
+    		style="position: absolute ;height:22px;visibility:hidden;width:24px;left:107px;top:45px;">
+    	</xf:input>
+    	<xf:trigger class="btn_po" id="btn_Close"
+    		style="position: absolute ;height:30px;color:#FFFFFF;width:70px;left:902px;top:3px;"
+    		type="image">
+    		<xf:label>닫 기</xf:label>
+    		<script ev:event="onclick" type="javascript"><![CDATA[ 
+    			parent.fn_PopupClose();
+    		]]></script>
+    	</xf:trigger>
+    	<xf:select1 appearance="full" cols="2" id="rd_OwnType"
+    		ref="resMaster/root/dataset[@id='ds_Master']/record/OWNER_TYPE"
+    		rows="" selectedIndex="-1"
+    		style="position: absolute ;height:24px;width:155px;left:264px;display:none;top:77px;">
+    		<xf:choices>
+    			<xf:item>
+    				<xf:label>개인명의</xf:label>
+    				<xf:value>01</xf:value>
+    			</xf:item>
+    			<xf:item>
+    				<xf:label>법인명의</xf:label>
+    				<xf:value>02</xf:value>
+    			</xf:item>
+    		</xf:choices>
+    	</xf:select1>
+    </body>
+</html>

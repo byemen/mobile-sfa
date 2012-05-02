@@ -1,0 +1,116 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?xml-stylesheet href="/mp/css/style.css" type="text/css"?>
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:ev="http://www.w3.org/2001/xml-events"
+    xmlns:w2="http://www.inswave.com/websquare" xmlns:xf="http://www.w3.org/2002/xforms">
+    <head>
+    	<w2:buildDate />
+    	<xf:model>
+    		<xf:instance>
+    			<data xmlns="" />
+    		</xf:instance>
+    		<xf:submission id="submissionNotice" ref="request"
+    			target="resNotice" action="" method="post"
+    			mediatype="application/xml" encoding="UTF-8" instance=""
+    			replace="instance" errorHandler="" customHandler=""
+    			mode="asynchronous" processMsg="">
+    		</xf:submission>
+    	</xf:model>
+    	<script type="javascript" src="/mp/js/common.js"></script>
+		<script type="javascript" src="/mp/js/WebSquare.js"></script>
+    	<script type="javascript"><![CDATA[
+     	/****************************************************************
+		* 화면로드
+		* @param  : 없음
+		* @return : 없음
+		******************************************************************/
+       	function fn_OnLoad(){
+       	 	fn_Search();		
+       	}
+       	/****************************************************************
+		* 조회
+		* @param  : 없음
+		* @return : 없음
+		******************************************************************/ 
+        function fn_Search(){        	
+        	setTitSendInfo("request", "", "", "mdms/mp/comm:COMM_BOARD_S01");
+        	setInputParamData("SEQ",parent.FV_sSeq);   
+        	
+    		setSubmissison("submissionNotice");
+        }
+        
+        fn_OnLoad();
+        ]]></script>
+    </head>
+    <body>
+
+    	<w2:textbox class="se_box" id="output71" label=""
+    		style="position: absolute ;height:563px;width:680px;left:0px;border:none;top:1px;">
+    	</w2:textbox>
+    	<w2:textbox class="se_box" id="output84" label=""
+    		style="position: absolute ;height:30px;width:658px;left:10px;top:58px;">
+    	</w2:textbox>
+    	<xf:image id="image49" src="/mp/images/pop_title_bg.png"
+    		style="position: absolute ;height:45px;width:680px;left:0px;top:0px;">
+    	</xf:image>
+    	<w2:textbox class="title_back" id="output72" label="공지사항"
+    		style="position: absolute ;height:20px;text-align:left;width:149px;left:15px;top:14px;">
+    	</w2:textbox>
+    	<w2:textbox class="title" id="output70" label="공지사항"
+    		style="position: absolute ;height:20px;text-align:left;width:149px;left:15px;top:13px;">
+    	</w2:textbox>
+    	<xf:trigger class="btn_po" id="trigger4"
+    		style="position: absolute ;height:30px;color:#FFFFFF;width:70px;left:601px;top:10px;"
+    		type="image">
+    		<xf:label>닫 기</xf:label>
+    		<script ev:event="onclick" type="javascript"><![CDATA[ 
+    			parent.fn_PopupClose();
+    		]]></script>
+    	</xf:trigger>
+    	<w2:textbox class=" txt1" id="output83" label="~"
+    		style="position: absolute ;height:21px;width:12px;left:407px;top:62px;">
+    	</w2:textbox>
+    	<w2:textbox class="se_lable" id="output85" label="공지기간"
+    		style="position: absolute ;height:22px;width:75px;left:221px;top:58px;">
+    	</w2:textbox>
+    	<w2:textbox class="se_lable" id="output86" label="글쓴이"
+    		style="position: absolute ;height:22px;width:75px;left:10px;top:58px;">
+    	</w2:textbox>
+    	<w2:textbox id="output87"
+    		style="position: absolute ;height:30px;width:658px;left:10px;top:89px;"
+    		class="se_box" label="">
+    	</w2:textbox>
+    	<w2:textbox id="output88"
+    		style="position: absolute ;height:22px;width:75px;left:10px;top:89px;"
+    		class="se_lable" label="제목">
+    	</w2:textbox>
+    	<xf:input class="input_edit" id="edt_Name"
+    		style="position: absolute ;height:22px;width:111px;left:96px;top:62px;"
+    		readOnlyClass="input_readonly" readOnly="true"
+    		ref="resNotice/root/dataset[@id='ds_Notice']/record/NAME">
+    	</xf:input>
+    	<xf:input id="edt_Subject"
+    		style="position: absolute ;height:22px;width:423px;left:96px;top:93px;"
+    		readOnlyClass="input_readonly" class="input_edit" readOnly="true"
+    		ref="resNotice/root/dataset[@id='ds_Notice']/record/SUBJECT">
+    	</xf:input>
+    	<w2:textbox class="se_box" id="output90" label=""
+    		style="position: absolute ;height:431px;width:658px;left:10px;top:120px;" ref="">
+    	</w2:textbox>
+    	<xf:input class="input_edit" id="input3" readOnly="true"
+    		readOnlyClass="input_readonly"
+    		style="position: absolute ;height:22px;width:90px;left:307px;top:62px;"
+    		ref="resNotice/root/dataset[@id='ds_Notice']/record/START_DATE">
+    	</xf:input>
+    	<xf:input class="input_edit" id="input4" readOnly="true"
+    		readOnlyClass="input_readonly"
+    		style="position: absolute ;height:22px;width:90px;left:422px;top:62px;"
+    		ref="resNotice/root/dataset[@id='ds_Notice']/record/END_DATE">
+    	</xf:input>
+    	<xf:output id="output91"
+    		style="position: absolute ;left:15px;top:124px;width:650px;height:423px;"
+    		label=""
+    		ref="resNotice/root/dataset[@id='ds_Notice']/record/CONTENT">
+    		<xf:label></xf:label>
+    	</xf:output>
+    </body>
+</html>

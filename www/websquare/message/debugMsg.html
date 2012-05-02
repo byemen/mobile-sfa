@@ -1,0 +1,187 @@
+<html>
+<head>
+<meta http-equiv="expires" content="0" />
+<meta http-equiv="pragma" content="no-cache" />
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+
+<title>Debug</title>
+
+<style type="text/css">
+body		{ background-color:#F6F4F1; margin-top:0pt; margin-left:5pt; margin-right:0pt }
+
+#title1 		{ margin-left:5pt;  padding-top:5pt; height:22pt; color:#B3550A; font-size:9pt; font-family:굴림; line-height:14pt; visibility:visible }
+#main 		{ text-align:center; visibility:visible; overflow-x:hidden; overflow-y:auto}
+#sub 		{ margin-top:5px; text-align:center; visibility:visible; }
+</style>
+
+<!--<script language='JavaScript' src='../bootloader.js'></script>-->
+<script language='JavaScript' src='../javascript.wq?q=/bootloader'></script>
+<script>
+window.onload=init;
+window.document.onclick=flagCheck;
+window.onblur=flagCount;
+
+var flag = 0;
+
+function flagCount() {
+	flag += 2;
+}
+
+function flagCheck() {
+	flag = 10;
+}
+
+function callFocus() {
+	if( flag++ < 6 ) {
+		focus();
+		window.setTimeout("callFocus();", 1);
+	}
+}
+
+function init() {
+	if( WebSquare.core.browserCheck.ie ) {
+		document.getElementById("main").style.setExpression("height",  "document.body.clientHeight - 65");
+	} else {
+		document.getElementById("main").style.height="90%";
+	}
+
+	var obj = WebSquare.net.getPopupParam();
+//	var obj = window.dialogArguments;
+	var str = "";
+	var cnt = 0;
+	var isHTML = false;
+	var isXML = false;
+	for ( var idx in obj )	{
+		if ( idx != "_config" && idx != "title" )	{
+			cnt ++;
+		}
+	}
+	var layerY = (document.body.clientHeight - 97)/4;
+	if( WebSquare.core.browserCheck.ie ) {
+		layerY = "expression( eval( (document.body.clientHeight - 67)/4 ) )";
+	}
+
+	switch ( cnt ) {
+		case 1:
+			if( WebSquare.core.browserCheck.ie ) {
+				layerY = "expression( document.body.clientHeight - 67 )";
+			} else {
+				layerY = document.body.clientHeight - 97;
+			}
+			break;
+		case 2:
+			if( WebSquare.core.browserCheck.ie ) {
+				layerY = "expression( eval( (document.body.clientHeight - 67)/2 ) )";
+			} else {
+				layerY = (document.body.clientHeight - 97)/2;
+			}
+			break;
+		case 3:
+			if( WebSquare.core.browserCheck.ie ) {
+				layerY = "expression( eval( (document.body.clientHeight - 67)/3 ) )";
+			} else {
+				layerY = (document.body.clientHeight - 97)/3;
+			}
+			break;
+		default:
+			if( WebSquare.core.browserCheck.ie ) {
+				layerY = "expression( eval( (document.body.clientHeight - 67)/4 ) )";
+			} else {
+				layerY = (document.body.clientHeight - 97)/4;
+			}
+			break;
+//		case 1:
+//			layerY = 430;
+//			break;
+//		case 2:
+//			layerY = 245;
+//			break;
+//		case 3:
+//			layerY = 163;		// 489
+//			break;
+//		default:
+//			layerY = 120;		//
+//			break;
+	}
+//	alert( layerY );
+	if ( obj["_config"] == "html" )	{
+		isHTML = true;
+	} else if ( obj["_config"] == "xml" )	{
+		isXML = true;
+	}
+
+	if ( typeof obj["title"] != "undefined" ) {
+		title1.innerHTML = "<img src='images/bullet_info.gif' style='vertical-align:middle; margin-right:5px' /><b>" + obj["title"] + "</b>";
+		document.title = obj["title"];
+	}
+
+	var txtIdx = 0;
+	var txtArray = new Array();
+
+	for ( var idx in obj )	{
+		if ( idx != "_config" && idx != "title" )	{
+			if ( idx == "arguments" )	{
+				str = str + "<div style='height:" + layerY + "; width:98%; border:4px #d7d7d7; border-style:solid; text-align:left; font-size:9pt; overflow: scroll;  overflow-x: auto;'><b>" + idx + "</b><br /><br /><table style='width:100%'>"
+
+				for ( var i = 2 ; i < obj[idx].length ; i++ )	{
+					str = str + "<tr><td>" + obj[idx][i] + "</td></tr>"
+				}
+				str = str + "</table></div>"
+			} else {
+				if( isXML ) {
+					if( idx == 'html' ) {
+						str = str + "<textArea id='txt_" + txtIdx  + "' style='height:" + layerY + "; width:98%; border:4px #d7d7d7; border-style:solid; font-size:9pt; text-align:left;' readOnly='true'></textArea>"
+						txtArray[txtIdx] = idx + "\n\n" + obj[idx];
+						txtIdx++;
+//						str = str + "<div contentEditable='true' style='height:" + layerY + "; width:98%; border:4px #d7d7d7; border-style:solid; text-align:left; overflow: scroll;  overflow-x: auto;'><b>" + idx + "</b><br /><br /><xmp>" + obj[idx] + "</xmp></div>"
+					} else if( idx == 'information' ) {
+						str = str + "<textArea id='txt_" + txtIdx  + "' style='height:" + layerY + "; width:98%; border:4px #d7d7d7; border-style:solid; font-size:9pt; text-align:left;' readOnly='true'></textArea>"
+						txtArray[txtIdx] = obj[idx];
+						txtIdx++;
+					} else {
+						var detail, doc;
+						if( obj[idx].length > 0 && obj[idx].charAt(0) == "<" ) {
+							doc = WebSquare.xml.parse(obj[idx]);
+						}
+						
+						if(doc) {
+							detail = WebSquare.xml.indent(doc, "html");
+						} else {
+							detail = obj[idx];
+						}
+						
+						str = str + "<div contentEditable='true' style='height:" + layerY + "; width:98%; border:4px #d7d7d7; border-style:solid; text-align:left; font-size:9pt; overflow: scroll;  overflow-x: auto;'><b>" + idx + "</b><br />" + detail + "</div>"
+					}
+				} else if( isHTML ) {
+					str = str + "<div contentEditable='true' style='height:" + layerY + "; width:98%; border:4px #d7d7d7; border-style:solid; font-size:9pt; text-align:left; overflow: scroll;  overflow-x: auto;'><b>" + idx + "</b><br /><br />" + obj[idx] + "</div>"
+				} else {
+					str = str + "<textArea id='txt_" + txtIdx  + "' style='height:" + layerY + "; width:98%; border:4px #d7d7d7; border-style:solid; font-size:9pt; text-align:left;' readOnly='true'></textArea>"
+					txtArray[txtIdx] = idx + "\n" + obj[idx];
+					txtIdx++;
+//					str = str + "<textArea style='height:" + layerY + "; width:98%; border:4px #d7d7d7; border-style:solid; text-align:left;' readOnly='true'>" + idx + "\n" + obj[idx] + "</textArea>"
+//					str = str + "<div contentEditable='true' style='height:" + layerY + "; width:98%; border:4px #d7d7d7; border-style:solid; text-align:left; overflow: scroll;  overflow-x: auto;'><b>" + idx + "</b><br /><br /><xmp>" + obj[idx] + "</xmp></div>"
+				}
+			}
+		}
+	}
+	main.innerHTML = str;
+	for( var i = 0 ; i < txtIdx ; i++ ) {
+		document.all["txt_" + i ].value = txtArray[i];
+	}
+
+	strTitle = "<img src='images/bullet_info.gif' style='vertical-align:middle; margin-right:5px' /><b>" + WebSquare.language.getMessage( "E_debugMsg_DebugInfo" );
+	document.getElementById("title1").innerHTML = strTitle;
+//	main.contentEditable = true;
+	window.setTimeout("callFocus();", 1);
+}
+</script>
+</head>
+
+<body ondblclick="self.close()">
+<div id="title1"><img src='images/bullet_info.gif' style='vertical-align:middle; margin-right:5px' /><b>Debug 정보입니다.</b></div>
+<div id="main"></div>
+<div id="sub">
+<input type="button" class="Button1" value=" OK " onClick="self.close()" />
+</div>
+</body>
+</html>

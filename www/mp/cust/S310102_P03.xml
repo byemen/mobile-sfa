@@ -1,0 +1,247 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?xml-stylesheet href="/mp/css/style.css" type="text/css"?>
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:ev="http://www.w3.org/2001/xml-events"
+    xmlns:w2="http://www.inswave.com/websquare" xmlns:xf="http://www.w3.org/2002/xforms">
+    <head>
+    	<w2:buildDate />
+    	<xf:model>
+    		<xf:instance>
+    			<data xmlns="" />
+    		</xf:instance>
+    		<xf:submission id="submissionMemo" ref="request" target="resMemo"
+        		action=""
+        		method="post" mediatype="application/xml" encoding="UTF-8" instance="" replace="instance"
+        		errorHandler="" customHandler="" mode="asynchronous"
+        		processMsg="">
+        	</xf:submission>
+    		<xf:submission id="submissionCode" ref="request" target="resCode"
+        		action=""
+        		method="post" mediatype="application/xml" encoding="UTF-8" instance="" replace="instance"
+        		errorHandler="" customHandler="" mode="asynchronous"
+        		processMsg="">
+        	</xf:submission>
+    		<xf:submission id="submissionSave" ref="request"
+    			target="resSave" action="" method="post"
+    			mediatype="application/xml" encoding="UTF-8" instance=""
+    			replace="instance" errorHandler="" customHandler=""
+    			mode="asynchronous" processMsg="">
+    			<script type="javascript" ev:event="xforms-submit-done"><![CDATA[ 
+    				fn_AfterSave();
+    			]]></script>
+    		</xf:submission>
+    	</xf:model>
+    	<script type="javascript" src="/mp/js/common.js"></script>
+		<script type="javascript" src="/mp/js/WebSquare.js"></script>
+    	<script type="javascript"><![CDATA[
+     	/****************************************************************
+		* 화면로드
+		* @param  : 없음
+		* @return : 없음
+		******************************************************************/
+       	function fn_OnLoad(){
+       	 	// 공통코드
+       		setTitSendInfo("request", "", "", "mdms/mp/comm::CO_CODE_S01");
+       		setInputParamData("CD_KND", "'CO0117'");	//메모구분
+			setSubmissison("submissionCode");
+			
+			if(parent.FV_sFlag == "I"){
+				var curDate = new Date();
+				var dYear = curDate.getFullYear();
+				var dMonth = curDate.getMonth()+1;
+			 	var dDay = curDate.getDate();
+			 	var dHour = curDate.getHours();
+			 	var dMin = curDate.getMinutes();
+			 	if(dHour < 10) dHour = "0" + dHour;
+			 	
+				st_MemoTitle.setLabel("메모 등록");
+				st_MemoTitle2.setLabel("메모 등록");
+				edt_RegDt.setValue(dYear+"-"+dMonth+"-"+dDay+" " +dHour+":"+dMin);
+				edt_RegId.setValue(GV_USER_ID);
+				edt_RegNm.setValue(GV_USER_NM);
+				edt_MemoDealerId.setValue(GV_UP_GROUP_ID);
+				edt_MemoDealerNm.setValue(GV_UP_GROUP_NM);
+				edt_MemoDeptNm.setValue(GV_DEPT_NM);
+			} else if(parent.FV_sFlag == "U"){
+				st_MemoTitle.setLabel("메모 수정");
+				st_MemoTitle2.setLabel("메모 수정")
+				fn_Search();
+			}		
+       	}
+       	/****************************************************************
+		* 조회
+		* @param  : 없음
+		* @return : 없음
+		******************************************************************/ 
+        function fn_Search(){        	
+        	var sSqlid = "mdms/mp/cust:S310102_P03_S01";
+        	
+        	setTitSendInfo("request", "", "", sSqlid);
+        	setInputParamData("CUST_SEQ",parent.FV_sCustSeq);
+        	setInputParamData("MEMO_SEQ",parent.FV_sSeq);    
+        	
+    		setSubmissison("submissionMemo");
+        }
+        /****************************************************************
+		* 저장
+		* @param  : 없음
+		* @return : 없음
+		******************************************************************/ 
+        function fn_Save(){ 
+			setTitSendInfo("request", "S310102_P03Action", "save", "");
+			setInputParamData("CUST_SEQ",parent.FV_sCustSeq);
+			setInputParamData("MEMO_SEQ",parent.FV_sSeq);
+			setInputParamData("DEALER_ID",edt_MemoDealerId.getValue());
+			setInputParamData("MNG_SC_ID",parent.FV_sMngScId);
+			setInputParamData("MEMO_TYPE",cb_MemoType.getValue());
+			setInputParamData("MEMO_CONT",ta_MemoContent.getValue());
+			setInputParamData("OPEN_YN",cb_MemoOpenYN.getValue());
+			setInputParamData("UPDATE_TYPE","INSERT");
+			setInputParamData("MENU_ID","S310102_P03");		//메뉴아이디
+			
+  			setSubmissison("submissionSave");
+        }
+        /****************************************************************
+		* callback(저장)
+		* @param  : 없음
+		* @return : 없음
+		******************************************************************/ 
+        function fn_AfterSave(){
+        	var errCode = WebSquare.ModelUtil.getInstanceValue("resSave/root/params/param[@id='ErrorCode']");
+        	
+        	if(errCode < 0){
+        		alert("처리에 실패했습니다.\n확인 후 다시 처리해 주십시오.");
+        	} else{
+        		alert("저장을 완료했습니다.");
+        		
+        		fn_Close();
+        	} 
+        }
+        /****************************************************************
+		* 닫기
+		* @param  : 없음
+		* @return : 없음
+		******************************************************************/
+		function fn_Close(){
+			parent.fn_PopupClose(4);
+		}
+		
+       	fn_OnLoad();
+        ]]></script>
+    </head>
+    <body>
+    	<w2:textbox class="se_box" id="output146" label=""
+    		style="position: absolute ;height:254px;width:599px;left:0px;border:none;top:0px;">
+    	</w2:textbox>
+    	<w2:textbox class="se_box" id="output143" label=""
+    		style="position: absolute ;height:30px;width:569px;left:13px;top:56px;">
+    	</w2:textbox>
+    	<w2:textbox class="se_box" id="output145" label=""
+    		style="position: absolute ;height:89px;width:569px;left:13px;top:149px;">
+    	</w2:textbox>
+    	<w2:textbox class="se_box" id="output149" label=""
+    		style="position: absolute ;height:30px;width:569px;left:13px;top:118px;">
+    	</w2:textbox>
+    	<w2:textbox class="se_box" id="output152" label=""
+    		style="position: absolute ;height:30px;width:569px;left:13px;top:87px;">
+    	</w2:textbox>
+    	<xf:image id="image47"
+    		src="/mp/images/pop_title_bg.png"
+    		style="position: absolute ;height:45px;width:599px;left:0px;top:0px;">
+    	</xf:image>
+    	<xf:select1 allOption="" appearance="minimal" chooseOption=""
+    		class="input_edit" direction="auto" disabled="false"
+    		displayMode="label" id="cb_MemoType"
+    		style="position: absolute ;height:22px;width:169px;left:123px;top:123px;"
+    		submenuSize="auto" ref="resMemo/root/dataset[@id='ds_Memo']/record/MEMO_TYPE">
+    		<xf:choices>
+    			<xf:itemset
+    				nodeset="resCode/root/dataset[@id='ds_Code']/record[CD_KND='CO0117']">
+    				<xf:label ref="NAME"></xf:label>
+    				<xf:value ref="CODE"></xf:value>
+    			</xf:itemset>
+    		</xf:choices>
+    	</xf:select1>
+    	<w2:textbox class="title_back" id="st_MemoTitle2" label="메모 등록"
+    		style="position: absolute ;height:20px;text-align:left;width:149px;left:15px;top:14px;">
+    	</w2:textbox>
+    	<w2:textbox class="title" id="st_MemoTitle" label="메모 등록"
+    		style="position: absolute ;height:20px;text-align:left;width:149px;left:15px;top:13px;">
+    	</w2:textbox>
+    	<w2:textbox class="se_lable" id="output141" label="부서"
+    		style="position: absolute ;height:22px;width:100px;left:298px;top:87px;">
+    	</w2:textbox>
+    	<w2:textbox class="se_lable" id="output142" label="등록자"
+    		style="position: absolute ;height:22px;width:100px;left:298px;top:56px;">
+    	</w2:textbox>
+    	<xf:textarea class="input_edit" id="ta_MemoContent"
+    		style="position: absolute ;height:79px;width:452px;left:123px;top:152px;" ref="resMemo/root/dataset[@id='ds_Memo']/record/MEMO_CONT">
+    	</xf:textarea>
+    	<w2:textbox class="se_lable" id="output144" label="메모구분"
+    		style="position: absolute ;height:22px;width:100px;left:13px;top:118px;">
+    	</w2:textbox>
+    	<w2:textbox class="se_lable" id="output147" label="메모내용"
+    		style="position: absolute ;height:81px;width:100px;left:13px;top:149px;">
+    	</w2:textbox>
+    	<xf:trigger class="btn_po" id="btn_Save"
+    		style="position: absolute ;height:30px;color:#FFFFFF;width:70px;left:448px;top:10px;"
+    		type="image">
+    		<xf:label>저 장</xf:label>
+    		<script ev:event="onclick" type="javascript"><![CDATA[ 
+    			fn_Save();
+    		]]></script>
+    	</xf:trigger>
+    	<w2:textbox class="se_lable" id="output148" label="공개여부"
+    		style="position: absolute ;height:22px;width:100px;left:298px;top:118px;">
+    	</w2:textbox>
+    	<xf:trigger class="btn_po" id="btn_Close"
+    		style="position: absolute ;height:30px;color:#FFFFFF;width:70px;left:521px;top:10px;"
+    		type="image">
+    		<xf:label>닫 기</xf:label>
+    		<script ev:event="onclick" type="javascript"><![CDATA[ 
+    			fn_Close();
+    		]]></script>
+    	</xf:trigger>
+    	<w2:textbox class="se_lable" id="output150" label="딜러"
+    		style="position: absolute ;height:22px;width:100px;left:13px;top:87px;">
+    	</w2:textbox>
+    	<xf:input class="input_edit" id="edt_RegDt"
+    		style="position: absolute ;height:22px;width:165px;left:123px;top:60px;" ref="resMemo/root/dataset[@id='ds_Memo']/record/UPD_DT" readOnlyClass="input_readonly" readOnly="true">
+    	</xf:input>
+    	<w2:textbox class="se_lable" id="output151" label="등록일시"
+    		style="position: absolute ;height:22px;width:100px;left:13px;top:56px;">
+    	</w2:textbox>
+    	<xf:input class="input_edit" id="edt_MemoDealerNm"
+    		style="position: absolute ;height:22px;width:165px;left:123px;top:91px;" ref="resMemo/root/dataset[@id='ds_Memo']/record/DEALER_NM" readOnlyClass="input_readonly" readOnly="true">
+    	</xf:input>
+    	<xf:input class="input_edit" id="edt_RegNm"
+    		style="position: absolute ;height:22px;width:165px;left:408px;top:60px;" ref="resMemo/root/dataset[@id='ds_Memo']/record/REG_USER_NM" readOnly="true" readOnlyClass="input_readonly">
+    	</xf:input>
+
+    	<xf:select1 allOption="" appearance="minimal" chooseOption=""
+    		class="input_edit" direction="auto" disabled="false"
+    		displayMode="label" id="cb_MemoOpenYN"
+    		style="position: absolute ;height:22px;width:84px;left:408px;top:122px;"
+    		submenuSize="auto" ref="resMemo/root/dataset[@id='ds_Memo']/record/OPEN_YN">
+    		<xf:choices>
+    			<xf:item>
+    				<xf:label>공개</xf:label>
+    				<xf:value>Y</xf:value>
+    			</xf:item>
+    			<xf:item>
+    				<xf:label>비공개</xf:label>
+    				<xf:value>N</xf:value>
+    			</xf:item>
+    		</xf:choices>
+    	</xf:select1>
+    	<xf:input class="input_edit" id="edt_MemoDeptNm"
+    		style="position: absolute ;height:22px;width:165px;left:408px;top:91px;" ref="resMemo/root/dataset[@id='ds_Memo']/record/DEPART" readOnlyClass="input_readonly" readOnly="true">
+    	</xf:input>
+    	<xf:input class="input_edit" id="edt_RegId"
+    		style="position: absolute ;height:22px;visibility:hidden;width:165px;left:408px;top:67px;"
+    		disabled="" ref="resMemo/root/dataset[@id='ds_Memo']/record/REG_USER_ID">
+    	</xf:input>
+    	<xf:input class="input_edit" id="edt_MemoDealerId"
+    		style="position: absolute ;height:22px;visibility:hidden;width:165px;left:123px;top:98px;" ref="resMemo/root/dataset[@id='ds_Memo']/record/DEALER_ID">
+    	</xf:input>
+    </body>
+</html>

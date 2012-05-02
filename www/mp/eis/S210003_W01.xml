@@ -1,0 +1,338 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?xml-stylesheet href="/mp/css/frame.css" type="text/css"?>
+<html xmlns="http://www.w3.org/1999/xhtml"
+    xmlns:ev="http://www.w3.org/2001/xml-events"
+    xmlns:w2="http://www.inswave.com/websquare" xmlns:xf="http://www.w3.org/2002/xforms">
+    <head>
+        <w2:buildDate/>
+        <xf:model>
+            <xf:instance>
+                <data xmlns="">
+               
+		        </data>
+		    </xf:instance>
+		    <xf:submission id="submissionList" ref="request" target="resList"
+        		action=""
+        		method="post" mediatype="application/xml" encoding="UTF-8" instance="" replace="instance"
+        		errorHandler="" customHandler="" mode="asynchronous"
+        		processMsg="">
+        		<script type="javascript" ev:event="xforms-submit-done"><![CDATA[
+            		grd_Model.setXML(WebSquare.ModelUtil.findInstanceNode("resList/root/dataset[@id='ds_SSbyModel']"));
+            		grd_Sfx.setXML(WebSquare.ModelUtil.findInstanceNode("resList/root/dataset[@id='ds_SSbySfx']"));
+            	]]></script>
+        	</xf:submission>
+        </xf:model>
+        <script type="javascript" src="/mp/js/common.js"></script>
+		<script type="javascript" src="/mp/js/WebSquare.js"></script>
+        <script type="javascript"><![CDATA[
+    	var FV_sDealerId = parent.cb_LDealer.getValue();	//GV_GROUP_ID;
+       	var FV_sUpGroupId = "";
+    	var FV_sDealerId = "";	//GV_GROUP_ID;
+        var FV_sYyyyMm = gfn_GetDate(0,0,0).substring(0,7);
+    	var FV_sToday = gfn_GetDate(0,0,0);
+       	var FV_sSvcNm = parent.FV_SvcNm;
+		
+
+
+		parent.fn_SpinnerShow();
+		setTimeout("parent.fn_SpinnerHide()", 3000);
+
+		var FV_sSvcNm = parent.FV_SvcNm;
+		var actionNm = "";
+
+		if(FV_sSvcNm == "T"){
+			actionNm = "TOYOTAAction";
+			FV_sDealerId = parent.cb_TDealer.getValue();	//GV_GROUP_ID;
+		}else{
+			FV_sDealerId = parent.cb_LDealer.getValue();	//GV_GROUP_ID;
+		}
+
+		if(FV_sDealerId.length!=0){
+			FV_sUpGroupId = FV_sDealerId;
+			fn_Search();
+		}else{
+			FV_sUpGroupId = GV_UP_GROUP_ID;
+			fn_Search();
+		}
+
+		function fn_Search(){
+			setTitSendInfo("request", actionNm, "", "mdms/mp/eis:S210003_W01_S01,mdms/mp/eis:S210003_W01_S02");
+			setInputParamData("YYYYMM", FV_sYyyyMm);
+			setInputParamData("TODAY", FV_sToday);       	
+			setInputParamData("GV_UP_GROUP_ID", FV_sUpGroupId);       	
+			setSubmissison("submissionList");
+		}
+
+		]]></script>
+    </head>
+    <body>
+    	<xf:image id="image24"
+    		src="/mp/images/eis/shape_4.png"
+    		style="position: absolute ;height:285px;width:1024px;left:0px;top:24px;">
+    	</xf:image>
+    	<w2:grid baseNode="dataset" repeatNode="record" id="grd_Model"
+    		style="position: absolute;left:13px;top:35px;width:506px;height:258px;"
+    		class="grid" resize="" overflowX="hidden" overflowY="hidden"
+    		valueNode="" readOnly="true">
+    		<w2:header id="header2" style="" class="gridHeaderTable"
+    			columnClass="gridHeaderTD">
+    			<w2:row id="row6" style="">
+    				<w2:column id="column135" style="height:20px;"
+    					hidden="" width="85" inputType="text" valueType="binary"
+    					value="Model">
+    				</w2:column>
+    				<w2:column id="column144" style="height:20px;"
+    					hidden="" inputType="text" width="60" valueType="binary"
+    					value="Contract">
+    				</w2:column>
+    				<w2:column id="column147" style="height:20px;"
+    					hidden="" inputType="text" width="60" valueType="binary"
+    					value="C.TGT">
+    				</w2:column>
+    				<w2:column id="column138" style="height:20px;"
+    					hidden="" inputType="text" width="60" valueType="binary"
+    					value="Sales">
+    				</w2:column>
+    				<w2:column id="column141" style="height:20px;"
+    					hidden="" inputType="text" width="60" valueType="binary"
+    					value="S.TGT">
+    				</w2:column>
+    				<w2:column id="column150" style="height:20px;"
+    					hidden="" inputType="text" width="60" valueType="binary"
+    					value="Cancel">
+    				</w2:column>
+    				<w2:column id="column153" style="height:20px;"
+    					hidden="" inputType="text" width="60" valueType="binary"
+    					value="BOC">
+    				</w2:column>
+    				<w2:column id="column156" style="height:20px;"
+    					hidden="" inputType="text" width="60" valueType="binary"
+    					value="STOCK">
+    				</w2:column>
+    			</w2:row>
+    		</w2:header>
+    		<w2:gBody id="gBody2" style="" class=" gridBodyTable"
+    			columnClass="gridBodyTD">
+    			<w2:row id="row7" style="">
+    				<w2:column id="VARIANT_NM" height="18" 
+    					hidden="" width="85" inputType="text" valueType="binary" textAlign="left">
+    				</w2:column>
+    				<w2:column id="C_CNT" height="18" 
+    					hidden="" inputType="text" width="70" valueType="binary" textAlign="right">
+    				</w2:column>
+    				<w2:column id="CT_CNT" height="18" 
+    					hidden="" inputType="text" width="70" valueType="binary" textAlign="right">
+    				</w2:column>
+    				<w2:column id="S_CNT" style="color:#F0B500;"
+    					height="18" hidden="" inputType="text" width="70" valueType="binary" textAlign="right">
+    				</w2:column>
+    				<w2:column id="ST_CNT" height="18" 
+    					hidden="" inputType="text" width="70" valueType="binary" textAlign="right">
+    				</w2:column>
+    				<w2:column id="CL_CNT" height="18" 
+    					hidden="" inputType="text" width="70" valueType="binary" textAlign="right">
+    				</w2:column>
+    				<w2:column id="BOC_CNT" height="18" 
+    					hidden="" inputType="text" width="70" valueType="binary" textAlign="right">
+    				</w2:column>
+    				<w2:column id="STOCK_CNT" height="18" 
+    					hidden="" inputType="text" width="70" valueType="binary" textAlign="right">
+    				</w2:column>
+    			</w2:row>
+    		</w2:gBody>
+    		<w2:footer id="footer2" style="" class="gridFooterTable"
+    			columnClass="gridFooterTD">
+    			<w2:row id="row3" style="">
+    				<w2:column id="column3" height="18" hidden=""
+    					width="70" inputType="text" valueType="binary" value="SUM">
+    				</w2:column>
+    				<w2:column id="column20" 
+    					height="18" hidden="" inputType="expression" width="60"
+    					valueType="binary" value="0"
+    					expression="sum('C_CNT')" textAlign="right">
+    				</w2:column>
+    				<w2:column id="column24" height="18" hidden=""
+    					inputType="expression" width="60" valueType="binary" value="0"
+    					expression="sum('CT_CNT')" textAlign="right">
+    				</w2:column>
+    				<w2:column id="column9" style="color:#F0B500;"
+    					height="18" hidden="" inputType="expression" width="60"
+    					valueType="binary" value="0" expression="sum('S_CNT')"
+    					textAlign="right">
+    				</w2:column>
+    				<w2:column id="column16" height="18" hidden=""
+    					inputType="expression" width="60" valueType="binary" value="0"
+    					expression="sum('ST_CNT')" textAlign="right">
+    				</w2:column>
+    				<w2:column id="column6" 
+    					height="18" hidden="" inputType="expression" width="60"
+    					valueType="binary" value="0" expression="sum('CL_CNT')"
+    					textAlign="right">
+    				</w2:column>
+    				<w2:column id="column89" height="18" hidden=""
+    					inputType="expression" width="60" valueType="binary" value="0"
+    					expression="sum('BOC_CNT')" textAlign="right">
+    				</w2:column>
+    				<w2:column id="column94" height="18" hidden=""
+    					inputType="expression" width="60" valueType="binary" value="0"
+    					expression="sum('STOCK_CNT')" textAlign="right">
+    				</w2:column>
+    			</w2:row>
+    			<w2:row id="row8" style="">
+    				<w2:column id="column137" style="height:20px"
+    					hidden="" width="85" inputType="text" valueType="binary"
+    					value="A/R">
+    				</w2:column>
+    				<w2:column id="column146" style="height:20px"
+    					hidden="" inputType="expression" width="140" valueType="binary"
+    					colSpan="2" rowSpan=""
+    					expression="if(sum('CT_CNT')==0) '0%'; else ((sum('C_CNT')/sum('CT_CNT')) * 100).toFixed(2) + '%';">
+    				</w2:column>
+    				<w2:column id="column140" style="height:20px"
+    					hidden="" inputType="expression" width="140" valueType="binary"
+    					colSpan="2" rowSpan=""
+    					expression="if(sum('ST_CNT')==0) '0%'; else ((sum('S_CNT')/sum('ST_CNT')) * 100).toFixed(2) + '%';">
+    				</w2:column>
+    				<w2:column id="column152" style="height:20px"
+    					hidden="" inputType="expression" width="70" valueType="binary"
+    					expression="sum('CL_CNT')" >
+    				</w2:column>
+    				<w2:column id="column155" style="height:20px"
+    					hidden="" inputType="expression" width="70" valueType="binary"
+    					expression="sum('BOC_CNT')" >
+    				</w2:column>
+    				<w2:column id="column158" style="height:20px"
+    					hidden="" inputType="expression" width="70" valueType="binary"
+    					expression="sum('STOCK_CNT')" >
+    				</w2:column>
+    			</w2:row>
+    		</w2:footer>
+    	</w2:grid>
+    	<w2:iframe id="iframe1"
+    		style="position: absolute ;left:530px;top:36px;width:480px;height:261px;"
+    		src="/mp/FusionCharts/Code/S210003_C01.jsp" scrolling="no">
+    	</w2:iframe>
+    	<xf:output class="sub_title_b" id="output30" label=""
+    		style="position: absolute ;height:20px;width:204px;left:20px;top:11px;">
+    		<xf:label>Model</xf:label>
+    	</xf:output>
+    	<xf:output id="sub_title"
+    		style="position: absolute ;height:20px;width:204px;left:20px;top:10px;"
+    		class="sub_title" label="">
+    		<xf:label>Model</xf:label>
+    	</xf:output>
+    	<xf:output id="output40"
+    		style="position: absolute ;height:20px;width:204px;left:20px;top:309px;"
+    		class="sub_title_b" label="">
+    		<xf:label>SFX</xf:label>
+    	</xf:output>
+    	<xf:output id="output41"
+    		style="position: absolute ;height:20px;width:204px;left:20px;top:308px;"
+    		class="sub_title" label="">
+    		<xf:label>SFX</xf:label>
+    	</xf:output>
+    	<xf:image id="image26"
+    		style="position: absolute ;height:285px;width:1024px;left:0px;top:323px;"
+    		src="/mp/images/eis/shape_4.png">
+    	</xf:image>
+    	<w2:grid id="grd_Sfx" baseNode="dataset" valueNode=""
+    		style="position: absolute;left:13px;top:335px;width:506px;height:258px;"
+    		overflowX="hidden" overflowY="hidden" class="grid" resize=""
+    		repeatNode="record" readOnly="true">
+    		<w2:header id="header20" style="" columnClass="gridHeaderTD"
+    			class="gridHeaderTable">
+    			<w2:row id="row60" style="">
+    				<w2:column id="column1350" style="height:20px;"
+    					hidden="" inputType="text" width="97" value="Model"
+    					valueType="binary">
+    				</w2:column>
+    				<w2:column id="column1380" style="height:20px;"
+    					hidden="" width="108" inputType="text" value="SFX"
+    					valueType="binary">
+    				</w2:column>
+    				<w2:column id="column1440" style="height:20px;"
+    					hidden="" width="60" inputType="text" value="Contract"
+    					valueType="binary">
+    				</w2:column>
+    				<w2:column id="column1410" style="height:20px;"
+    					hidden="" width="60" inputType="text" value="Sales"
+    					valueType="binary">
+    				</w2:column>
+    				<w2:column id="column1500" style="height:20px;"
+    					hidden="" width="60" inputType="text" value="Cancel"
+    					valueType="binary">
+    				</w2:column>
+    				<w2:column id="column1530" style="height:20px;"
+    					hidden="" width="60" inputType="text" value="BOC"
+    					valueType="binary">
+    				</w2:column>
+    				<w2:column id="column1560" style="height:20px;"
+    					hidden="" width="60" inputType="text" value="STOCK"
+    					valueType="binary">
+    				</w2:column>
+    			</w2:row>
+    		</w2:header>
+    		<w2:gBody id="gBody20" style="" columnClass="gridBodyTD"
+    			class=" gridBodyTable">
+    			<w2:row id="row70" style="">
+    				<w2:column id="VARIANT_NM_1" height="18" 
+    					hidden="" inputType="text" width="97" valueType="binary" textAlign="left"  colMerge="true" verticalAlign="middle">
+    				</w2:column>
+    				<w2:column id="SFX_NM_1" height="18" 
+    					hidden="" width="118" inputType="text" valueType="binary" textAlign="left">
+    				</w2:column>
+    				<w2:column id="C_CNT_1" height="18" 
+    					hidden="" width="70" inputType="text" valueType="binary" textAlign="right">
+    				</w2:column>
+    				<w2:column id="S_CNT_1" style="color:#F0B500;"
+    					hidden="" width="70" inputType="text" valueType="binary" textAlign="right">
+    				</w2:column>
+    				<w2:column id="CL_CNT_1" height="18" 
+    					hidden="" width="70" inputType="text" valueType="binary" textAlign="right">
+    				</w2:column>
+    				<w2:column id="BOC_CNT_1" height="18" 
+    					hidden="" width="70" inputType="text" valueType="binary" textAlign="right">
+    				</w2:column>
+    				<w2:column id="STOCK_CNT_1" height="18" 
+    					hidden="" width="70" inputType="text" valueType="binary" textAlign="right">
+    				</w2:column>
+    			</w2:row>
+    		</w2:gBody>
+    		<w2:footer id="footer20" style="" class="gridFooterTable"
+    			columnClass="gridFooterTD">
+    			<w2:row id="row30" style="">
+    				<w2:column id="column30" height="18" hidden="" colSpan="2" 
+    					width="70" inputType="text" valueType="binary" value="SUM">
+    				</w2:column>
+    				<w2:column id="column160" height="18" hidden=""
+    					inputType="expression" width="60" valueType="binary" value="0"
+    					expression="sum('C_CNT_1')" textAlign="right">
+    				</w2:column>
+    				<w2:column id="column90" style="color:#F0B500;"
+    					height="18" hidden="" inputType="expression" width="60"
+    					valueType="binary" value="0" expression="sum('S_CNT_1')"
+    					textAlign="right">
+    				</w2:column>
+    				<w2:column id="column200" 
+    					height="18" hidden="" inputType="expression" width="60"
+    					valueType="binary" value="0"
+    					expression="sum('CL_CNT_1')" textAlign="right">
+    				</w2:column>
+    				<w2:column id="column240" height="18" hidden=""
+    					inputType="expression" width="60" valueType="binary" value="0"
+    					expression="sum('BOC_CNT_1')" textAlign="right">
+    				</w2:column>
+    				<w2:column id="column60" 
+    					height="18" hidden="" inputType="expression" width="60"
+    					valueType="binary" value="0" expression="sum('STOCK_CNT_1')"
+    					textAlign="right">
+    				</w2:column>
+    			</w2:row>
+    		</w2:footer>
+    	</w2:grid>
+    	<w2:iframe id="iframe2"
+    		style="position: absolute ;left:530px;top:335px;width:480px;height:261px;"
+    		src="/mp/FusionCharts/Code/S210003_C02.jsp" scrolling="no">
+    	</w2:iframe>
+    </body>
+</html>

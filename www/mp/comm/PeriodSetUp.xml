@@ -1,0 +1,191 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<html xmlns="http://www.w3.org/1999/xhtml"
+    xmlns:ev="http://www.w3.org/2001/xml-events"
+    xmlns:w2="http://www.inswave.com/websquare" xmlns:xf="http://www.w3.org/2002/xforms">
+    <head>
+        <w2:buildDate/>
+        <xf:model>
+            <xf:instance>
+                <data xmlns=""/>
+            </xf:instance>
+        </xf:model>
+        <script type="javascript"><![CDATA[
+       	from_dt.setValue(fn_GetDate(0,0,0));
+       	to_dt.setValue(fn_GetDate(0,0,0));
+       	
+       	var nIdx = 0;
+		var objGb = "btn_Day";
+		
+		//각 버튼 click
+		function fn_ProcessDate(id){
+			switch(id){
+				case "btn_Prev" :
+					nIdx--;
+					fn_ChangeRange();			
+					break;
+				case "btn_Next" :
+					nIdx++;
+					fn_ChangeRange();			
+					break;
+				case "btn_Day" :
+					objGb = id;
+					nIdx = 0;
+					fn_ChangeRange();	
+					break;
+				case "btn_Week" :
+					from_dt.setValue(fn_GetDate(0,0,0,"FW"));
+					to_dt.setValue(fn_GetDate(0,0,0));
+					objGb = id;
+					nIdx = 0;
+					break;
+				case "btn_Month" :
+					from_dt.setValue(fn_GetDate(0,0,0,"FM"));
+					to_dt.setValue(fn_GetDate(0,0,0));
+					objGb = id;
+					nIdx = 0;
+					break;
+				case "btn_Year" :
+					from_dt.setValue(fn_GetDate(0,0,0,"FY"));
+					to_dt.setValue(fn_GetDate(0,0,0));
+					objGb = id;
+					nIdx = 0;
+					break;
+			}
+			
+		}
+		
+		// 이전/다음 날짜 처리
+		function fn_ChangeRange(){		
+			switch(objGb){
+				case "btn_Day" :
+					from_dt.setValue(fn_GetDate(0,0,nIdx));
+					to_dt.setValue(fn_GetDate(0,0,nIdx));
+					break;
+				case "btn_Week" :
+					from_dt.setValue(fn_GetDate(0,0,(nIdx*7),"FW"));
+					to_dt.setValue(fn_GetDate(0,0,(nIdx*7)+6,"FW"));
+					break;
+				case "btn_Month" :
+					from_dt.setValue(fn_GetDate(0,nIdx,0,"FM"));
+					to_dt.setValue(fn_GetDate(0,nIdx,0,"TM"));
+					break;
+				case "btn_Year" :
+					from_dt.setValue(fn_GetDate(nIdx,0,0,"FY"));
+					to_dt.setValue(fn_GetDate(nIdx,0,0,"TY"));
+					break;
+			}		
+		}
+		
+		// 날짜 계산
+		function fn_GetDate(year, month, day, gb){
+			 var curDate = new Date();
+			 
+			 if(gb == "FW")	day = day - curDate.getDay();// + 1;
+			 	
+			 //현재 날짜에 날짜 게산.
+			 curDate.setYear(curDate.getFullYear() + year );
+			 curDate.setMonth(curDate.getMonth() + month );
+			 curDate.setDate(curDate.getDate() + day );
+			 
+			 //실제 사용할 연, 월, 일
+			 var dYear = curDate.getFullYear();
+			 var dMonth = curDate.getMonth()+1;
+			 var dDay = curDate.getDate();
+			 var date = "";
+		
+			 dMonth = "0" + dMonth;
+			 dMonth = dMonth.substring(dMonth.length-2,dMonth.length);
+			 dDay   = "0" + dDay;
+			 dDay   = dDay.substring(dDay.length-2,dDay.length);
+			 
+			 if(gb == "FM")
+			 	date = dYear + "-" + dMonth + "-01";
+			 else if(gb == "TM")
+			 	date = dYear + "-" + dMonth + "-" + fn_LastDay(dYear,dMonth);
+			 else if(gb == "FY")
+			 	date = dYear + "-01-01";
+			 else if(gb == "TY")
+			 	date = dYear + "-12-31";
+			 else 
+			 	date = dYear + "-" + dMonth + "-" +  dDay;
+			 
+			 return date;
+		}
+		
+		//월말
+		function fn_LastDay(year,month){
+			 //각 달의 마지막 날짜
+			var lastdate = new Array(31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31);
+			
+			//윤년인 경우 2월의 마지막 날짜를 29로 입력
+			if((0 == year%4 && 0 != year%100) || 0 == year%400){
+			 	lastdate[1]=29; 
+			}
+		
+			day = lastdate[month-1];
+			
+		 	return day;
+		}
+        
+         ]]></script>
+    </head>
+    <body>
+    	<w2:inputCalendar calendarValueType="yearMonthDate"
+    		class="input_edit" id="from_dt"
+    		style="position: absolute ;height:24px;width:92px;left:0px;top:1px;">
+    	</w2:inputCalendar>
+    	<xf:image id="btn_Next"
+    		src="/mp/images/btn2_right.png"
+    		style="position: absolute ;cursor:hand;height:24px;width:31px;left:235px;top:1px;">
+    		<script ev:event="onclick" type="javascript"><![CDATA[ 
+    			fn_ProcessDate(this.id);
+    		]]></script>
+    	</xf:image>
+    	<w2:inputCalendar calendarValueType="yearMonthDate"
+    		class="input_edit" id="to_dt"
+    		style="position: absolute ;height:24px;width:92px;left:106px;top:1px;">
+    	</w2:inputCalendar>
+    	<xf:trigger id="btn_Year"
+    		style="position: absolute ;height:26px;width:31px;left:368px;top:0px;"
+    		type="button">
+    		<xf:label>Y</xf:label>
+    		<script ev:event="onclick" type="javascript"><![CDATA[
+    			fn_ProcessDate(this.id);
+    		]]></script>
+    	</xf:trigger>
+    	<xf:trigger id="btn_Month"
+    		style="position: absolute ;height:26px;width:31px;left:335px;top:0px;"
+    		type="button">
+    		<xf:label>M</xf:label>
+    		<script ev:event="onclick" type="javascript"><![CDATA[ 
+    			fn_ProcessDate(this.id);
+    		]]></script>
+    	</xf:trigger>
+    	<xf:trigger id="btn_Day"
+    		style="position: absolute ;height:26px;width:31px;left:269px;top:0px;"
+    		type="button">
+    		<xf:label>D</xf:label>
+    		<script ev:event="onclick" type="javascript"><![CDATA[ 
+    			fn_ProcessDate(this.id);
+    		]]></script>
+    	</xf:trigger>
+    	<xf:trigger id="btn_Week"
+    		style="position: absolute ;height:26px;width:31px;left:302px;top:0px;"
+    		type="button">
+    		<xf:label>W</xf:label>
+    		<script ev:event="onclick" type="javascript"><![CDATA[ 
+    			fn_ProcessDate(this.id);
+    		]]></script>
+    	</xf:trigger>
+    	<w2:textbox class="txt1" id="output2" label="~"
+    		style="position: absolute ;padding-top:3px;height:21px;text-align:center;width:14px;left:92px;top:2px;">
+    	</w2:textbox>
+    	<xf:image id="btn_Prev"
+    		src="/mp/images/btn2_left.png"
+    		style="position: absolute ;height:24px;cursor:hand;width:31px;left:200px;top:1px;">
+    		<script ev:event="onclick" type="javascript"><![CDATA[ 
+    			fn_ProcessDate(this.id);
+    		]]></script>
+    	</xf:image>
+    </body>
+</html>

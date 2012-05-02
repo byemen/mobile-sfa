@@ -1,0 +1,270 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?xml-stylesheet href="/mp/css/style.css" type="text/css"?>
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:ev="http://www.w3.org/2001/xml-events"
+    xmlns:w2="http://www.inswave.com/websquare" xmlns:xf="http://www.w3.org/2002/xforms">
+    <head>
+    	<w2:buildDate />
+    	<xf:model>
+    		<xf:instance>
+    			<data xmlns="" />
+    		</xf:instance>
+    		<xf:submission id="submissionLogin" ref="request"
+    			target="resUser" action="" method="post"
+    			mediatype="application/xml" encoding="UTF-8" instance=""
+    			replace="instance" errorHandler="" customHandler=""
+    			mode="asynchronous" processMsg="">
+    			<script type="javascript" ev:event="xforms-submit-done"><![CDATA[ 
+    				fn_AfterLogin();
+    			]]></script>
+    		</xf:submission>
+    	</xf:model>
+    	<script type="javascript" src="/mp/js/common.js"></script>
+		<script type="javascript" src="/mp/js/WebSquare.js"></script>		
+		<script type="javascript" src="/mp/js/jquery/jquery.min.js"></script>
+    	<script type="javascript"><![CDATA[     	
+		var	FV_mainVar = "";
+		var FV_homeUrl = "";
+		/****************************************************************
+		* 화면로드
+		* @param  : 없음
+		* @return : 없음
+		******************************************************************/
+        function fn_OnLoad(){
+        	var sSqlid = "mdms/mp/comm:LOGIN_S01";        	
+        	setTitSendInfo("request", "", "", sSqlid);
+			setInputParamData("USER_ID", WebSquare.cookie.getCookie("userId"));
+			setInputParamData("PASSWORD", "123");
+			setSubmissison("submissionLogin");
+        }
+        /****************************************************************
+		* callback (Login)
+		* @param  : 없음
+		* @return : 없음
+		******************************************************************/
+        function fn_AfterLogin(){
+        	// 사용자 정보
+        	var userinfo = WebSquare.ModelUtil.findInstanceNodes("resUser/root/dataset[@id='ds_UserInfo']/record");
+
+			WebSquare.session.setAttribute("USER_ID",WebSquare.xml.getValue(userinfo[0],"USER_ID"));
+			WebSquare.session.setAttribute("NAME",WebSquare.xml.getValue(userinfo[0],"NAME"));
+			WebSquare.session.setAttribute("GROUP_ID",WebSquare.xml.getValue(userinfo[0],"GROUP_ID"));
+			WebSquare.session.setAttribute("UP_GROUP_ID",WebSquare.xml.getValue(userinfo[0],"UP_GROUP_ID"));
+			WebSquare.session.setAttribute("UP_GROUP_NAME",WebSquare.xml.getValue(userinfo[0],"UP_GROUP_NAME"));
+			WebSquare.session.setAttribute("USER_GROUP",WebSquare.xml.getValue(userinfo[0],"USER_GROUP"));
+			WebSquare.session.setAttribute("USER_TYPE",WebSquare.xml.getValue(userinfo[0],"USER_TYPE"));
+			WebSquare.session.setAttribute("DEPT_NM",WebSquare.xml.getValue(userinfo[0],"DEPT_NM"));
+			WebSquare.session.setAttribute("DEPT_CD",WebSquare.xml.getValue(userinfo[0],"DEPT_CD"));
+			WebSquare.session.setAttribute("TEL_NO",WebSquare.xml.getValue(userinfo[0],"TEL_NO"));
+			WebSquare.session.setAttribute("BRAND_CD",WebSquare.xml.getValue(userinfo[0],"BRAND_CD"));
+
+			// 권한
+			var sUserGroup = WebSquare.xml.getValue(userinfo[0],"USER_GROUP");
+
+			if(sUserGroup.indexOf("DE2") >= 0 || sUserGroup.indexOf("TE2") >= 0){
+       			FV_homeUrl = "/mp/main/S310002_W01.xml";
+       		} else{
+       			FV_homeUrl = "/mp/main/S310001_W01.xml";
+       		}
+       		ifrm_Main.setSrc(FV_homeUrl);
+        }
+        /****************************************************************
+		* 메뉴 이동
+		* @param  : id	메뉴 구분
+		* @return : 없음
+		******************************************************************/
+        function fn_MenuChange(id){
+        	//fn_SpinnerShow();
+        	fn_DeleteMemo();
+
+        	FV_sQuickSearch = "";
+        	var urls = "";
+
+			switch(id) {
+				case "btn_Cust":
+					urls = "/mp/cust/S310101_W01.xml";
+					break;
+				case "btn_Retn":
+					urls = "/mp/retn/S310201_W01.xml";
+					break;
+				case "btn_Act":
+					urls = "/mp/act/S310301_W01.xml";
+					break;
+				case "btn_Tride":
+					urls = "/mp/tride/S310401_W01.xml";
+					break;
+				case "btn_Resvt":
+					urls = "/mp/resvt/S310501_W01.xml";
+					break;
+				case "btn_Home":
+					urls = FV_homeUrl;
+					break;
+				case "btn_Sms":
+					urls = "/mp/main/S310003_W01.xml";
+					break;
+			}
+
+        	ifrm_Main.setSrc(urls);
+        }
+        /****************************************************************
+		* 로그아웃
+		* @param  : 없음
+		* @return : 없음
+		******************************************************************/
+       	function fn_Logout(){
+       		var result = confirm("로그아웃 하시겠습니까?");
+
+	    	if(result == true) {
+	      		document.location.href = path+"/mp/comm/Login.xml";
+	      	} else {
+	      		return;
+	      	}
+       	}
+       	var FV_sQuickSearch = "";
+       	/****************************************************************
+		* 퀵서치
+		* @param  : 없음
+		* @return : 없음
+		******************************************************************/
+       	function fn_QuickSearch(){
+       		if(gfn_IsNullVal(edt_QuickSearch.getValue())){
+       			alert("조회 조건을 입력하세요.");
+       			edt_QuickSearch.focus();
+       			return;
+       		}
+       		
+       		FV_sQuickSearch = edt_QuickSearch.getValue();
+       		
+       		ifrm_Main.setSrc("/mp/cust/S310101_W01.xml");
+       	}
+       	function fn_SpinnerShow(){
+        	$('#spinner').show();
+        }
+        function fn_SpinnerHide(){
+        	$('#spinner').hide();
+        }	        
+       // 	$('#spinner').show();
+       	/****************************************************************
+		* 시승예약 메모 삭제 처리
+		* @param  : 없음
+		* @return : 없음
+		******************************************************************/
+        function fn_DeleteMemo(){
+            for(var i=0; i<10; i++){
+	            var oDiv = document.getElementById("div");
+	   			if(null != oDiv){
+					oDiv.parentNode.removeChild(oDiv);
+	            }
+	        }
+        }
+
+       	fn_OnLoad(); 
+        ]]></script>
+    </head>
+    <body>
+    	<xf:image id="image42" src="/mp/images/top_bg.png" style="position: absolute ;height:60px;width:1024px;left:0px;top:0px;">
+    	</xf:image><xf:image id="image20"
+    		src="/mp/images/top_bg.png"
+    		style="position: absolute ;height:60px;width:100px;right:0px;top:0px;">
+    	</xf:image>
+    	<xf:image id="image21"
+    		style="position: absolute ;height:36px;width:154px;left:11px;top:12px;"
+    		src="/mp/images/ci_toyota.png">
+    	</xf:image>
+    	<xf:select1 appearance="minimal" direction="auto"
+    		chooseOption="" id="selectbox1"
+    		style="position: absolute ;height:18px;cursor:pointer;color:#ffffff;width:60px;font-size:11px;background-color:#222223;left:799px;border:1px solid #494949;top:33px;"
+    		displayMode="label" allOption="" disabled="false"
+    		submenuSize="auto">
+    		<xf:choices>
+    			<xf:item>
+    				<xf:label>ALL</xf:label>
+    				<xf:value></xf:value>
+    			</xf:item>
+    			<xf:item>
+    				<xf:label>SC</xf:label>
+    				<xf:value></xf:value>
+    			</xf:item>
+    		</xf:choices>
+    	</xf:select1>
+    	<xf:input id="edt_QuickSearch"
+    		style="position: absolute ;height:18px;color:#ffffff;width:98px;background-color:#222223;left:864px;border:1px solid #494949;top:33px;">
+    	</xf:input>
+    	<xf:image id="btn_Cust"
+    		style="position: absolute ;height:51px;width:99px;left:206px;top:4px;;cursor:pointer"
+    		src="/mp/images/mbtn_01_de.png">
+    		<script ev:event="onclick" type="javascript"><![CDATA[ 
+    			fn_MenuChange(this.id);
+    		]]></script>
+    	</xf:image>
+    	<xf:image id="btn_Retn"
+    		src="/mp/images/mbtn_02_de.png"
+    		style="position: absolute ;height:51px;width:99px;left:314px;top:4px;;cursor:pointer">
+    		<script ev:event="onclick" type="javascript"><![CDATA[ 
+    			fn_MenuChange(this.id);
+    		]]></script>
+    	</xf:image>
+    	<xf:image id="btn_Act"
+    		style="position: absolute ;height:51px;width:99px;left:422px;top:4px;;cursor:pointer"
+    		src="/mp/images/mbtn_03_de.png">
+    		<script ev:event="onclick" type="javascript"><![CDATA[ 
+    			fn_MenuChange(this.id);
+    		]]></script>
+    	</xf:image>
+    	<xf:image id="btn_Tride"
+    		style="position: absolute ;height:51px;width:99px;left:530px;top:4px;;cursor:pointer"
+    		src="/mp/images/mbtn_04_de.png">
+    		<script ev:event="onclick" type="javascript"><![CDATA[ 
+    			fn_MenuChange(this.id);
+    		]]></script>
+    	</xf:image>
+    	<xf:image id="btn_Resvt"
+    		style="position: absolute ;height:51px;width:99px;left:638px;top:4px;;cursor:pointer"
+    		src="/mp/images/mbtn_05_de.png">
+    		<script ev:event="onclick" type="javascript"><![CDATA[ 
+    			fn_MenuChange(this.id);
+    		]]></script>
+    	</xf:image>
+    	<xf:image id="btn_QuickSearch"
+    		src="/mp/images/btn_quicksearch.png"
+    		style="position: absolute ;height:20px;width:35px;left:967px;top:33px;">
+    		<script ev:event="onclick" type="javascript"><![CDATA[ 
+    			fn_QuickSearch();
+    		]]></script>
+    	</xf:image>
+    	<xf:image id="btn_Home"
+    		src="/mp/images/btn_home.png"
+    		style="position: absolute ;height:20px;width:70px;left:788px;top:5px;">
+    		<script ev:event="onclick" type="javascript"><![CDATA[
+    			fn_MenuChange(this.id);
+    		]]></script>
+    	</xf:image>
+    	<xf:image id="btn_Sms"
+    		src="/mp/images/btn_sms.png"
+    		style="position: absolute ;height:20px;width:59px;left:866px;top:5px;">
+    		<script ev:event="onclick" type="javascript"><![CDATA[
+    			fn_MenuChange(this.id);
+    		]]></script>
+    	</xf:image>
+    	<xf:image id="btn_Logout"
+    		src="/mp/images/btn_logout.png"
+    		style="position: absolute ;height:20px;width:74px;left:933px;top:5px;">
+    		<script ev:event="onclick" type="javascript"><![CDATA[
+    		fn_Logout();
+    		]]></script>
+    	</xf:image>
+    	<xf:output class="txt1" id="output45" label=""
+    		style="position: absolute ;height:13px;width:1px;background-color:#000000;left:928px;top:9px;">
+    		<xf:label></xf:label>
+    	</xf:output>
+    	<xf:output class="txt1" id="output46" label=""
+    		style="position: absolute ;height:13px;width:1px;background-color:#000000;left:860px;top:9px;">
+    		<xf:label></xf:label>
+    	</xf:output>
+    	<w2:iframe id="ifrm_Main"
+    		style="position: absolute ;height:619px;width:994px;left:14px;top:71px;" src="" scrolling="no">
+    	</w2:iframe>
+    	<div id="spinner" style="position: absolute; margin-top:306px; margin-left:447px; display:none; text-align:center">
+    		<img src="/mp/images/loading-black.gif" />
+    	</div>
+    </body>
+</html>

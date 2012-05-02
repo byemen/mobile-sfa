@@ -1,0 +1,204 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?xml-stylesheet href="/mp/css/style.css" type="text/css"?>
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:ev="http://www.w3.org/2001/xml-events"
+    xmlns:w2="http://www.inswave.com/websquare" xmlns:xf="http://www.w3.org/2002/xforms">
+    <head>
+    	<w2:buildDate />
+    	<xf:model>
+    		<xf:instance>
+    			<data xmlns="" />
+    		</xf:instance>
+    		<xf:submission id="submissionList" ref="request" target="resList"
+        		action=""
+        		method="post" mediatype="application/xml" encoding="UTF-8" instance="" replace="instance"
+        		errorHandler="" customHandler="" mode="synchronous"
+        		processMsg="">
+        		<script type="javascript" ev:event="xforms-submit-done"><![CDATA[
+            		grd_List.setXML(WebSquare.ModelUtil.findInstanceNode("resList/root/dataset[@id='ds_List']"));
+            	]]></script>
+        	</xf:submission>
+    	</xf:model>
+    	<script type="javascript" src="/mp/js/common.js"></script>
+		<script type="javascript" src="/mp/js/WebSquare.js"></script>
+    	<script type="javascript"><![CDATA[
+     	var FV_SEARCH_CNT = 14;		// 조회 건수
+		var FV_nMAXCNT = -1;		// 전체 데이터 수	
+     	/****************************************************************
+		* 화면로드
+		* @param  : 없음
+		* @return : 없음
+		******************************************************************/
+     	function fn_OnLoad(){
+     		wfrm_Page.visible(false);
+     		edt_Zip.focus();
+     	}
+     	/****************************************************************
+		* 조회
+		* @param  : 없음
+		* @return : 없음
+		******************************************************************/
+     	function fn_Search(pageNo){
+     		if(gfn_IsNullVal(edt_Zip.getValue())){
+     			alert("동/읍/면을 입력하세요.");
+				edt_Zip.focus();
+				return;
+     		}
+     		
+     		if(pageNo == null){
+				FV_nMAXCNT = -1;
+				pageNo = 1;
+				fn_InitPage();
+			}
+        	
+        	var sSqlid = "mdms/mp/comm:CO_ZIPCODE_S01@" + pageNo + "/" + FV_SEARCH_CNT;        	
+        	setTitSendInfo("request", "", "", sSqlid);
+			setInputParamData("ZIP", edt_Zip.getValue());
+			setSubmissison("submissionList");
+			
+    		fn_AfterSearch();
+        }
+        /****************************************************************
+		* callback (조회)
+		* @param  : 없음
+		* @return : 없음
+		******************************************************************/
+        function fn_AfterSearch(){
+        	if(FV_nCurrPage == -1 && grd_List.getRowCount() > 0){
+				FV_nMAXCNT = grd_List.getCellData(0,0);
+				fn_SetPageInfo(1,FV_nMAXCNT,FV_SEARCH_CNT);
+			}
+        }
+        /****************************************************************
+		* 고객정보
+		* @param  : 없음
+		* @return : 없음
+		******************************************************************/
+        function fn_SetParams(row,col){
+        	if(col == 1){
+        		var arrResult = new Array();
+        		
+        		arrResult[0] = grd_List.getCellData(row,1);			//	우편번호
+        		arrResult[1] = grd_List.getCellData(row,2);			//	주소
+				arrResult[2] = grd_List.getCellData(row,3);			//	주소
+				arrResult[3] = grd_List.getCellData(row,4);			//	시
+				arrResult[4] = grd_List.getCellData(row,5);			//	구
+				arrResult[5] = grd_List.getCellData(row,6);			//	동
+				
+				parent.fn_AddrParams(arrResult);
+        	}
+        }
+        
+        fn_OnLoad(); 
+        ]]></script>
+    </head>
+    <body>
+    	<w2:textbox class="se_box" id="output71" label=""
+    		style="position: absolute ;height:494px;cursor:hand;width:500px;left:1px;border:none;top:1px;">
+    	</w2:textbox>
+    	<xf:group 
+    		id="roundRectangle2"
+    		style="position: absolute ;height:42px;width:480px;left:10px;top:76px;" class="if_group">
+    	</xf:group>
+    	<w2:textbox class="if_lable" id="output47" label="동/읍/면을 입력하세요.(예: 서초동)"
+    		style="position: absolute ;height:22px;text-align:left;width:268px;left:11px;font-weight:bold;top:51px;">
+    	</w2:textbox>
+    	<xf:image id="btn_Search"
+    		src="/mp/images/if_btn_seach.png"
+    		style="position: absolute ;cursor:pointer;height:25px;width:77px;left:405px;top:86px;">
+    		<script ev:event="onclick" type="javascript"><![CDATA[ 
+    			fn_Search();
+    		]]></script>
+    	</xf:image>
+    	<xf:image id="image49"
+    		src="/mp/images/pop_title_bg.png"
+    		style="position: absolute ;height:45px;width:500px;left:0px;top:0px;">
+    	</xf:image>
+    	<w2:textbox class="title_back" id="output72" label="우편번호 찾기"
+    		style="position: absolute ;height:20px;text-align:left;width:149px;left:15px;top:14px;">
+    	</w2:textbox>
+    	<w2:textbox class="title" id="output70" label="우편번호 찾기"
+    		style="position: absolute ;height:20px;text-align:left;width:149px;left:15px;top:13px;">
+    	</w2:textbox>
+    	<w2:grid autoFit="" baseNode="dataset" class="grid"
+    		evenRowBackgroundColor="#e1ebf5" focusMode="row" id="grd_List"
+    		oddEvenColorDisplay="true" oddRowBackgroundColor="#ffffff"
+    		overflowX="hidden" overflowY="hidden"
+    		readOnly="true" repeatNode="record" resize=""
+    		style="position:absolute;height:322px;width:480px;left:10px;top:127px;">
+    		<w2:header class="gridHeaderTable"
+    			columnClass="gridHeaderTD1" id="header9" style="" width="472">
+    			<w2:row id="row20" style="">
+    				<w2:column id="column385" style="height:26px"
+    					hidden="" inputType="text" width="30" valueType="binary">
+    				</w2:column>
+    				<w2:column colSpan="" hidden="" id="_T_CNT"
+    					inputType="text" rowSpan="" style="height:26px;" value="우편번호"
+    					valueType="binary" width="70">
+    				</w2:column>
+    				<w2:column colSpan="" hidden="" id="column375"
+    					inputType="text" rowSpan="" style="height:26px;" value="주소"
+    					valueType="binary" width="409">
+    				</w2:column>
+    				<w2:column id="column387" style="height:26px"
+    					hidden="" inputType="text" width="70" valueType="binary">
+    				</w2:column>
+    				<w2:column id="column393" style="height:26px"
+    					hidden="" inputType="text" width="70" valueType="binary">
+    				</w2:column>
+    				<w2:column id="column391" style="height:26px"
+    					hidden="" inputType="text" width="70" valueType="binary">
+    				</w2:column>
+    				<w2:column id="column389" style="height:26px"
+    					hidden="" inputType="text" width="70" valueType="binary">
+    				</w2:column>
+    			</w2:row>
+    		</w2:header>
+    		<w2:gBody class="gridBodyTable" columnClass="gridBodyTD"
+    			id="gBody9" style="">
+    			<w2:row id="row21" style="">
+    				<w2:column id="_T_CNT" style="height:21px"
+    					hidden="true" inputType="text" width="70" valueType="binary">
+    				</w2:column>
+    				<w2:column hidden="" id="ZIP_CD" inputType="text"
+    					style="color:#519eec;" valueType="binary" width="70">
+    				</w2:column>
+    				<w2:column hidden="" id="ADDR" inputType="text"
+ textAlign="left" 
+    					style="height:21px" valueType="binary" width="408">
+    				</w2:column>
+    				<w2:column id="ADDR_NO" style="height:21px"
+    					hidden="true" inputType="text" width="70" valueType="binary">
+    				</w2:column>
+    				<w2:column id="CITY" style="height:21px"
+    					hidden="true" inputType="text" width="70" valueType="binary">
+    				</w2:column>
+    				<w2:column id="GU" style="height:21px"
+    					hidden="true" inputType="text" width="70" valueType="binary">
+    				</w2:column>
+    				<w2:column id="DONG1" style="height:21px"
+    					hidden="true" inputType="text" width="70" valueType="binary">
+    				</w2:column>
+    			</w2:row>
+    		</w2:gBody>
+    		<script ev:event="onCellClick( row , col )"
+    			type="javascript"><![CDATA[ 
+    			fn_SetParams(row,col);
+    		]]></script>
+    	</w2:grid>
+    	<xf:trigger id="btn_Close"
+    		style="position: absolute ;height:30px;color:#FFFFFF;width:70px;left:424px;top:9px;"
+    		class="btn_po" type="image">
+    		<xf:label>닫 기</xf:label>
+    		<script ev:event="onclick" type="javascript"><![CDATA[ 
+    			parent.fn_AddrParams();
+    		]]></script>
+    	</xf:trigger>
+    	<xf:input class="input_edit" id="edt_Zip"
+    		style="position: absolute ;height:22px;width:256px;left:18px;top:86px;">
+    	</xf:input>
+    	<w2:wframe id="wfrm_Page" mode="async"
+    		src="/mp/comm/Paging.xml"
+    		style="position: absolute ;left:29px;top:459px;width:443px;height:28px;">
+    	</w2:wframe>
+    </body>
+</html>

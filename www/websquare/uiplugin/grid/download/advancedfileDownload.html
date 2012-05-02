@@ -1,0 +1,56 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:xf="http://www.w3.org/2002/xforms" xmlns:ev="http://www.w3.org/2001/xml-events" xmlns:w2="http://www.inswave.com/websquare">
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+<META http-equiv="X-UA-Compatible" content="IE=Edge" />
+<script type="text/javascript" language="javascript">
+	
+	init = function (){
+		parentObj = opener || parent;
+		gridObj = parentObj[parentObj.window['downloadGridId']];
+		gridObj.downloadInit = true;
+	}
+	checkUpload = function(uploadPercent){
+		if(uploadPercent === "end" ) {
+			excelDone()
+		} else {
+			var textLayer = document.getElementById("textLayer");
+			textLayer.innerHTML = "데이터 수집 중.." + Math.round(uploadPercent * 1000) /10  + "%";
+		}
+	}
+	sendData = function(){
+		gridObj.sendExcelData(gridObj.excelOptions,gridObj.excelInfoArr,gridObj.excelFinalStr);	
+	} 
+	cancle = function(){
+		gridObj.cancleDownload();
+	}
+	excelDone = function(){
+		var textLayer = document.getElementById("textLayer");
+		textLayer.innerHTML = "데이터 변환 완료";
+		var downloadButton = document.getElementById("downloadButton");
+		downloadButton.disabled = false;
+	}
+	initialize = function() {
+		var textLayer = document.getElementById("textLayer");
+		textLayer.innerHTML = "데이터 수집 중.. 0%";
+		var downloadButton = document.getElementById("downloadButton");
+		downloadButton.disabled = true;
+		init();
+	}
+</script>
+<style>
+	body {
+		font-family: "dotum";
+		font-size: 11px;
+		font-weight: bold;
+	}
+</style>
+</head>
+<body style="background-color:#ffffff" onload="init()"> 
+<img style="position:absolute;left:15px;top:15px;" src="../../../message/images/progressingbar.gif" /><br />
+<div id="textLayer" style="position:absolute;left:15px;width:150px;top:30px;height:15px;text-align:center;">
+	데이터 수집 중.. 0%
+</div>
+<input id='downloadButton' type='button' disabled="true" style="position:absolute;left:90px;width:85px;top:60px;height:30px;text-align:center;word-wrap:break-word;" onclick="sendData()" value="download" />
+<input id='cancelButton' type='button'  style="position:absolute;left:5px;width:75px;top:60px;height:30px;text-align:center;word-wrap:break-word;" onclick="cancle()" value="cancel" />
+</body>
+</html>

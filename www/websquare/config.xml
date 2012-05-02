@@ -1,0 +1,181 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<WebSquare>
+	<docType value="standard"/>	<!-- quirk, standard-->
+	<debug value="true" console="true" remoteConsole="false"/>
+	<DocumentRoot>..</DocumentRoot>
+	<debugKey value=""/>
+	<language value="ko"/>
+
+	<!-- system : websquare(*) -->
+	<exceptionHandler value="websquare"/>
+	<debugMenu value="use"/>
+	<welcome-file></welcome-file>
+	<forcedValueSetting value="true">
+		<!-- xml model instance에 값을 넣으려할때, 대상 instance가 없을경우 해당 instance를 만들건지를 결정-->
+	</forcedValueSetting>
+	<processMsgHeight value="80"/>
+	<processMsgWidth value="180"/>
+	<processMsgBackground value="true" backgroundColor="#112233"/>
+	<byteCheckEncoding value="euc-kr">	 
+		<!-- string을 읽어서 byte를 셀 때의 default encoding을 설정해준다. ex: WebSquare.util.getStringByteSize -->
+	</byteCheckEncoding>
+	<initScript value="false">
+	</initScript>
+	<clearMemory value="false"/>
+	
+	<!-- stylesheet를 websquare.html의 link로 넣을 경우는 enable속성을 false로 설정. 기본값은 true-->
+	<stylesheet value="stylesheet.css"/>
+	<!--
+		Initializer에서 Engine 모듈을 호출 한다.
+		업무 공통 JavaScript를 추가해 준다.
+	-->
+	<engine>
+  		<!-- module src="/education/common/common.js"/ -->
+ 	</engine>
+ 	
+ 	<ModelUtil>
+ 		<copyChildrenNodes refresh="false" />
+ 	</ModelUtil>
+
+	<preProcessor>
+		<!--systemPreProcessor value="alert(WebSquare.startApplication)"/-->
+		<!--businessPreProcessor value="alert('bbb')"/-->
+	</preProcessor>
+
+	<submission>
+		<!-- 기본 에러 처리기 -->
+		<!--errorHandler value="WebSquare.proworks.checkXMLHTTPError"/-->
+		<!-- 기본 처리 중 메시지(생략되면 메시지가 나타나지 않는다.)-->
+		<processMsg value=""/>
+		<showSubmissionTime value="true"/>
+		<preSubmitFunction value="presubmit"/>
+		<callbackSubmitFunction value=""/>
+	</submission>
+
+	<!--
+		XML파일이 갱신 자동 확인 기능 설정 (head노드의  <w2:buildDate>2008-12-22 15:51:20</w2:buildDate> 노드 사용)
+			enable="true|false(*)" true로 설정되면 갱신 자동 확인 기능 활성화
+			interval	확인 간격(ms) 기본값은 30000ms
+			mode="client(*)|server"
+				client로 설정되면 XML을 직접 client로 가져와서 파싱한 다음 업데이트 여부를 판단한다.
+				server로 설정되면 서버 URL에 XML path를 보내서 버전정보를 반환받아 업데이트 여부를 판단한다.
+			serverUrl	mode가 server인 경우 처리 URL을 지정한다. 지정되지 않은 경우 mode가 client로 자동으로 변경된다.
+	-->
+	<checkUpdate enable="false" interval="60000" mode="client" serverUrl=""/>
+
+	<!--
+		image cache여부 설정
+			enable="true|false(*)" true로 설정되면 이미지 캐싱 기능 활성화
+			version		버전은 일련의 문자열로 버전 값이 변경되면 새로운 이미지를 서버에서 다운받는다.
+						파일이 갱신된 경우 반드시 버전 값을 변경해야 한다.
+			serverUrl	이미지 캐싱을 지원하는 서버 Url로 설정되지 않으면 기본값으로 WebSquareImageCache?url= 를 사용한다.
+						JSP를 사용하는 경우에는 engine/servlet/image.jsp?url= 를 설정해야 한다.
+			hostUrl     이미지를 관리하는 서버가 있다면 포트값을 포함해 값을 지정을 해준다
+									물른 http를 제외한 값을 원칙으로 한다. 
+									ex) {serverIP}:{port}
+	-->
+	<!--imageCache enable="true" version="20080225161" serverUrl="engine/servlet/image.jsp?url=" hostUrl="192.168.150.53:8080" /-->
+	<!-- imageCache enable="false" version="20080225161" serverUrl="engine/servlet/image.jsp?url="/-->
+
+	<!--
+		engine cache여부 설정
+			enable="true|false(*)" true로 설정되면 Engine 캐싱 기능 활성화
+			version		버전은 일련의 문자열로 버전 값이 변경되면 새로운 엔진을 서버에서 다운받는다.
+						파일이 갱신된 경우 반드시 버전 값을 변경해야 한다.
+		compression="true|false(*)"	true로 설정되고 license를 사용가능하도록(<license value="true"/>)설정되면 gzip압축을 지원한다.
+									false로 설정되면 plain text를 사용한다.
+	-->
+	<!--engineCache compression="false" enable="false" version="200712240754"/-->
+	<engineCache compression="true" enable="true" postfix="month"/>
+
+	<!--
+		userAgent관련 regular expression 패턴을 등록한다.
+			serializer : 브라우저에서 제공하는 XML Serializer를 사용하지 않을 userAgent 패턴을 등록한다. (Galaxy S2 중 일부 오류가 있는 스마트폰을 위한 userAgent를 등록 하기 위한 값을 등록하였다.)
+			XMLParser : 브라우저에서 제공하는 XML 및 XPath 구현을 사용하지 않을 userAgent 패턴을 등록한다. (Opera 11.60, 11.61 등)
+	<userAgentPattern serializer="Android 2.3.5[\w\W]+M250" XMLParser="Opera[\w\W]+11.6"/>
+	-->
+
+	<!--
+		개발환경에 관련된 설정을 추가한다.
+			mode="development|production(*)"  production로 설정되면 _alert를 실행시키지 않는다.
+			cache="cache|nocache" 개발환경에서 Cacheing을 비활성화 시키기 위해서 random url을 생성하는 로직을 추가할지 여부를 설정한다.
+					imageCache가 enable="true"로 설정되면 이미지 파일을 캐싱하지 않게 되고,
+					engineCache가 enable="true"로 설정되면 엔진 파일을 캐싱하지 않게 된다.
+	-->
+	<environment mode="production" cache="cache" postfix="day"/>
+	
+	<!--
+		브라우저 별로 설정 가능
+		0 : 기존 방식 (All Download)
+		1 : 60K분할 다운로드 + 통합 Eval
+		2 : 파일별 다운로드 + 통합 Eavl
+		3 : 파일별 다운로드 + 개별 Eval
+	-->
+	<engineLoadingMode ie="0" moz="0" opera="0" android="0" iphone="0" chrome="0" safari="0"/>
+
+	<grid>
+		<fastScroll value="true" />
+		<dataType>
+			<date displayFormat="yyyy-MM-dd"/>
+		</dataType>
+		<editType value="focus"/>
+		<rowNumBackgroundColor value="#e5eff7"/>
+		<selectedRowColor value="#ffebd1"/>
+		<oddEvenColorDisplay value="true"/>
+		<evenRowBackgroundColor value="#f1f7fe"/>
+		<oddRowBackgroundColor value="#ffffff"/>
+		<rowMouseOver value="true"/>
+		<rowMouseOverColor value="#cce2ff"/>
+		<tooltipStyle value="padding-left:5px; padding-right:5px; font-size:11px;  border:2px solid #FCA73C; background-color:#FFF7D1;"/>
+		<noResultMessageVisible value="true"/>
+		<noResultMessage value="데이터가 없음"/>
+		<noResultMessageStyle value="position:absolute; left:30%; width:40%; top:40%; border:2px solid #7BAFE4; color:#000000; font-size:12px; padding-top:5px; text-align:center;"/>
+		<column inputType="text">
+			<editType value="select"/>
+		</column>
+		<column inputType="select">
+			<chooseOptionLabel value="-선택-"/>
+		</column>				
+		<column inputType="calendar">
+			<dataType value="date"/>
+			<displayFormat value="yyyy-MM-dd"/>
+		</column>
+	</grid>
+	<inputCalendar>
+		<validCheck value="false"/>
+		<dataType value="date"/>
+  		<delimiter value="-"/>
+  		<mask value="MM-dd-yyyy"/>
+  		<delimiterLocaleKey value="IC_Delimiter" />
+  		<maskLocaleKey value="IC_Mask" />
+  		<!-- <wmode value="true" /> -->
+	</inputCalendar>
+	<input>
+		<focusStyle value=""/>
+		<dateMask value="yyyy-MM-dd"/>
+		<timeMask value="HH:mm"/>
+	</input>
+	<calendar>
+		<minYear value="1978" />
+		<maxYear value="2030" />
+	</calendar>
+	<selectbox>
+		<visibleRowNum value="5"/>
+		<!-- <wmode value="true"/> -->
+	</selectbox>
+	<!-- 툴팁 관련 설정입니다.-->
+	<body>	
+		   <toolTipSec value="1"/>
+	</body>
+	<languagePack useLanguagePack="false">
+	  <url lang="ko" value="/langpack/ko.js"/>
+	  <url lang="en" value="/langpack/en.js"/>
+	  <url lang="ch" value="/langpack/ch.js"/>
+	  <!--
+	  <url lang="ko" value="/doovis/common/langpack/ko.js"/>
+	  <url lang="en" value="/doovis/common/langpack/en.js"/>
+	  <url lang="ch" value="/doovis/common/langpack/ch.js"/>
+	  -->
+	</languagePack>
+	<license value="true"/>
+</WebSquare>

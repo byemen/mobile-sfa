@@ -1,0 +1,175 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?xml-stylesheet href="/mp/css/style.css" type="text/css"?>
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:ev="http://www.w3.org/2001/xml-events"
+    xmlns:w2="http://www.inswave.com/websquare" xmlns:xf="http://www.w3.org/2002/xforms">
+    <head>
+    	<w2:buildDate />
+    	<xf:model>
+    		<xf:instance>
+    			<data xmlns="" />
+    		</xf:instance>
+    	</xf:model>
+    	<script type="javascript" src="/mp/js/common.js"></script>
+		<script type="javascript" src="/mp/js/WebSquare.js"></script>
+    	<script type="javascript"><![CDATA[
+    	var FV_nTabIdx = 0;
+    	var FV_bFlag = false;
+     	/****************************************************************
+		* 화면로드
+		* @param  : 없음
+		* @return : 없음
+		******************************************************************/
+        function fn_OnLoad(){
+        	st_Date.visible(false);
+        	wfrm_Date.visible(false);
+        	tab_Main.setSelectedIndex(1);        	
+        } 
+        /****************************************************************
+		* 조회
+		* @param  : 없음
+		* @return : 없음
+		******************************************************************/ 
+        function fn_Search(){
+        	fn_TabSearch(FV_nTabIdx);
+        }     
+        /****************************************************************
+		* 탭 변경시 처리
+		* @param  : nIdx	탭 인덱스
+		* @return : 없음
+		******************************************************************/
+        function fn_TabSearch(nIdx){
+        	switch(nIdx){
+        		case 0:
+        			st_Date.visible(false);
+        			wfrm_Date.visible(false);
+        			
+        			iframe1.getWindow().fn_Search();   			
+        			break;
+        		case 1:
+        			st_Date.visible(true);
+        			wfrm_Date.visible(true);        			
+        			
+        			if(FV_bFlag)
+        				iframe2.getWindow().fn_Search();
+        			else
+        				iframe2.setSrc("/mp/main/S310003_S02.xml");
+        			break;
+        	}
+        }
+        
+        fn_OnLoad();
+        ]]></script>
+    </head>
+    <body>
+
+    	<w2:textbox class="se_box" id="output71" label=""
+    		style="position: absolute ;height:483px;width:890px;left:1px;border:none;top:1px;">
+    	</w2:textbox>
+    	<xf:group 
+    		id="roundRectangle2"
+    		style="position: absolute ;height:42px;width:867px;left:11px;top:56px;" class="if_group">
+    	</xf:group>
+    	<w2:textbox class="if_lable" id="output47" label="수신자명"
+    		style="position: absolute ;height:22px;width:50px;left:21px;top:66px;">
+    	</w2:textbox>
+    	<xf:image id="btn_Search"
+    		src="/mp/images/if_btn_seach.png"
+    		style="position: absolute ;cursor:pointer;height:25px;width:77px;left:797px;top:65px;">
+    		<script ev:event="onclick" type="javascript"><![CDATA[ 
+    			fn_Search();
+    		]]></script>
+    	</xf:image>
+    	<xf:image id="image49"
+    		src="/mp/images/pop_title_bg.png"
+    		style="position: absolute ;height:45px;width:890px;left:0px;top:0px;">
+    	</xf:image>
+    	<w2:textbox class="title_back" id="output72" label="SMS List"
+    		style="position: absolute ;height:20px;text-align:left;width:149px;left:15px;top:14px;">
+    	</w2:textbox>
+    	<w2:textbox class="title" id="output70" label="SMS List"
+    		style="position: absolute ;height:20px;text-align:left;width:149px;left:15px;top:13px;">
+    	</w2:textbox>
+    	<xf:trigger class="btn_po" id="trigger4"
+    		style="position: absolute ;height:30px;color:#FFFFFF;width:70px;left:806px;top:10px;"
+    		type="image">
+    		<xf:label>닫 기</xf:label>
+    		<script ev:event="onclick" type="javascript"><![CDATA[ 
+    			parent.fn_MainPopupClose("smsList");
+    		]]></script>
+    	</xf:trigger>
+    	<w2:tabContainer contentsClass="tab1Contens" id="tab_Main"
+    		overflowX="auto" overflowY="auto"
+    		style="position: absolute ;height:366px;width:870px;left:10px;top:105px;"
+    		tabDefaultCenterImageClass="tab1C"
+    		tabDefaultCenterImageStyle="position:absolute;vertical-align:middle;word-wrap:break-word"
+    		tabDefaultLeftImageClass="tab1L"
+    		tabDefaultLeftImageStyle="position:absolute;vertical-align:middle;word-wrap:break-word"
+    		tabDefaultRightImageClass="tab1R"
+    		tabDefaultRightImageStyle="position:absolute;vertical-align:middle;word-wrap:break-word"
+    		tabHoverCenterImageClass="tab1C_on"
+    		tabHoverCenterImageStyle="position:absolute;vertical-align:middle;word-wrap:break-word"
+    		tabHoverLeftImageClass="tab1L_on"
+    		tabHoverLeftImageStyle="position:absolute;vertical-align:middle;word-wrap:break-word"
+    		tabHoverRightImageClass="tab1R_on"
+    		tabHoverRightImageStyle="position:absolute;vertical-align:middle;word-wrap:break-word"
+    		tabSelectedCenterImageClass="tab1C_over"
+    		tabSelectedCenterImageStyle="position:absolute;vertical-align:middle;word-wrap:break-word"
+    		tabSelectedLeftImageClass="tab1L_over"
+    		tabSelectedLeftImageStyle="position:absolute;vertical-align:middle;word-wrap:break-word"
+    		tabSelectedRightImageClass="tab1R_over"
+    		tabSelectedRightImageStyle="position:absolute;vertical-align:middle;word-wrap:break-word" alwaysDraw="true">
+    		<w2:tab id="tab1"
+    			style="position:absolute;height:26px;width:100px;left:1px;top:1px;"
+    			tabDefaultCenterImageClass="" tabDefaultLeftImageClass=""
+    			tabDefaultRightImageClass="" tabHoverCenterImageClass=""
+    			tabHoverLeftImageClass="" tabHoverRightImageClass=""
+    			tabSelectedCenterImageClass="" tabSelectedLeftImageClass=""
+    			tabSelectedRightImageClass="" value="발송대기">
+    		</w2:tab>
+    		<w2:contents bind="" id="contents1" src=""
+    			style="position: absolute;height:337px;width:867px;left:1px;top:26px;">
+    			<w2:iframe id="iframe1"
+    				style="position: absolute ;left: 0px;top: 0px;width: 867px;height: 337px;"
+    				src="/mp/main/S310003_S01.xml" scrolling="no">
+    			</w2:iframe>
+    		</w2:contents>
+    		<w2:tab id="tab2"
+    			style="position: absolute;height:26px;width:100px;left:101px;top: 1px;"
+    			tabDefaultCenterImageClass="" tabDefaultLeftImageClass=""
+    			tabDefaultRightImageClass="" tabHoverCenterImageClass=""
+    			tabHoverLeftImageClass="" tabHoverRightImageClass=""
+    			tabSelectedCenterImageClass="" tabSelectedLeftImageClass=""
+    			tabSelectedRightImageClass="" value="발송결과">
+    		</w2:tab>
+    		<w2:contents id="contents2"
+    			style="position: absolute;height:337px;width:867px;left:1px;top:26px;">
+    			<w2:iframe id="iframe2"
+    				style="position: absolute ;left: 0px;top: 0px;width: 867px;height: 337px;"
+    				src="/mp/main/S310003_S02.xml" scrolling="no">
+    			</w2:iframe>
+    		</w2:contents>
+    		<script ev:event="onchange" type="javascript"><![CDATA[
+    			FV_nTabIdx = tab_Main.getSelectedIndex();
+    			fn_TabSearch(FV_nTabIdx);
+    		]]></script>
+    	</w2:tabContainer>
+    	<xf:input class="input_edit" id="edt_Subject"
+    		style="position: absolute ;height:22px;width:60px;left:74px;top:66px;">
+    	</xf:input>
+    	<xf:input id="edt_DestCallNo"
+    		style="position: absolute ;height:22px;width:100px;left:201px;top:66px;"
+    		class="input_edit">
+    	</xf:input>
+    	<w2:textbox id="st_Title"
+    		style="position: absolute ;height:22px;width:50px;left:147px;top:66px;"
+    		class="if_lable" label="수신번호">
+    	</w2:textbox>
+    	<w2:wframe id="wfrm_Date" mode="async"
+    		src="/mp/comm/PeriodSetUp.xml"
+    		style="position: absolute ;left:366px;top:64px;width: 400px;height: 26px;">
+    	</w2:wframe>
+    	<w2:textbox class="if_lable" id="st_Date" label="접수일자"
+    		style="position: absolute ;height:22px;width:50px;left:313px;top:66px;">
+    	</w2:textbox>
+    </body>
+</html>

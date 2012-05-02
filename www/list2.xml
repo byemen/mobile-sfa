@@ -1,0 +1,469 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:ev="http://www.w3.org/2001/xml-events"
+	xmlns:w2="http://www.inswave.com/websquare" xmlns:xf="http://www.w3.org/2002/xforms">
+	<head>
+		<w2:buildDate />
+		<xf:model>
+			<xf:instance>
+				<data xmlns="">
+					<response>
+	                	<list>
+	                		<data index="0">
+	                			<number>1</number>
+	                			<name>홍길동</name>
+	                			<address>서울 동작구</address>
+	                		</data>
+	                 		<data index="1">
+	                			<number>2</number>
+	                			<name>허준</name>
+	                			<address>서울 강서구</address>
+	                		</data>
+	                 		<data index="2">
+	                			<number>3</number>
+	                			<name>전우치</name>
+	                			<address>서울 강남구</address>
+	                		</data>
+	                 		<data index="3">
+	                			<number>4</number>
+	                			<name>나이름</name>
+	                			<address>서울 서초구</address>
+	                		</data>
+	                		<data index="0">
+	                			<number>1</number>
+	                			<name>홍길동</name>
+	                			<address>서울 동작구</address>
+	                		</data>
+	                 		<data index="1">
+	                			<number>2</number>
+	                			<name>허준</name>
+	                			<address>서울 강서구</address>
+	                		</data>
+	                 		<data index="2">
+	                			<number>3</number>
+	                			<name>전우치</name>
+	                			<address>서울 강남구</address>
+	                		</data>
+	                 		<data index="3">
+	                			<number>4</number>
+	                			<name>나이름</name>
+	                			<address>서울 서초구</address>
+	                		</data>
+	                		<data index="0">
+	                			<number>1</number>
+	                			<name>홍길동</name>
+	                			<address>서울 동작구</address>
+	                		</data>
+	                 		<data index="1">
+	                			<number>2</number>
+	                			<name>허준</name>
+	                			<address>서울 강서구</address>
+	                		</data>
+	                 		<data index="2">
+	                			<number>3</number>
+	                			<name>전우치</name>
+	                			<address>서울 강남구</address>
+	                		</data>
+	                 		<data index="3">
+	                			<number>4</number>
+	                			<name>나이름</name>
+	                			<address>서울 서초구</address>
+	                		</data>
+	                		<data index="0">
+	                			<number>1</number>
+	                			<name>홍길동</name>
+	                			<address>서울 동작구</address>
+	                		</data>
+	                 		<data index="1">
+	                			<number>2</number>
+	                			<name>허준</name>
+	                			<address>서울 강서구</address>
+	                		</data>
+	                 		<data index="2">
+	                			<number>3</number>
+	                			<name>전우치</name>
+	                			<address>서울 강남구</address>
+	                		</data>
+	                 		<data index="3">
+	                			<number>4</number>
+	                			<name>나이름</name>
+	                			<address>서울 서초구</address>
+	                		</data>
+	                		<data index="0">
+	                			<number>1</number>
+	                			<name>홍길동</name>
+	                			<address>서울 동작구</address>
+	                		</data>
+	                 		<data index="1">
+	                			<number>2</number>
+	                			<name>허준</name>
+	                			<address>서울 강서구</address>
+	                		</data>
+	                 		<data index="2">
+	                			<number>3</number>
+	                			<name>전우치</name>
+	                			<address>서울 강남구</address>
+	                		</data>
+	                 		<data index="3">
+	                			<number>4</number>
+	                			<name>나이름</name>
+	                			<address>서울 서초구</address>
+	                		</data>
+	                		<data index="0">
+	                			<number>1</number>
+	                			<name>홍길동</name>
+	                			<address>서울 동작구</address>
+	                		</data>
+	                 		<data index="1">
+	                			<number>2</number>
+	                			<name>허준</name>
+	                			<address>서울 강서구</address>
+	                		</data>
+	                 		<data index="2">
+	                			<number>3</number>
+	                			<name>전우치</name>
+	                			<address>서울 강남구</address>
+	                		</data>
+	                 		<data index="3">
+	                			<number>4</number>
+	                			<name>나이름</name>
+	                			<address>서울 서초구</address>
+	                		</data>
+	                		<data index="0">
+	                			<number>1</number>
+	                			<name>홍길동</name>
+	                			<address>서울 동작구</address>
+	                		</data>
+	                 		<data index="1">
+	                			<number>2</number>
+	                			<name>허준</name>
+	                			<address>서울 강서구</address>
+	                		</data>
+	                 		<data index="2">
+	                			<number>3</number>
+	                			<name>전우치</name>
+	                			<address>서울 강남구</address>
+	                		</data>
+	                 		<data index="3">
+	                			<number>4</number>
+	                			<name>나이름</name>
+	                			<address>서울 서초구</address>
+	                		</data>
+	                		<data index="0">
+	                			<number>1</number>
+	                			<name>홍길동</name>
+	                			<address>서울 동작구</address>
+	                		</data>
+	                 		<data index="1">
+	                			<number>2</number>
+	                			<name>허준</name>
+	                			<address>서울 강서구</address>
+	                		</data>
+	                 		<data index="2">
+	                			<number>3</number>
+	                			<name>전우치</name>
+	                			<address>서울 강남구</address>
+	                		</data>
+	                 		<data index="3">
+	                			<number>4</number>
+	                			<name>나이름</name>
+	                			<address>서울 서초구</address>
+	                		</data>
+	                		<data index="0">
+	                			<number>1</number>
+	                			<name>홍길동</name>
+	                			<address>서울 동작구</address>
+	                		</data>
+	                 		<data index="1">
+	                			<number>2</number>
+	                			<name>허준</name>
+	                			<address>서울 강서구</address>
+	                		</data>
+	                 		<data index="2">
+	                			<number>3</number>
+	                			<name>전우치</name>
+	                			<address>서울 강남구</address>
+	                		</data>
+	                 		<data index="3">
+	                			<number>4</number>
+	                			<name>나이름</name>
+	                			<address>서울 서초구</address>
+	                		</data>
+	                		<data index="0">
+	                			<number>1</number>
+	                			<name>홍길동</name>
+	                			<address>서울 동작구</address>
+	                		</data>
+	                 		<data index="1">
+	                			<number>2</number>
+	                			<name>허준</name>
+	                			<address>서울 강서구</address>
+	                		</data>
+	                 		<data index="2">
+	                			<number>3</number>
+	                			<name>전우치</name>
+	                			<address>서울 강남구</address>
+	                		</data>
+	                 		<data index="3">
+	                			<number>4</number>
+	                			<name>나이름</name>
+	                			<address>서울 서초구</address>
+	                		</data>
+	                		<data index="0">
+	                			<number>1</number>
+	                			<name>홍길동</name>
+	                			<address>서울 동작구</address>
+	                		</data>
+	                 		<data index="1">
+	                			<number>2</number>
+	                			<name>허준</name>
+	                			<address>서울 강서구</address>
+	                		</data>
+	                 		<data index="2">
+	                			<number>3</number>
+	                			<name>전우치</name>
+	                			<address>서울 강남구</address>
+	                		</data>
+	                 		<data index="3">
+	                			<number>4</number>
+	                			<name>나이름</name>
+	                			<address>서울 서초구</address>
+	                		</data>
+	                		<data index="0">
+	                			<number>1</number>
+	                			<name>홍길동</name>
+	                			<address>서울 동작구</address>
+	                		</data>
+	                 		<data index="1">
+	                			<number>2</number>
+	                			<name>허준</name>
+	                			<address>서울 강서구</address>
+	                		</data>
+	                 		<data index="2">
+	                			<number>3</number>
+	                			<name>전우치</name>
+	                			<address>서울 강남구</address>
+	                		</data>
+	                 		<data index="3">
+	                			<number>4</number>
+	                			<name>나이름</name>
+	                			<address>서울 서초구</address>
+	                		</data>
+	                		<data index="0">
+	                			<number>1</number>
+	                			<name>홍길동</name>
+	                			<address>서울 동작구</address>
+	                		</data>
+	                 		<data index="1">
+	                			<number>2</number>
+	                			<name>허준</name>
+	                			<address>서울 강서구</address>
+	                		</data>
+	                 		<data index="2">
+	                			<number>3</number>
+	                			<name>전우치</name>
+	                			<address>서울 강남구</address>
+	                		</data>
+	                 		<data index="3">
+	                			<number>4</number>
+	                			<name>나이름</name>
+	                			<address>서울 서초구</address>
+	                		</data>
+	                		<data index="0">
+	                			<number>1</number>
+	                			<name>홍길동</name>
+	                			<address>서울 동작구</address>
+	                		</data>
+	                 		<data index="1">
+	                			<number>2</number>
+	                			<name>허준</name>
+	                			<address>서울 강서구</address>
+	                		</data>
+	                 		<data index="2">
+	                			<number>3</number>
+	                			<name>전우치</name>
+	                			<address>서울 강남구</address>
+	                		</data>
+	                 		<data index="3">
+	                			<number>4</number>
+	                			<name>나이름</name>
+	                			<address>서울 서초구</address>
+	                		</data>
+	                		<data index="0">
+	                			<number>1</number>
+	                			<name>홍길동</name>
+	                			<address>서울 동작구</address>
+	                		</data>
+	                 		<data index="1">
+	                			<number>2</number>
+	                			<name>허준</name>
+	                			<address>서울 강서구</address>
+	                		</data>
+	                 		<data index="2">
+	                			<number>3</number>
+	                			<name>전우치</name>
+	                			<address>서울 강남구</address>
+	                		</data>
+	                 		<data index="3">
+	                			<number>4</number>
+	                			<name>나이름</name>
+	                			<address>서울 서초구</address>
+	                		</data>
+	                		<data index="0">
+	                			<number>1</number>
+	                			<name>홍길동</name>
+	                			<address>서울 동작구</address>
+	                		</data>
+	                 		<data index="1">
+	                			<number>2</number>
+	                			<name>허준</name>
+	                			<address>서울 강서구</address>
+	                		</data>
+	                 		<data index="2">
+	                			<number>3</number>
+	                			<name>전우치</name>
+	                			<address>서울 강남구</address>
+	                		</data>
+	                 		<data index="3">
+	                			<number>4</number>
+	                			<name>나이름</name>
+	                			<address>서울 서초구</address>
+	                		</data>
+	                	</list>
+					</response>
+				</data>
+			</xf:instance>
+		</xf:model>
+		<script type="javascript"><![CDATA[
+        	
+        	var setRow = function(idx, node) {
+        	
+				generator1.insert();
+			
+        		var numberValue = WebSquare.xml.getValue(node, "number");
+        		var nameValue = WebSquare.xml.getValue(node, "name");
+        		var addressValue = WebSquare.xml.getValue(node, "address");
+        		
+				var numberObj = generator1.getChild(idx, "numberOutput");
+				var nameObj = generator1.getChild(idx, "nameOutput");
+				var addressObj = generator1.getChild(idx, "addressOutput");
+				var groupObj = generator1.getChild(idx, "group1");
+				
+				numberObj.setValue(numberValue);
+				nameObj.setValue(nameValue);
+				addressObj.setValue(addressValue);
+				
+				if((numberValue % 2) != 0) {
+					groupObj.addClass('line1')
+				} else  {
+					groupObj.addClass('line2')
+				}
+				
+			};
+			
+			var nodeArr = WebSquare.ModelUtil.findInstanceNodes("response/list/data");
+			
+			for(var i=0;i<nodeArr.length;i++) {
+				setRow(i, nodeArr[i]);
+			}
+			
+         ]]></script>
+		<style type="text/css"><![CDATA[
+			    		
+    		.line1 {
+    			background : #ffffff;
+				color : black;
+    		}
+    		
+    		.line2 {
+    			background : #e1e1e1;
+				color : black;
+    		}
+    		
+		 ]]></style>
+	</head>
+	<body>
+
+		<xf:switch id="switch1" caseClass=""
+			style="position: absolute ;width:100%;height:100%;"
+			class="" motionDisplay="true" slide="true">
+			<xf:case id="case1" class=""
+				style="position:absolute;width:100%;height:100%;">
+				<w2:scrollView
+					style="position: absolute ;width:100%;height:100.0%;"
+					id="scrollView1" class="">
+					<w2:generator id="generator1"
+						style="position: relative ;width: 100%;height: 100%;" class="">
+						<xf:group id="group1"
+							style="position:relative;width:100%;height:48px;">
+							<xf:output id="numberOutput"
+								style="position: absolute ;left:0px;top:2px;width:41px;height:21px;"
+								label="">
+								<xf:label></xf:label>
+								<script ev:event="onclick"
+									type="javascript"><![CDATA[
+						
+						var idx = this.getGeneratedIndex();
+						var node = nodeArr[idx];
+						//alert(WebSquare.xml.serialize( node ));
+						
+						output1.setValue( WebSquare.xml.getValue( node, "number" ) );
+						output2.setValue( WebSquare.xml.getValue( node, "name" ) );
+						output3.setValue( WebSquare.xml.getValue( node, "address" ) );
+						
+						switch1.setSelectedID( "case2" );
+						
+						//var nameObj = this.getGeneratedComponent("nameOutput");
+						//alert(nameObj.getValue());
+						
+					 ]]></script>
+							</xf:output>
+							<xf:output id="nameOutput"
+								style="position: absolute ;left:55px;top:0px;width:222px;height:24px;"
+								label="">
+								<xf:label></xf:label>
+							</xf:output>
+							<xf:output id="addressOutput"
+								style="position: absolute ;left:62px;top:26px;width:219px;height:22px;"
+								label="">
+								<xf:label></xf:label>
+							</xf:output>
+						</xf:group>
+					</w2:generator>
+				</w2:scrollView>
+			</xf:case>
+			<xf:case id="case2"
+				style="position:absolute;width:100%;height:100%;" class="">
+				<xf:output id="output1"
+					style="position: absolute ;left:96px;top:33px;width:178px;height:26px;"
+					label="">
+					<xf:label></xf:label>
+				</xf:output>
+				<xf:output id="output2" label=""
+					style="position: absolute ;left:96px;top:69px;width:178px;height:26px;">
+					<xf:label></xf:label>
+				</xf:output>
+				<xf:output id="output3" label=""
+					style="position: absolute ;left:96px;top:108px;width:178px;height:26px;">
+					<xf:label></xf:label>
+				</xf:output>
+				<w2:textbox id="textbox1"
+					style="position: absolute ;left:29px;top: 33px;width:57px;height:25px;"
+					label="번호">
+				</w2:textbox>
+				<w2:textbox id="textbox2" label="이름"
+					style="position: absolute ;left:29px;top:69px;width:57px;height:25px;">
+				</w2:textbox>
+				<w2:textbox id="textbox3" label="주소"
+					style="position: absolute ;left:29px;top:108px;width:57px;height:25px;">
+				</w2:textbox>
+				<xf:trigger type="button" id="trigger1"
+					style="position: absolute ;left:135px;top:163px;width:143px;height:23px;">
+					<xf:label>리스트로 돌아가기</xf:label>
+					<script ev:event="onclick" type="javascript"><![CDATA[
+						switch1.setSelectedID( "case1" );
+					 ]]></script>
+				</xf:trigger>
+			</xf:case>
+		</xf:switch>
+	</body>
+</html>

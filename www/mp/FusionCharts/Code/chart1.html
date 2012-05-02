@@ -1,0 +1,52 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<title>My First chart using FusionCharts - Rendering HTML5 based chart</title>
+<script type="text/javascript" src="../Charts/FusionCharts.js"></script>
+</head>
+<body topmargin="0" leftmargin="0" marginheight="0" marginwidth="0">
+	<div id="chartContainer">FusionCharts will load here</div>
+	<script type="text/javascript"><!--
+/*
+	  FusionCharts.setCurrentRenderer('JavaScript');
+	  var myChart = new FusionCharts("../Charts/MSLine.swf", "myChartId", "476", "164", "0", "1");
+	  myChart.setXMLUrl("MSLine1.xml");
+	  myChart.render("chartContainer");
+*/
+
+	var pChart = new FusionCharts({'swfUrl': 'MSLine.swf', 'id': 'javascript-chart', 'width': '476', 'height': '180', 'debugMode': '0', 'registerWithJS': '0', renderer: 'javascript'});
+    pChart.setXMLUrl('MSLine1.xml');
+    
+    if (typeof pChart._overrideJSChartConfiguration === 'function') {
+        pChart._overrideJSChartConfiguration({
+            chart: {
+                defaultSeriesType: 'spline'
+                ,margin:[10,10,65,30]
+            },
+            credits: {
+                enabled: false
+            },
+            title: {
+                style: {
+                    color: '#FFFFFF'
+                }
+            },
+            legend: { 
+                lineHeight: 12,
+	            style: { 
+		            left: '160px', 
+		            bottom: '20px', 
+		            right: 'auto', 
+		            top: 'auto'
+	            } 
+           }
+        });
+    }
+    pChart.setTransparent('true');
+    pChart.render('chartContainer');
+	// -->
+  	</script>
+	</div>
+</body>
+</html>

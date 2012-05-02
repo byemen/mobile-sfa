@@ -1,0 +1,400 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?xml-stylesheet href="/mp/css/style.css" type="text/css"?>
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:ev="http://www.w3.org/2001/xml-events"
+    xmlns:w2="http://www.inswave.com/websquare" xmlns:xf="http://www.w3.org/2002/xforms">
+    <head>
+    	<w2:buildDate />
+    	<xf:model>
+    		<xf:instance>
+    			<data xmlns="" />
+    		</xf:instance>
+    		<xf:submission id="submissionBase" ref="request" target="resBase"
+        		action=""
+        		method="post" mediatype="application/xml" encoding="UTF-8" instance="" replace="instance"
+        		errorHandler="" customHandler="" mode="asynchronous"
+        		processMsg="">
+        	</xf:submission>
+        	<xf:submission id="submissionCustVehic" ref="request" target="resCustVehic"
+        		action=""
+        		method="post" mediatype="application/xml" encoding="UTF-8" instance="" replace="instance"
+        		errorHandler="" customHandler="" mode="asynchronous"
+        		processMsg="">
+        		<script type="javascript" ev:event="xforms-submit-done"><![CDATA[
+            		grd_CustVehic.setXML(WebSquare.ModelUtil.findInstanceNode("resCustVehic/root/dataset[@id='ds_CustVehic']"));
+            	]]></script>
+        	</xf:submission>
+        	<xf:submission id="submissionActive" ref="request" target="resActive"
+        		action=""
+        		method="post" mediatype="application/xml" encoding="UTF-8" instance="" replace="instance"
+        		errorHandler="" customHandler="" mode="asynchronous"
+        		processMsg="">
+        		<script type="javascript" ev:event="xforms-submit-done"><![CDATA[
+            		grd_Active.setXML(WebSquare.ModelUtil.findInstanceNode("resActive/root/dataset[@id='ds_Active']"));
+            	]]></script>
+        	</xf:submission>
+    	</xf:model>
+    	<script type="javascript" src="/mp/js/common.js"></script>
+		<script type="javascript" src="/mp/js/WebSquare.js"></script>
+    	<script type="javascript"><![CDATA[
+     	/****************************************************************
+		* 화면로드
+		* @param  : 없음
+		* @return : 없음
+		******************************************************************/
+        function fn_OnLoad(){
+        	fn_Search();
+        }
+        /****************************************************************
+		* 조회
+		* @param  : 없음
+		* @return : 없음
+		******************************************************************/
+        function fn_Search(){        
+        	setTitSendInfo("request", "", "", "mdms/mp/cust:S310102_P04_S01");
+        	setInputParamData("CUST_SEQ",parent.FV_CustSeq);        
+    		setSubmissison("submissionBase");
+    	
+    		setTitSendInfo("request", "", "", "mdms/mp/cust:S310102_P04_S02");
+        	setInputParamData("CUST_SEQ",parent.FV_CustSeq);        
+    		setSubmissison("submissionCustVehic");
+    	
+    		setTitSendInfo("request", "", "", "mdms/mp/cust:S310102_P04_S03");
+        	setInputParamData("CUST_SEQ",parent.FV_CustSeq);        
+    		setSubmissison("submissionActive");
+        }
+        fn_OnLoad();
+        ]]></script>
+    </head>
+    <body>
+    	<w2:textbox class="se_box" id="output144" label=""
+    		style="position: absolute ;height:943px;width:830px;left:1px;border:none;top:0px;">
+    	</w2:textbox>
+    	<w2:textbox class="se_box" id="output75" label=""
+    		style="position: absolute ;height:30px;width:800px;left:14px;top:76px;">
+    	</w2:textbox>
+    	<w2:textbox class="se_box" id="output70" label=""
+    		style="position: absolute ;height:30px;width:800px;left:14px;top:200px;">
+    	</w2:textbox>
+    	<w2:textbox class="se_box" id="output84" label=""
+    		style="position: absolute ;height:30px;width:800px;left:14px;top:138px;">
+    	</w2:textbox>
+    	<w2:textbox class="se_box" id="output71" label=""
+    		style="position: absolute ;height:30px;width:800px;left:14px;top:107px;">
+    	</w2:textbox>
+    	<w2:textbox class="se_box" id="output83" label=""
+    		style="position: absolute ;height:30px;width:800px;left:14px;top:262px;">
+    	</w2:textbox>
+    	<w2:textbox class="se_g_lable" id="output72" label="기념일"
+    		style="position: absolute ;padding-top:8px;height:22px;width:90px;left:14px;top:262px;">
+    	</w2:textbox>
+    	<w2:textbox class="se_box" id="output80" label=""
+    		style="position: absolute ;height:30px;width:800px;left:14px;top:169px;">
+    	</w2:textbox>
+    	<w2:textbox class="se_box" id="output73" label=""
+    		style="position: absolute ;height:30px;width:800px;left:14px;top:231px;">
+    	</w2:textbox>
+    	<w2:textbox class="se_g_lable" id="output74" label="회사"
+    		style="position: absolute ;padding-top:8px;height:22px;width:90px;left:14px;top:231px;">
+    	</w2:textbox>
+    	<w2:textbox class="se_g_lable" id="output76" label="연락처"
+    		style="position: absolute ;padding-top:8px;height:22px;width:90px;left:14px;top:107px;">
+    	</w2:textbox>
+    	<w2:textbox class="se_g_lable" id="output78" label="고객명"
+    		style="position: absolute ;padding-top:8px;height:22px;width:90px;left:14px;top:76px;">
+    	</w2:textbox>
+    	<w2:textbox class="se_lable" id="output79" label="핸드폰"
+    		style="position: absolute ;height:22px;width:90px;left:111px;top:107px;">
+    	</w2:textbox>
+    	<w2:textbox class="se_g_lable" id="output81" label="주소"
+    		style="position: absolute ;padding-top:40px;height:52px;width:90px;left:14px;top:138px;">
+    	</w2:textbox>
+    	<w2:textbox id="output100"
+    		style="position: absolute ;height:32px;width:800px;left:14px;top:293px;"
+    		class="se_box" label="">
+    	</w2:textbox>
+    	<w2:textbox id="output101"
+    		style="position: absolute ;padding-top:8px;height:24px;width:90px;left:14px;top:293px;"
+    		class="se_g_lable" label="메모">
+    	</w2:textbox>
+    	<xf:image id="image49"
+    		src="/mp/images/pop_title_bg.png"
+    		style="position: absolute ;height:45px;width:830px;left:0px;top:0px;">
+    	</xf:image>
+    	<w2:textbox class="title_back" id="output104" label="고객카드(개인)"
+    		style="position: absolute ;height:20px;text-align:left;width:149px;left:15px;top:16px;">
+    	</w2:textbox>
+    	<w2:textbox class="title" id="st_Title" label="고객카드(개인)"
+    		style="position: absolute ;height:20px;text-align:left;width:149px;left:15px;top:15px;">
+    	</w2:textbox>
+    	<xf:trigger class="btn_po" id="btn_Close"
+    		style="position: absolute ;height:30px;color:#FFFFFF;width:70px;left:744px;top:9px;"
+    		type="image">
+    		<xf:label>닫 기</xf:label>
+    		<script ev:event="onclick" type="javascript"><![CDATA[ 
+
+    			parent.fn_MainPopupClose("CustCard");
+    		]]></script>
+    	</xf:trigger>
+    	<w2:textbox class="se_lable" id="output106" label="주민등록지"
+    		style="position: absolute ;height:22px;width:90px;left:111px;top:138px;">
+    	</w2:textbox>
+    	<w2:textbox id="output107"
+    		style="position: absolute ;height:22px;width:90px;left:111px;top:200px;"
+    		class="se_lable" label="직장">
+    	</w2:textbox>
+    	<w2:textbox id="output108"
+    		style="position: absolute ;height:22px;width:90px;left:111px;top:169px;"
+    		class="se_lable" label="실거주지">
+    	</w2:textbox>
+    	<w2:textbox id="output109"
+    		style="position: absolute ;height:22px;width:90px;left:111px;top:262px;"
+    		class="se_lable" label="생일">
+    	</w2:textbox>
+    	<w2:textbox id="output110"
+    		style="position: absolute ;height:22px;width:90px;left:111px;top:231px;"
+    		class="se_lable" label="직업">
+    	</w2:textbox>
+    	<w2:textbox class="se_lable" id="output111" label="직장명"
+    		style="position: absolute ;height:22px;width:90px;left:345px;top:231px;">
+    	</w2:textbox>
+    	<w2:textbox class="se_lable" id="output112" label="결혼기념일"
+    		style="position: absolute ;height:22px;width:90px;left:345px;top:262px;">
+    	</w2:textbox>
+    	<w2:textbox id="output113"
+    		style="position: absolute ;height:22px;width:90px;left:580px;top:231px;"
+    		class="se_lable" label="부서/직위">
+    	</w2:textbox>
+    	<w2:textbox id="output114"
+    		style="position: absolute ;height:22px;width:90px;left:580px;top:262px;"
+    		class="se_lable" label="소개자">
+    	</w2:textbox>
+    	<w2:textbox id="output115"
+    		style="position: absolute ;height:22px;width:90px;left:345px;top:76px;"
+    		class="se_lable" label="담당SC">
+    	</w2:textbox>
+    	<w2:textbox id="output116"
+    		style="position: absolute ;height:22px;width:90px;left:345px;top:107px;"
+    		class="se_lable" label="자택">
+    	</w2:textbox>
+    	<w2:textbox id="output117"
+    		style="position: absolute ;height:22px;width:90px;left:580px;top:76px;"
+    		class="se_lable" label="등록일">
+    	</w2:textbox>
+    	<w2:textbox id="output118"
+    		style="position: absolute ;height:22px;width:90px;left:580px;top:107px;"
+    		class="se_lable" label="사무실">
+    	</w2:textbox>
+    	<xf:output class="se_output" id="CUST_NM" label=""
+    		style="position: absolute ;height:18px;width:223px;left:115px;top:80px;" ref="resBase/root/dataset[@id='ds_Base']/record/CUST_NM">
+    		<xf:label></xf:label>
+    	</xf:output>
+    	<w2:textbox class="se_output" id="output120" label="DMS 고객번호:"
+    		style="position: absolute ;height:18px;width:85px;left:14px;top:50px;">
+    	</w2:textbox>
+    	<xf:output id="CUST_SEQ"
+    		style="position: absolute ;height:18px;width:85px;left:100px;top:50px;"
+    		class="se_output" label="" ref="resBase/root/dataset[@id='ds_Base']/record/CUST_SEQ">
+    		<xf:label></xf:label>
+    	</xf:output>
+    	<xf:output id="MNG_SC_NM"
+    		style="position: absolute ;height:18px;width:127px;left:446px;top:80px;"
+    		class="se_output" label="" ref="resBase/root/dataset[@id='ds_Base']/record/MNG_SC_NM">
+    		<xf:label></xf:label>
+    	</xf:output>
+    	<xf:output id="REG_DT"
+    		style="position: absolute ;height:18px;width:127px;left:681px;top:80px;"
+    		class="se_output" label="" ref="resBase/root/dataset[@id='ds_Base']/record/REG_DT">
+    		<xf:label></xf:label>
+    	</xf:output>
+    	<xf:output id="DEPT_NM"
+    		style="position: absolute ;height:18px;width:127px;left:681px;top:235px;"
+    		class="se_output" label="" ref="resBase/root/dataset[@id='ds_Base']/record/DEPT_NM">
+    		<xf:label></xf:label>
+    	</xf:output>
+    	<xf:output id="OFFICE_NM"
+    		style="position: absolute ;height:18px;width:127px;left:446px;top:235px;"
+    		class="se_output" label="" ref="resBase/root/dataset[@id='ds_Base']/record/OFFICE_NM">
+    		<xf:label></xf:label>
+    	</xf:output>
+    	<xf:output id="JOB_DETAIL"
+    		style="position: absolute ;height:18px;width:127px;left:211px;top:235px;"
+    		class="se_output" label="" ref="resBase/root/dataset[@id='ds_Base']/record/JOB_DETAIL">
+    		<xf:label></xf:label>
+    	</xf:output>
+    	<xf:output id="ADDR_REG"
+    		style="position: absolute ;height:18px;width:597px;left:211px;top:142px;"
+    		class="se_output" label="" ref="resBase/root/dataset[@id='ds_Base']/record/ADDR_REG">
+    		<xf:label></xf:label>
+    	</xf:output>
+    	<xf:output class="se_output" id="ADDR_FACT" label=""
+    		style="position: absolute ;height:18px;width:597px;left:211px;top:173px;" ref="resBase/root/dataset[@id='ds_Base']/record/ADDR_FACT">
+    		<xf:label></xf:label>
+    	</xf:output>
+    	<xf:output id="ADDR_OFFICE"
+    		style="position: absolute ;height:18px;width:597px;left:211px;top:204px;"
+    		class="se_output" label="" ref="resBase/root/dataset[@id='ds_Base']/record/ADDR_OFFICE">
+    		<xf:label></xf:label>
+    	</xf:output>
+    	<xf:output class="se_output" id="TEL_NO" label=""
+    		style="position: absolute ;height:18px;width:127px;left:446px;top:111px;" ref="resBase/root/dataset[@id='ds_Base']/record/TEL_NO">
+    		<xf:label></xf:label>
+    	</xf:output>
+    	<xf:output class="se_output" id="OFFICE_NO" label=""
+    		style="position: absolute ;height:18px;width:127px;left:681px;top:111px;" ref="resBase/root/dataset[@id='ds_Base']/record/OFFICE_NO">
+    		<xf:label></xf:label>
+    	</xf:output>
+    	<xf:output class="se_output" id="HP_NO" label=""
+    		style="position: absolute ;height:18px;width:127px;left:211px;top:111px;" ref="resBase/root/dataset[@id='ds_Base']/record/HP_NO">
+    		<xf:label></xf:label>
+    	</xf:output>
+    	<xf:output id="INTRO_CUST_NM"
+    		style="position: absolute ;height:18px;width:127px;left:680px;top:266px;"
+    		class="se_output" label="" ref="resBase/root/dataset[@id='ds_Base']/record/INTRO_CUST_NM">
+    		<xf:label></xf:label>
+    	</xf:output>
+    	<xf:output id="MARRY_DT"
+    		style="position: absolute ;height:18px;width:127px;left:446px;top:266px;"
+    		class="se_output" label="" ref="resBase/root/dataset[@id='ds_Base']/record/MARRY_DT">
+    		<xf:label></xf:label>
+    	</xf:output>
+    	<xf:output id="REMARK"
+    		style="position: absolute ;height:20px;width:694px;left:114px;top:297px;"
+    		class="se_output" label="" ref="resBase/root/dataset[@id='ds_Base']/record/REMARK">
+    		<xf:label></xf:label>
+    	</xf:output>
+    	<xf:output id="output143"
+    		style="position: absolute ;height:18px;width:127px;left:211px;top:266px;"
+    		class="se_output" label="" ref="resBase/root/dataset[@id='ds_Base']/record/BIRTH_DT">
+    		<xf:label></xf:label>
+    	</xf:output>
+    	<w2:grid autoFit="" baseNode="dataset" class="grid"
+    		evenRowBackgroundColor="#e1ebf5" focusMode="row"
+    		id="grd_CustVehic" oddEvenColorDisplay="true"
+    		oddRowBackgroundColor="#ffffff" overflowX="hidden"
+    		overflowY="hidden" readOnly="true"
+    		repeatNode="record" resize=""
+    		style="position:absolute;height:123px;width:800px;left:14px;top:350px;">
+    		<w2:header class="gridHeaderTable"
+    			columnClass="gridHeaderTD1" id="header1" style="" width="840">
+    			<w2:row id="row1" style="">
+    				<w2:column colSpan="" hidden="" id="column2"
+    					inputType="text" rowSpan="" style="height:26px;" value="출고일"
+    					valueType="binary" width="100">
+    				</w2:column>
+    				<w2:column colSpan="" hidden="" id="column4"
+    					inputType="text" rowSpan="" style="height:26px;" value="차종"
+    					valueType="binary" width="120">
+    				</w2:column>
+    				<w2:column hidden="" id="column5" inputType="text"
+    					style="height:26px;" value="차량번호" valueType="binary"
+    					width="100">
+    				</w2:column>
+    				<w2:column hidden="" id="column6" inputType="text"
+    					style="height:26px;" value="판매SC" valueType="binary"
+    					width="110">
+    				</w2:column>
+    				<w2:column hidden="" id="column7" inputType="text"
+    					style="height:28px" value="보험사" valueType="binary"
+    					width="120">
+    				</w2:column>
+    				<w2:column hidden="" id="column8" inputType="text"
+    					style="height:28px" value="보험만기일" valueType="binary"
+    					width="120">
+    				</w2:column>
+    				<w2:column hidden="" id="column9" inputType="text"
+    					style="height:26px" value="리스만기일" valueType="binary"
+    					width="120">
+    				</w2:column>
+    			</w2:row>
+    		</w2:header>
+    		<w2:gBody class="gridBodyTable" columnClass="gridBodyTD"
+    			id="gBody1" style="" width="840">
+    			<w2:row id="row2" style="">
+    				<w2:column hidden="" id="DELIVERY_DT"
+    					inputType="text" style="height:20px;" value=""
+    					valueType="binary" width="50">
+    				</w2:column>
+    				<w2:column hidden="" id="VARIANT_NM"
+    					inputType="text" style="height:20px;" textAlign="left" value=""
+    					valueType="binary" width="120">
+    				</w2:column>
+    				<w2:column hidden="" id="VEHIC_NO" inputType="text"
+    					style="height:20px;" textAlign="center" value=""
+    					valueType="binary" width="60">
+    				</w2:column>
+    				<w2:column hidden="" id="SALES_SC_NM"
+    					inputType="text" style="height:20px;" textAlign="left"
+    					value="" valueType="binary" width="110">
+    				</w2:column>
+    				<w2:column hidden="" id="INSU_COMP_NM"
+    					inputType="text" style="height:20px;" valueType="binary"
+    					width="120" textAlign="left">
+    				</w2:column>
+    				<w2:column hidden="" id="INSU_EXPIR_DT" inputType="text"
+    					style="height:20px;" valueType="binary" width="120">
+    				</w2:column>
+    				<w2:column hidden="" id="LEASE_TERM_DT" inputType="text"
+    					style="height:20px;" valueType="binary" width="120">
+    				</w2:column>
+    			</w2:row>
+    		</w2:gBody>
+    	</w2:grid>
+    	<w2:textbox class="sub_title" id="output145" label="출고차량현황"
+    		style="position: absolute ;height:20px;width:204px;left:15px;top:331px;;color:#000000">
+    	</w2:textbox>
+    	<w2:grid baseNode="dataset" autoFit=""
+    		class="grid" resize=""
+    		id="grd_Active" focusMode="row"
+    		style="position:absolute;height:432px;width:800px;left:14px;top:498px;"
+    		evenRowBackgroundColor="#e1ebf5" overflowX="hidden"
+    		overflowY="hidden" oddEvenColorDisplay="true"
+    		oddRowBackgroundColor="#ffffff" repeatNode="record" readOnly="true">
+    		<w2:header id="header1" style="" width="840"
+    			columnClass="gridHeaderTD1" class="gridHeaderTable">
+    			<w2:row id="row1" style="">
+    				<w2:column id="column2" style="height:26px;"
+    					colSpan="" hidden="" width="120" inputType="text" value="실행일자"
+    					rowSpan="" valueType="binary">
+    				</w2:column>
+    				<w2:column id="column4" style="height:26px;"
+    					colSpan="" hidden="" width="100" inputType="text" value="홛동구분"
+    					rowSpan="" valueType="binary">
+    				</w2:column>
+    				<w2:column id="column5" style="height:26px;"
+    					hidden="" width="290" inputType="text" value="활동내용"
+    					valueType="binary">
+    				</w2:column>
+    				<w2:column id="column6" style="height:26px;"
+    					hidden="" width="288" inputType="text" value="특이사항"
+    					valueType="binary">
+    				</w2:column>
+    			</w2:row>
+    		</w2:header>
+    		<w2:gBody id="gBody1" style="" width="840"
+    			columnClass="gridBodyTD" class="gridBodyTable">
+    			<w2:row id="row2" style="">
+    				<w2:column id="ACTIVE_DT" style="height:20px;"
+    					hidden="" width="50" inputType="text" value=""
+    					valueType="binary">
+    				</w2:column>
+    				<w2:column id="ACTIVE_CD" style="height:20px;"
+    					hidden="" width="60" inputType="text" value=""
+    					valueType="binary" textAlign="left">
+    				</w2:column>
+    				<w2:column id="ACTIVE_TYPE" style="height:20px;"
+    					hidden="" width="300" inputType="text" value=""
+    					valueType="binary" textAlign="left">
+    				</w2:column>
+    				<w2:column id="ACTIVE_REMARK" style="height:20px;"
+    					hidden="" width="298" inputType="text" value=""
+    					valueType="binary" textAlign="left">
+    				</w2:column>
+    			</w2:row>
+    		</w2:gBody>
+    	</w2:grid>
+    	<w2:textbox id="output146"
+    		style="position: absolute ;height:20px;width:204px;left:15px;top:479px;;color:#000000"
+    		class="sub_title" label="활동내역">
+    	</w2:textbox>
+    </body>
+</html>

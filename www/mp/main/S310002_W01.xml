@@ -1,0 +1,545 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?xml-stylesheet href="/mp/css/style.css" type="text/css"?>
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:ev="http://www.w3.org/2001/xml-events"
+    xmlns:w2="http://www.inswave.com/websquare" xmlns:xf="http://www.w3.org/2002/xforms">
+    <head>
+    	<w2:buildDate />
+    	<xf:model>
+    		<xf:instance>
+    			<data xmlns="" />
+    		</xf:instance>
+    		<xf:submission id="submissionTrend" ref="request" target="resTrend"
+        		action=""
+        		method="post" mediatype="application/xml" encoding="UTF-8" instance="" replace="instance"
+        		errorHandler="" customHandler="" mode="asynchronous"
+        		processMsg="">
+        		<script type="javascript" ev:event="xforms-submit-done"><![CDATA[
+            		grd_DailyTrend.setXML(WebSquare.ModelUtil.findInstanceNode("resTrend/root/dataset[@id='ds_DailyTrend']"));
+            	]]></script>
+        	</xf:submission>
+        	<xf:submission id="submissionTmkrNotice" ref="request" target="resTmkrNotice"
+        		action=""
+        		method="post" mediatype="application/xml" encoding="UTF-8" instance="" replace="instance"
+        		errorHandler="" customHandler="" mode="asynchronous"
+        		processMsg="">
+        		<script type="javascript" ev:event="xforms-submit-done"><![CDATA[
+            		grd_TmkrNotice.setXML(WebSquare.ModelUtil.findInstanceNode("resTmkrNotice/root/dataset[@id='ds_TmkrNotice']"));
+            		
+            		for(var i=0; i<grd_TmkrNotice.getRowCount(); i++){
+		        		grd_TmkrNotice.setCellData(i, 0, i+1);
+		        	}
+            	]]></script>
+        	</xf:submission>
+        	<xf:submission id="submissionDlrNotice" ref="request" target="resDlrNotice"
+        		action=""
+        		method="post" mediatype="application/xml" encoding="UTF-8" instance="" replace="instance"
+        		errorHandler="" customHandler="" mode="asynchronous"
+        		processMsg="">
+        		<script type="javascript" ev:event="xforms-submit-done"><![CDATA[
+            		grd_DlrNotice.setXML(WebSquare.ModelUtil.findInstanceNode("resDlrNotice/root/dataset[@id='ds_DlrNotice']"));
+            		
+            		for(var i=0; i<grd_DlrNotice.getRowCount(); i++){
+		        		grd_DlrNotice.setCellData(i, 0, i+1);
+		        	}
+            	]]></script>
+        	</xf:submission>
+        	<xf:submission id="submissionDealer" ref="request"
+        		target="resDealer" action="" method="post"
+        		mediatype="application/xml" encoding="UTF-8" instance=""
+        		replace="instance" errorHandler="" customHandler=""
+        		mode="asynchronous" processMsg="">
+        		<script type="javascript" ev:event="xforms-submit-done"><![CDATA[ 
+        			if(GV_UP_GROUP_ID != "TM00000")
+		        		cb_Dealer.setValue(GV_UP_GROUP_ID);
+		        	else
+		        		cb_Dealer.setValue("");
+        		]]></script>
+        	</xf:submission>
+    	</xf:model>
+    	<script type="javascript" src="/mp/js/common.js"></script>
+		<script type="javascript" src="/mp/js/WebSquare.js"></script>
+    	<script type="javascript"><![CDATA[
+    	var FV_sUpGroupId = GV_UP_GROUP_ID;
+    	var FV_sDealerId = GV_GROUP_ID;
+    	var FV_sToMonthDay = gfn_GetDate(0,0,0).substring(0,7);
+    	var FV_sBeMonth = gfn_GetDate(0,-1,0,"FM").substring(0,7);
+    	var FV_sTargetDay = gfn_GetDate(0,0,0).substring(8);
+    	var FV_sToday = gfn_GetDate(0,0,0);
+     	/****************************************************************
+		* 화면로드
+		* @param  : 없음
+		* @return : 없음
+		******************************************************************/
+        function fn_OnLoad(){
+        	// 딜러      	
+			setTitSendInfo("request", "", "", "mdms/mp/comm::CO_GROUP_S01");
+        	setSubmissison("submissionDealer");
+        	
+        	var curDate = new Date();
+		 	var dHour = curDate.getHours();
+		 	var dMin = curDate.getMinutes();			
+		 	if(dHour < 10) dHour = "0" + dHour;
+		 	if(dMin < 10) dMin = "0" + dMin;
+		 	
+        	st_FrDt.setValue(gfn_GetDate(0,0,0,"FM"));
+        	st_ToDt.setValue(gfn_GetDate(0,0,0));
+        	st_Time.setValue(dHour + ":" + dMin);
+        	
+        	fn_SearchDaily();
+        	fn_SearchNotice();
+        }
+        /****************************************************************
+		* 계약/판매 실적 조회
+		* @param  : gb
+		* @return : 없음
+		******************************************************************/ 
+        function fn_SearchDaily(){
+			setTitSendInfo("request", "", "", "mdms/mp/main:S310001_W01_S01");
+        	setInputParamData("DEALER_ID", cb_Dealer.getValue());
+        	setInputParamData("FR8_DATE", st_FrDt.getValue().replaceAll("-",""));
+        	setInputParamData("FR10_DATE", st_FrDt.getValue()); 
+        	setInputParamData("TO10_DATE", st_ToDt.getValue());
+        	setInputParamData("TO10_DATE31", gfn_GetDate(0,0,0,"TM")); 
+        	setInputParamData("TARGET_DAY", st_ToDt.getValue().substring(8,10));       	
+        	
+    		setSubmissison("submissionTrend");        
+        }
+        /****************************************************************
+		* TMKR/딜러 공지사항 조회
+		* @param  : 없음
+		* @return : 없음
+		******************************************************************/ 
+        function fn_SearchNotice(){
+        	setTitSendInfo("request", "", "", "mdms/mp/main:S310001_W01_S02");
+    		setSubmissison("submissionTmkrNotice");
+    		
+    		setTitSendInfo("request", "", "", "mdms/mp/main:S310001_W01_S03");
+    		setSubmissison("submissionDlrNotice");
+        }
+        
+        fn_OnLoad();
+        ]]></script>
+    </head>
+    <body>
+    	<xf:output class="sub_title" id="output30" label=""
+    		style="position: absolute ;height:20px;width:204px;left:0px;top:0px;">
+    		<xf:label>Daily</xf:label>
+    	</xf:output>
+    	<xf:output id="output37"
+    		style="position: absolute ;height:20px;color:#000000;width:204px;left:496px;top:0px;"
+    		class="sub_title" label="">
+    		<xf:label>Monthly Sales / Contract Progress</xf:label>
+    	</xf:output>
+    	<xf:output class="txt1" id="st_FrDt" label=""
+    		style="position: absolute ;height:20px;width:64px;left:1px;top:22px;">
+    		<xf:label></xf:label>
+    	</xf:output>
+    	<xf:output class="txt1" id="output45" label=""
+    		style="position: absolute ;height:20px;width:12px;left:64px;top:22px;">
+    		<xf:label>~</xf:label>
+    	</xf:output>
+    	<xf:output class="txt1" id="st_ToDt" label=""
+    		style="position: absolute ;height:20px;width:64px;left:76px;top:22px;">
+    		<xf:label></xf:label>
+    	</xf:output>
+    	<xf:output class="txt1" id="st_Time" label=""
+    		style="position: absolute ;height:20px;width:64px;left:139px;top:22px;">
+    		<xf:label></xf:label>
+    	</xf:output>
+    	<w2:tabContainer
+    		tabDefaultCenterImageStyle="position:absolute;vertical-align:middle;word-wrap:break-word"
+    		tabSelectedRightImageStyle="position:absolute;vertical-align:middle;word-wrap:break-word"
+    		id="tabContainer1"
+    		style="position: absolute ;height:166px;width:476px;background-color:#e9e9e9;left:2px;top:450px;"
+    		tabSelectedCenterImageStyle="position:absolute;vertical-align:middle;word-wrap:break-word"
+    		tabDefaultLeftImageStyle="position:absolute;vertical-align:middle;word-wrap:break-word"
+    		tabSelectedLeftImageStyle="position:absolute;vertical-align:middle;word-wrap:break-word"
+    		tabHoverLeftImageStyle="position:absolute;vertical-align:middle;word-wrap:break-word"
+    		tabHoverRightImageStyle="position:absolute;vertical-align:middle;word-wrap:break-word"
+    		tabDefaultRightImageStyle="position:absolute;vertical-align:middle;word-wrap:break-word"
+    		tabHoverCenterImageStyle="position:absolute;vertical-align:middle;word-wrap:break-word"
+    		overflowY="hidden" overflowX="hidden"
+    		contentsClass="tabContens">
+    		<w2:tab id="tab1"
+    			style="position:absolute;height:30px;width:126px;left:1px;top:1px;"
+    			tabDefaultCenterImageClass="tabC_1"
+    			tabDefaultRightImageClass="tabR" tabDefaultLeftImageClass="tabL"
+    			tabHoverCenterImageClass="tabC_on_1"
+    			tabHoverLeftImageClass="tabL_on"
+    			tabHoverRightImageClass="tabR_on"
+    			tabSelectedCenterImageClass="tabC_over_1"
+    			tabSelectedLeftImageClass="tabL_over"
+    			tabSelectedRightImageClass="tabR_over">
+    		</w2:tab>
+    		<w2:contents id="contents1"
+    			style="position: absolute;height:132px;width:474px;left:1px;top:31px;">
+    			<w2:grid autoFit="" baseNode="dataset" class="grid"
+    				evenRowBackgroundColor="#e1ebf5" focusMode="row"
+    				id="grd_TmkrNotice" oddEvenColorDisplay="true"
+    				oddRowBackgroundColor="#ffffff" overflowX="hidden"
+    				overflowY="hidden" readOnly="true" repeatNode="record" resize=""
+    				style="position:absolute;height:132px;width:472px;left:0px;top:0px;">
+    				<w2:header class="gridHeaderTable"
+    					columnClass="gridHeaderTD1" id="header2" style=""
+    					width="840">
+    					<w2:row id="row5" style="">
+    						<w2:column colSpan="" hidden=""
+    							id="column125" inputType="text" rowSpan="" value="번호"
+    							valueType="binary" width="40" style="height:26px;">
+    						</w2:column>
+    						<w2:column colSpan="" hidden=""
+    							id="column126" inputType="text" rowSpan="" value="제목"
+    							valueType="binary" width="291" style="height:26px;">
+    						</w2:column>
+    						<w2:column id="column164"
+    							style="height:26px;" hidden="" width="60" inputType="text"
+    							valueType="binary" value="글쓴이">
+    						</w2:column>
+    						<w2:column id="column167"
+    							style="height:26px;" hidden="" width="80" inputType="text"
+    							valueType="binary" value="날짜">
+    						</w2:column>
+    					</w2:row>
+    				</w2:header>
+    				<w2:gBody class="gridBodyTable"
+    					columnClass="gridBodyTD" id="gBody2" style="" width="840">
+    					<w2:row id="row7" style="">
+    						<w2:column hidden="" id="column139"
+    							inputType="text" value="" valueType="binary" width="60"
+    							style="height:21px;" textAlign="left">
+    						</w2:column>
+    						<w2:column hidden="" id="SUBJECT"
+    							inputType="text" style="height:21px;" textAlign="left"
+    							value="" valueType="binary" width="295">
+    						</w2:column>
+    						<w2:column hidden="" id="NAME"
+    							inputType="text" style="height:21px;" textAlign="center"
+    							value="" valueType="binary" width="60">
+    						</w2:column>
+    						<w2:column hidden="" id="REG_DATE"
+    							inputType="text" textAlign="center" valueType="binary"
+    							width="80" value="" style="height:21px;">
+    						</w2:column>
+    					</w2:row>
+    				</w2:gBody>
+    			</w2:grid>
+    		</w2:contents>
+    		<w2:tab id="tab2"
+    			style="position: absolute;height: 30px;width:126px;left:101px;top: 1px;"
+    			tabDefaultCenterImageClass="tabC_2"
+    			tabDefaultRightImageClass="tabR" tabDefaultLeftImageClass="tabL"
+    			tabHoverCenterImageClass="tabC_on_2"
+    			tabHoverLeftImageClass="tabL_on"
+    			tabHoverRightImageClass="tabR_on"
+    			tabSelectedCenterImageClass="tabC_over_2"
+    			tabSelectedLeftImageClass="tabL_over"
+    			tabSelectedRightImageClass="tabR_over">
+    		</w2:tab>
+    		<w2:contents id="contents2"
+    			style="position: absolute;height:132px;width:474px;left:1px;top:31px;">
+    			<w2:grid autoFit="" baseNode="dataset" class="grid"
+    				evenRowBackgroundColor="#e1ebf5" focusMode="row"
+    				id="grd_DlrNotice" oddEvenColorDisplay="true"
+    				oddRowBackgroundColor="#ffffff" overflowX="hidden"
+    				overflowY="hidden" readOnly="true" repeatNode="record" resize=""
+    				style="position:absolute;height:132px;width:472px;left:0px;top:0px;">
+    				<w2:header class="gridHeaderTable"
+    					columnClass="gridHeaderTD1" id="header3" style=""
+    					width="840">
+    					<w2:row id="row8" style="">
+    						<w2:column hidden="" id="column168"
+    							inputType="text" style="height:26px;" value="번호"
+    							valueType="binary" width="40">
+    						</w2:column>
+    						<w2:column hidden="" id="column169"
+    							inputType="text" style="height:26px;" value="제목"
+    							valueType="binary" width="291">
+    						</w2:column>
+    						<w2:column hidden="" id="column170"
+    							inputType="text" style="height:26px;" value="글쓴이"
+    							valueType="binary" width="60">
+    						</w2:column>
+    						<w2:column hidden="" id="column171"
+    							inputType="text" style="height:26px;" value="날짜"
+    							valueType="binary" width="80">
+    						</w2:column>
+    					</w2:row>
+    				</w2:header>
+    				<w2:gBody class="gridBodyTable"
+    					columnClass="gridBodyTD" id="gBody3" style="" width="840">
+    					<w2:row id="row9" style="">
+    						<w2:column hidden="" id="column172"
+    							inputType="text" style="height:21px;" value=""
+    							valueType="binary" width="60" textAlign="left">
+    						</w2:column>
+    						<w2:column hidden="" id="SUBJECT"
+    							inputType="text" style="height:21px;" textAlign="left"
+    							value="" valueType="binary" width="294">
+    						</w2:column>
+    						<w2:column hidden="" id="NAME"
+    							inputType="text" style="height:21px;" textAlign="center"
+    							value="" valueType="binary" width="60">
+    						</w2:column>
+    						<w2:column hidden="" id="REG_DATE"
+    							inputType="text" style="height:21px;" textAlign="center"
+    							value="" valueType="binary" width="80">
+    						</w2:column>
+    					</w2:row>
+    				</w2:gBody>
+    			</w2:grid>
+    		</w2:contents>
+    	</w2:tabContainer>
+    	<xf:output class="txt1" id="output39" label=""
+    		style="position: absolute ;height:20px;width:82px;left:45px;top:0px;">
+    		<xf:label>Trend</xf:label>
+    	</xf:output>
+    	<w2:grid baseNode="dataset" autoFit="" class="grid" resize=""
+    		id="grd_DailyTrend" focusMode="row"
+    		style="position:absolute;height:396px;width:476px;left:1px;top:44px;"
+    		evenRowBackgroundColor="#e1ebf5" overflowX="hidden"
+    		overflowY="hidden" oddEvenColorDisplay="true"
+    		oddRowBackgroundColor="#ffffff" repeatNode="record"
+    		fixedColumn="0" readOnly="true">
+    		<w2:header id="header1" style="" width="840"
+    			class="gridHeaderTable" columnClass="gridHeaderTD1">
+    			<w2:row id="row1" style="">
+    				<w2:column id="column1" hidden="" width="79"
+    					inputType="text" value="Model" rowSpan="2" valueType="binary"
+    					style="height:50px;">
+    				</w2:column>
+    				<w2:column id="column7" colSpan="5" hidden=""
+    					inputType="text" width="170" value="Sales" valueType="binary"
+    					style="height:20px" rowSpan="">
+    				</w2:column>
+    				<w2:column id="column4" colSpan="7" hidden=""
+    					inputType="text" width="238" value="Contract"
+    					valueType="binary" style="height:20px;">
+    				</w2:column>
+    			</w2:row>
+    			<w2:row id="row4" style="">
+    				<w2:column id="column11"
+    					style="background-position:top;background-image:/mp/images/g_h_1.png;background-repeat:repeat-x;height:30px;"
+    					hidden="" width="33" inputType="text"
+    					value="당월&amp;nbsp&lt;br&gt;&amp;nbsp목표" valueType="binary">
+    				</w2:column>
+    				<w2:column id="column14"
+    					style="background-position:top;background-image:/mp/images/g_h_1.png;background-repeat:repeat-x;height:30px;"
+    					hidden="" inputType="text" width="33"
+    					value="당월&amp;nbsp&lt;br&gt;&amp;nbsp실적" valueType="binary">
+    				</w2:column>
+    				<w2:column id="column18" height="30"
+    					style="background-position:top;background-repeat:repeat-x;background-image:/mp/images/g_h_1.png;height:30px;"
+    					hidden="" inputType="text" width="33"
+    					value="  진도&amp;nbsp&lt;br&gt;&amp;nbsp목표"
+    					valueType="binary">
+    				</w2:column>
+    				<w2:column id="column22"
+    					style="background-position:top;background-image:/mp/images/g_h_1.png;background-repeat:repeat-x;height:30px;"
+    					hidden="" inputType="text" width="33"
+    					value="당일&amp;nbsp&lt;br&gt;&amp;nbsp실적" valueType="binary">
+    				</w2:column>
+    				<w2:column id="column181" style="height:30px"
+    					hidden="" inputType="text" width="33" valueType="binary"
+    					value="가용&amp;nbsp&lt;br&gt;&amp;nbsp재고">
+    				</w2:column>
+    				<w2:column id="column10"
+    					style="background-position:top;background-repeat:repeat-x;background-image:/mp/images/g_h_1.png;height:30px;"
+    					hidden="" width="33" inputType="text"
+    					value="당월&amp;nbsp&lt;br&gt;&amp;nbsp목표" valueType="binary">
+    				</w2:column>
+    				<w2:column id="column87"
+    					style="background-position:top;background-image:/mp/images/g_h_1.png;background-repeat:repeat-x;height:30px;"
+    					hidden="" inputType="text" width="33"
+    					value="당월&amp;nbsp&lt;br&gt;&amp;nbsp실적" valueType="binary">
+    				</w2:column>
+    				<w2:column id="column92"
+    					style="background-position:top;background-repeat:repeat-x;background-image:/mp/images/g_h_1.png;height:30px;"
+    					hidden="" inputType="text" width="33"
+    					value="당월&amp;nbsp&lt;br&gt;&amp;nbsp취소" valueType="binary">
+    				</w2:column>
+    				<w2:column id="column97"
+    					style="background-position:top;background-repeat:repeat-x;background-image:/mp/images/g_h_1.png;height:30px;"
+    					hidden="" inputType="text" width="33"
+    					value="진도&amp;nbsp&lt;br&gt;&amp;nbsp목표" valueType="binary">
+    				</w2:column>
+    				<w2:column id="column102" height="18"
+    					style="background-position:top;background-image:/mp/images/g_h_1.png;background-repeat:repeat-x;height:30px;"
+    					hidden="" inputType="text" width="33"
+    					value="당일&amp;nbsp&lt;br&gt;&amp;nbsp실적" valueType="binary">
+    				</w2:column>
+    				<w2:column id="column117" height="18"
+    					style="background-position:top;background-repeat:repeat-x;background-image:/mp/images/g_h_1.png;height:30px;"
+    					hidden="" inputType="text" width="33"
+    					value="당일&amp;nbsp&lt;br&gt;&amp;nbsp취소" valueType="binary">
+    				</w2:column>
+    				<w2:column id="column122" height="30"
+    					style="background-position:top;background-repeat:repeat-x;background-image:/mp/images/g_h_1.png;height:30px;"
+    					hidden="" inputType="text" width="33"
+    					value="당일&amp;nbsp&lt;br&gt;&amp;nbspBOC" valueType="binary">
+    				</w2:column>
+    			</w2:row>
+    		</w2:header>
+    		<w2:gBody id="gBody1" style="" width="840"
+    			class="gridBodyTable" columnClass="gridBodyTD">
+    			<w2:row id="row2" style="">
+    				<w2:column id="VARIANT_NM" style="height:21px;"
+    					hidden="" width="100" inputType="text" value=""
+    					valueType="binary" textAlign="left">
+    				</w2:column>
+    				<w2:column id="SALES_TARGET_QTY"
+    					style="height:21px;" hidden="" inputType="text" width="34"
+    					value="" valueType="binary" textAlign="right">
+    				</w2:column>
+    				<w2:column id="RS_TOTAL" style="height:21px;"
+    					hidden="" inputType="text" width="34" value=""
+    					valueType="binary" textAlign="right">
+    				</w2:column>
+    				<w2:column id="RS_DAILY_TARGET" style="height:21px;"
+    					hidden="" inputType="text" width="34" value=""
+    					valueType="binary" textAlign="right">
+    				</w2:column>
+    				<w2:column id="SALES_DAILY_QTY" style="height:21px;"
+    					hidden="" inputType="text" width="34" value=""
+    					valueType="binary" textAlign="right">
+    				</w2:column>
+    				<w2:column id="AVAILABLE_CNT" style="height:21px"
+    					hidden="" inputType="text" width="34" valueType="binary"
+    					textAlign="right">
+    				</w2:column>
+    				<w2:column id="CO_TARGET_QTY" style="height:21px;"
+    					hidden="" inputType="text" width="34" valueType="binary"
+    					textAlign="right">
+    				</w2:column>
+    				<w2:column id="CO_TOTAL" style="height:21px;"
+    					hidden="" inputType="text" width="34" valueType="binary"
+    					textAlign="right">
+    				</w2:column>
+    				<w2:column id="CANCEL_TOTAL" style="height:21px;"
+    					hidden="" inputType="text" width="34" valueType="binary"
+    					textAlign="right">
+    				</w2:column>
+    				<w2:column id="CO_DAILY_TARGET" style="height:21px;"
+    					hidden="" inputType="text" width="34" valueType="binary"
+    					textAlign="right">
+    				</w2:column>
+    				<w2:column id="CO_DAILY_QTY" style="height:21px;"
+    					hidden="" inputType="text" width="34" valueType="binary"
+    					textAlign="right">
+    				</w2:column>
+    				<w2:column id="CANCEL_DAILY_QTY"
+    					style="height:21px;" hidden="" inputType="text" width="34"
+    					valueType="binary" textAlign="right">
+    				</w2:column>
+    				<w2:column id="BOC_CNT" style="height:21px;"
+    					hidden="" inputType="text" width="34" valueType="binary"
+    					textAlign="right">
+    				</w2:column>
+    			</w2:row>
+    		</w2:gBody>
+    		<w2:footer id="footer1" style="" width="840"
+    			columnClass="gridFooterTD" class="gridFooterTable">
+    			<w2:row id="row3" style="">
+    				<w2:column id="column3" style="height:21px;"
+    					hidden="" width="100" inputType="text" value="합계"
+    					valueType="binary">
+    				</w2:column>
+    				<w2:column id="column9" style="height:21px;"
+    					hidden="" inputType="expression" width="34" value=""
+    					valueType="binary" textAlign="right"
+    					expression="sum('SALES_TARGET_QTY')">
+    				</w2:column>
+    				<w2:column id="column16" style="height:21px;"
+    					hidden="" inputType="expression" width="34" value=""
+    					valueType="binary" textAlign="right"
+    					expression="sum('RS_TOTAL')">
+    				</w2:column>
+    				<w2:column id="column20" style="height:21px;"
+    					hidden="" inputType="expression" width="34" value=""
+    					valueType="binary" textAlign="right"
+    					expression="sum('RS_DAILY_TARGET')">
+    				</w2:column>
+    				<w2:column id="column24" style="height:21px;"
+    					hidden="" inputType="expression" width="34" value=""
+    					valueType="binary" textAlign="right"
+    					expression="sum('SALES_DAILY_QTY')">
+    				</w2:column>
+    				<w2:column id="column183" style="height:21px"
+    					hidden="" inputType="expression" width="70" valueType="binary"
+    					expression="sum('AVAILABLE_CNT')" textAlign="right">
+    				</w2:column>
+    				<w2:column id="column6" style="height:21px;"
+    					hidden="" inputType="expression" width="34" value=""
+    					valueType="binary" textAlign="right"
+    					expression="sum('CO_TARGET_QTY')">
+    				</w2:column>
+    				<w2:column id="column89" style="height:21px;"
+    					hidden="" inputType="expression" width="34" value=""
+    					valueType="binary" textAlign="right"
+    					expression="sum('CO_TOTAL')">
+    				</w2:column>
+    				<w2:column id="column94" style="height:21px;"
+    					hidden="" inputType="expression" width="34" value=""
+    					valueType="binary" textAlign="right"
+    					expression="sum('CANCEL_TOTAL')">
+    				</w2:column>
+    				<w2:column id="column99" style="height:21px;"
+    					hidden="" inputType="expression" width="34" value=""
+    					valueType="binary" textAlign="right"
+    					expression="sum('CO_DAILY_TARGET')">
+    				</w2:column>
+    				<w2:column id="column109" style="height:21px;"
+    					hidden="" inputType="expression" width="34" value=""
+    					valueType="binary" textAlign="right"
+    					expression="sum('CO_DAILY_QTY')">
+    				</w2:column>
+    				<w2:column id="column119" style="height:21px;"
+    					hidden="" inputType="expression" width="34" value=""
+    					valueType="binary" textAlign="right"
+    					expression="sum('CANCEL_DAILY_QTY')">
+    				</w2:column>
+    				<w2:column id="column124" style="height:21px;"
+    					hidden="" inputType="expression" width="34" value=""
+    					valueType="binary" textAlign="right"
+    					expression="sum('BOC_CNT')">
+    				</w2:column>
+    			</w2:row>
+    		</w2:footer>
+    	</w2:grid>
+    	<xf:select1 allOption="" appearance="minimal" chooseOption=""
+    		class="input_edit" direction="auto" disabled="false"
+    		displayMode="label" id="cb_Dealer"
+    		style="position: absolute ;height:22px;width:113px;left:364px;top:17px;"
+    		submenuSize="auto" visibleRowNum="10">
+    		<xf:choices>
+    			<xf:itemset
+    				nodeset="resDealer/root/dataset[@id='ds_Dealer']">
+    				<xf:label ref="record/NAME"></xf:label>
+    				<xf:value ref="record/CODE"></xf:value>
+    			</xf:itemset>
+    		</xf:choices>
+    		<script ev:event="onchange" type="javascript"><![CDATA[ 
+    			fn_SearchDaily();
+    		]]></script>
+    	</xf:select1>
+    	<w2:iframe id="iframe1" scrolling="no"
+    		src="/mp/FusionCharts/Code/chart1.jsp"
+    		style="position: absolute ;left:496px;top:15px;width:486px;height:200px;">
+    	</w2:iframe>
+    	<w2:iframe id="iframe2" scrolling="no"
+    		src="/mp/FusionCharts/Code/chart2.jsp"
+    		style="position: absolute ;left:496px;top:235px;width:486px;height:190px;">
+    	</w2:iframe>
+    	<w2:iframe id="iframe3" scrolling="no"
+    		src="/mp/FusionCharts/Code/chart3.jsp"
+    		style="position: absolute ;left:496px;top:446px;width:486px;height:170px;">
+    	</w2:iframe>
+    	<xf:output class="sub_title" id="output46" label=""
+    		style="position: absolute ;height:20px;color:#000000;width:204px;left:496px;top:220px;">
+    		<xf:label>Available Stock / BOC Status</xf:label>
+    	</xf:output>
+    	<xf:output class="sub_title" id="output47" label=""
+    		style="position: absolute ;height:20px;color:#000000;width:204px;left:496px;top:431px;">
+    		<xf:label>Showroom Traffic(Visitor)</xf:label>
+    	</xf:output>
+    </body>
+</html>

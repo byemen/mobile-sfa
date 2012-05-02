@@ -1,0 +1,216 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?xml-stylesheet href="/mp/css/style.css" type="text/css"?>
+<html xmlns="http://www.w3.org/1999/xhtml"
+    xmlns:ev="http://www.w3.org/2001/xml-events"
+    xmlns:w2="http://www.inswave.com/websquare" xmlns:xf="http://www.w3.org/2002/xforms">
+    <head>
+        <w2:buildDate/>
+        <xf:model>
+        	<xf:instance>
+        		<data xmlns="" />
+        	</xf:instance>
+        	<xf:submission id="submissionBase" ref="request"
+        		target="resList" action="" method="post"
+        		mediatype="application/xml" encoding="UTF-8" instance=""
+        		replace="instance" errorHandler="" customHandler=""
+        		mode="asynchronous" processMsg="처리중입니다.">
+        		<script type="javascript"
+        			ev:event="xforms-submit-done"><![CDATA[
+					grid1.setXML(WebSquare.ModelUtil.findInstanceNode("resList/root/dataset[@id='ds_List']"));
+					//alert(WebSquare.xml.serialize( grid1.getAllDisplayXML() ));
+					//fn_Search();
+            	]]></script>
+        	</xf:submission>
+        	<xf:submission id="submissionSave" ref="request"
+				target="resSave" action="" method="post" mediatype="application/xml"
+				encoding="UTF-8" instance="" replace="instance" errorHandler=""
+				customHandler="" mode="synchronous" processMsg="">
+			</xf:submission>
+        </xf:model>
+        <script type="javascript" src="/mp/js/common.js"></script>
+		<script type="javascript" src="/mp/js/WebSquare.js"></script>
+        <script type="javascript"><![CDATA[ 
+      
+    	/****************************************************************
+		* 화면로드
+		* @param  : 없음
+		* @return : 없음
+		******************************************************************/
+    	 function fn_OnLoad(){
+     		if(!gfn_IsNullVal(parent.FV_CustSeq)){
+       			fn_Search();
+      		}
+
+      	}
+  
+        /****************************************************************
+		* 조회
+		* @param  : 없음
+		* @return : 없음
+		******************************************************************/ 
+        function fn_Search(){
+			//top.fn_SpinnerShow();
+			var sSqlid = "crm/act:S110101_S05_S01";
+        	setTitSendInfo("request", "", "", sSqlid);
+        	setInputParamData("CUST_SEQ", parent.FV_CustSeq);
+        	setSubmissison("submissionBase"); 
+         }
+      	fn_OnLoad();	
+  
+  		/****************************************************************
+		* 저장
+		* @param  : 없음
+		* @return : 없음
+		******************************************************************/ 
+        function fn_Save(){
+  
+        	setTitSendInfo("request", "S310302_P01Action", "save", ""); 
+			//request에 수정된 xml을 추가
+			//alert(WebSquare.xml.serialize(grid1.getRowXML( 0 )));
+			
+			setInstanceNodeDataSetforTIT("ds_List", grid1.getModifiedXML(), "request/root" );
+			
+			//setInputParamData("CUST_SEQ",parent.FV_sCustSeq);
+			//setInputParamData("MNG_SC_ID",parent.FV_sMngScId);
+			//setInputParamData("DEALER_ID",parent.FV_sDealerId);
+			//setInputParamData("UPDATE_TYPE","INSERT");
+			setInputParamData("MENU_ID","S310302_P01");		//메뉴아이디
+			
+			setSubmissison("submissionSave");
+  			alert("저장을 완료했습니다.");
+  			//fn_Search();
+        }
+        ]]></script>
+    </head>
+    <body>
+
+    	<w2:textbox class="se_box" id="textbox2" label=""
+    		style="position: absolute ;height:440px;width:723px;left:0px;top:0px;border:none;">
+    	</w2:textbox>
+    	<xf:image id="image1" src="/mp/images/pop_title_bg.png"
+    		style="position: absolute ;height:45px;width:723px;left:0px;top:0px;">
+    	</xf:image>
+    	<w2:textbox class="title" id="textbox1" label="고객 보유차량"
+    		style="position: absolute ;height:20px;text-align:left;width:149px;left:14px;top:15px;">
+    	</w2:textbox>
+
+    	<xf:trigger class="btn_po" id="trigger1"
+    		style="position: absolute; height:30px; color:#FFFFFF; width:70px;left:640px;top:5px;"
+    		type="image">
+    		<xf:label>닫 기</xf:label>
+    		<script ev:event="onclick" type="javascript"><![CDATA[ 
+   				//parent.fn_PopupClose(3);
+   				parent.parent.fn_PopupClose();
+    			//parent.fn_MainPopupClose("Today");
+    		]]></script>
+    	</xf:trigger>
+    	<w2:grid autoFit="" baseNode="dataset" class="grid"
+    		evenRowBackgroundColor="#e1ebf5" focusMode="row" id="grid1"
+    		oddEvenColorDisplay="true" oddRowBackgroundColor="#ffffff"
+    		overflowX="hidden" overflowY="hidden" readOnly="false"
+    		repeatNode="record" resize="" sortEvent="onclick"
+    		style="position:absolute;height:369px;width:700px;left:6px;top:45px;" editModeEvent="onclick">
+    		<w2:header class="gridHeaderTable"
+    			columnClass="gridHeaderTD1" id="header1" style="" width="472">
+    			<w2:row id="row1" style="">
+    				<w2:column colSpan="" hidden="" id="column1"
+    					imageHeight="19" imageSrc="/TOYOTA_WEB/icon_grid_sel.png"
+    					imageWidth="20" inputType="image" rowSpan=""
+    					style="height:20px;" value="" valueType="binary" width="34">
+    				</w2:column>
+    				<w2:column colSpan="" hidden="" id="column2"
+    					inputType="text" rowSpan="" style="height:20px;" value=""
+    					valueType="binary" width="50">
+    				</w2:column>
+    				<w2:column colSpan="" hidden="" id="column3"
+    					inputType="text" rowSpan="" style="height:20px;" value="인도일자"
+    					valueType="binary" width="90">
+    				</w2:column>
+    				<w2:column hidden="" id="column4" inputType="text"
+    					style="height:25px" valueType="binary" width="70">
+    				</w2:column>
+    				<w2:column colSpan="" hidden="" id="column5"
+    					inputType="text" rowSpan="" style="height:20px;" value="차종"
+    					valueType="binary" width="100">
+    				</w2:column>
+    				<w2:column colSpan="" hidden="" id="column6"
+    					inputType="text" rowSpan="" style="height:20px;" value="년식"
+    					valueType="binary" width="60">
+    				</w2:column>
+    				<w2:column colSpan="" hidden="" id="column7"
+    					inputType="text" rowSpan="" style="height:20px" value="차대번호"
+    					valueType="binary" width="150">
+    				</w2:column>
+    				<w2:column colSpan="" hidden="" id="column8"
+    					inputType="text" rowSpan="" style="height:25px" value="차량번호"
+    					valueType="binary" width="90">
+    				</w2:column>
+    				<w2:column hidden="" id="column9" inputType="text"
+    					style="height:25px" value="소유여부" valueType="binary"
+    					width="70">
+    				</w2:column>
+    				<w2:column id="column21" style="height:25px"
+    					hidden="" inputType="text" width="92" valueType="binary"
+    					value="중고차가격">
+    				</w2:column>
+    			</w2:row>
+    		</w2:header>
+    		<w2:gBody class="gridBodyTable" columnClass="gridBodyTD"
+    			id="gBody1" style="">
+    			<w2:row id="row2" style="">
+    				<w2:column hidden="true" id="CUST_SEQ"
+    					inputType="text" style="height:21px;" value=""
+    					valueType="binary" width="34">
+    				</w2:column>
+    				<w2:column hidden="false" id="column12"
+    					inputType="text" style="height:21px;" textAlign="left" value=""
+    					valueType="binary" width="50">
+    				</w2:column>
+    				<w2:column hidden="false" id="DELIVERY_DT"
+    					inputType="text" style="height:21px;" value=""
+    					valueType="binary" width="90" readOnly="true">
+    				</w2:column>
+    				<w2:column hidden="true" id="MNG_SC_ID"
+    					inputType="text" style="height:21px" valueType="binary"
+    					width="70">
+    				</w2:column>
+    				<w2:column hidden="false" id="VARIANT_NM"
+    					inputType="text" style="color:#519eec;" textAlign="left"
+    					value="" valueType="binary" width="100" readOnly="true">
+    				</w2:column>
+    				<w2:column hidden="false" id="MODEL_YEAR"
+    					inputType="text" style="color:#519eec;height:21px;"
+    					textAlign="left" value="" valueType="binary" width="97" readOnly="true">
+    				</w2:column>
+    				<w2:column hidden="false" id="VIN" inputType="text"
+    					style="height:21px" textAlign="left" valueType="binary"
+    					width="150" readOnly="true">
+    				</w2:column>
+    				<w2:column hidden="false" id="VEHIC_NO"
+    					inputType="text" style="height:21px" textAlign="left"
+    					valueType="binary" width="82" readOnly="true">
+    				</w2:column>
+    				<w2:column hidden="false" id="POSS_YN"
+    					inputType="text" style="height:21px" textAlign="left"
+    					valueType="binary" width="70" readOnly="true">
+    				</w2:column>
+    				<w2:column id="ASS_PRICE" style="height:21px"
+    					hidden="" inputType="text" width="92" valueType="binary" editType="" allowChar="0-9">
+    				</w2:column>
+    			</w2:row>
+    		</w2:gBody>
+    		<script ev:event="onCellClick( row , col )"
+    			type="javascript"><![CDATA[ 
+    			//fn_CustPopup(row,col);
+    		]]></script>
+    	</w2:grid>
+    	<xf:trigger class="btn_po" id="trigger2"
+    		style="position: absolute ;height:30px;color:#FFFFFF;width:70px;left:567px;top:5px;"
+    		type="image">
+    		<xf:label>저 장</xf:label>
+    		<script ev:event="onclick" type="javascript"><![CDATA[ 
+    			fn_Save();
+    		]]></script>
+    	</xf:trigger>
+    </body>
+</html>

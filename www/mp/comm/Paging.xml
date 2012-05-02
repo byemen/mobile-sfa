@@ -1,0 +1,240 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<html xmlns="http://www.w3.org/1999/xhtml"
+    xmlns:ev="http://www.w3.org/2001/xml-events"
+    xmlns:w2="http://www.inswave.com/websquare" xmlns:xf="http://www.w3.org/2002/xforms">
+    <head>
+        <w2:buildDate/>
+        <xf:model>
+            <xf:instance>
+                <data xmlns=""/>
+                
+            </xf:instance>
+        </xf:model>
+        <script type="javascript"><![CDATA[ 
+		var FV_nCurrPage = -1;		// 현재 페이지
+		var FV_nMaxCnt = -1;		// 전체 데이터 수
+		var FV_nPageCnt = -1;		// 조회 건수
+		var FV_nStep = -1;			// 블럭 크기
+				
+		//Paging 정보설정
+		function fn_SetPageInfo(nCurrPage,nMaxCnt,nPageCnt) {
+			FV_nCurrPage = nCurrPage;
+			FV_nPageCnt = nPageCnt;
+			FV_nMaxCnt = nMaxCnt;
+			FV_nStep = 1;
+			fn_MakePageNumber(FV_nStep);
+		}
+		
+		// Paging 정보설정
+		function fn_MakePageNumber(FV_nStep){
+			var nMaxPage = (FV_nMaxCnt / FV_nPageCnt);
+			if((FV_nMaxCnt % FV_nPageCnt) > 0){
+				nMaxPage = Math.floor(nMaxPage);
+				nMaxPage++;
+			}
+			
+			if(nMaxPage < 1){
+				return;
+			}
+			
+			//PAGE 번호설정
+			for(var i=1; i<11; i++){
+				var nPageNo = ((FV_nStep -1) * 10) + i;
+				var objBtn = fn_GetBtnId(i);
+				
+				objBtn.setValue(nPageNo);
+				
+				if(nPageNo > nMaxPage){
+					document.getElementById(objBtn.id).style.cursor = "";
+					objBtn.setDisabled(true);
+				}else{
+					document.getElementById(objBtn.id).style.cursor = "hand";
+					objBtn.setDisabled(false);
+				}
+			}
+			wfrm_Page.visible(true);
+		}		
+		// 페이지 클릭
+		function fn_Page_onclick(obj){
+			fn_ResetPageColor();
+			document.getElementById(obj.id).className = "paging_on";
+			
+			var nPageNo = obj.getValue();
+			if(FV_nCurrPage == nPageNo){
+				return;
+			}
+			FV_nCurrPage = nPageNo;
+			fn_Search(FV_nCurrPage);
+		}		
+		// 페이지 클릭
+		function fn_Navigate_onclick(id){
+			var nMaxPage = FV_nMaxCnt / FV_nPageCnt;
+			
+			if((FV_nMaxCnt % FV_nPageCnt) > 0){				
+				nMaxPage = Math.floor(nMaxPage);
+				nMaxPage++;
+			}	
+			
+			if(id == "out_Next"){
+				if(out_Page10.getValue() >= nMaxPage){
+					return;
+				}
+				fn_MakePageNumber(++FV_nStep);
+			} else if(id == "out_Prev"){
+				if(out_Page1.getValue() == "1"){
+					return;
+				}
+				fn_MakePageNumber(--FV_nStep);	
+			} else if(id == "out_Last"){
+				var nLastStep = nMaxPage/10;
+				if(nMaxPage%10 != 0){
+					nLastStep = Math.floor(nLastStep);
+					nLastStep++;
+				}
+				FV_nStep = nLastStep;
+				fn_MakePageNumber(nLastStep);	
+			} else{
+				FV_nStep = 1
+				fn_MakePageNumber(FV_nStep);	
+			}
+			fn_ResetPageColor();
+			document.getElementById("out_Page1").className = "paging_on";			
+			FV_nCurrPage = out_Page1.getValue();
+			fn_Search(FV_nCurrPage);
+		}
+		//
+		function fn_ResetPageColor(){
+			for(var i=1; i<11; i++){
+				var objBtn = fn_GetBtnId(i);
+				
+				document.getElementById(objBtn.id).className = "paging";
+			}
+		}
+		// 페이지 초기화
+		function fn_InitPage(){
+			FV_nCurrPage = -1;
+			fn_ResetPageColor();
+			document.getElementById("out_Page1").className = "paging_on";
+			wfrm_Page.visible(false);
+		}		
+		// 페이지 
+		function fn_GetBtnId(nIdx){
+			switch(nIdx){
+				case 1 : return out_Page1;
+				case 2 : return out_Page2;
+				case 3 : return out_Page3;
+				case 4 : return out_Page4;
+				case 5 : return out_Page5;
+				case 6 : return out_Page6;
+				case 7 : return out_Page7;
+				case 8 : return out_Page8;
+				case 9 : return out_Page9;
+				case 10 : return out_Page10;
+			}
+		}
+        ]]></script>
+    </head>
+    <body>
+    	<xf:group id="grp_Page"
+    		style="position:absolute;top:0px;left:0px;width:441px;height:28px;;background-color:#e7e9eb">
+    		<xf:output class="paging" id="out_First" label=""
+    			style="position: absolute ;vertical-align:middle;height:26px;width:25px;left:0px;top:0px;;text-align:center">
+    			<xf:label>&lt;&lt;</xf:label>
+    			<script ev:event="onclick" type="javascript"><![CDATA[ 
+    				fn_Navigate_onclick(this.id);
+    			]]></script>
+    		</xf:output>
+    		<xf:output class="paging" id="out_Prev" label=""
+    			style="position: absolute ;vertical-align:middle;height:26px;width:25px;left:31px;top:0px;;text-align:center">
+    			<xf:label>&lt;</xf:label>
+    			<script ev:event="onclick" type="javascript"><![CDATA[ 
+    				fn_Navigate_onclick(this.id);
+    			]]></script>
+    		</xf:output>
+    		<xf:output class="paging_on" id="out_Page1" label=""
+    			style="position: absolute ;vertical-align:middle;height:26px;width:25px;left:63px;top:0px;;text-align:center">
+    			<xf:label>1</xf:label>
+    			<script ev:event="onclick" type="javascript"><![CDATA[ 
+    				fn_Page_onclick(this);
+    			]]></script>
+    		</xf:output>
+    		<xf:output class="paging" id="out_Page2" label=""
+    			style="position: absolute ;vertical-align:middle;height:26px;width:25px;left:95px;top:0px;;text-align:center">
+    			<xf:label>2</xf:label>
+    			<script ev:event="onclick" type="javascript"><![CDATA[ 
+    				fn_Page_onclick(this);
+    			]]></script>
+    		</xf:output>
+    		<xf:output class="paging" id="out_Page3" label=""
+    			style="position: absolute ;vertical-align:middle;height:26px;width:25px;left:127px;top:0px;;text-align:center">
+    			<xf:label>3</xf:label>
+    			<script ev:event="onclick" type="javascript"><![CDATA[ 
+    				fn_Page_onclick(this);
+    			]]></script>
+    		</xf:output>
+    		<xf:output class="paging" id="out_Page4" label=""
+    			style="position: absolute ;vertical-align:middle;height:26px;width:25px;left:159px;top:0px;;text-align:center">
+    			<xf:label>4</xf:label>
+    			<script ev:event="onclick" type="javascript"><![CDATA[ 
+    				fn_Page_onclick(this);
+    			]]></script>
+    		</xf:output>
+    		<xf:output class="paging" id="out_Page5" label=""
+    			style="position: absolute ;vertical-align:middle;height:26px;width:25px;left:191px;top:0px;;text-align:center">
+    			<xf:label>5</xf:label>
+    			<script ev:event="onclick" type="javascript"><![CDATA[ 
+    				fn_Page_onclick(this);
+    			]]></script>
+    		</xf:output>
+    		<xf:output class="paging" id="out_Page6" label=""
+    			style="position: absolute ;vertical-align:middle;height:26px;width:25px;left:223px;top:0px;;text-align:center">
+    			<xf:label>6</xf:label>
+    			<script ev:event="onclick" type="javascript"><![CDATA[ 
+    				fn_Page_onclick(this);
+    			]]></script>
+    		</xf:output>
+    		<xf:output class="paging" id="out_Page7" label=""
+    			style="position: absolute ;vertical-align:middle;height:26px;width:25px;left:255px;top:0px;;text-align:center">
+    			<xf:label>7</xf:label>
+    			<script ev:event="onclick" type="javascript"><![CDATA[ 
+    				fn_Page_onclick(this);
+    			]]></script>
+    		</xf:output>
+    		<xf:output class="paging" id="out_Page8" label=""
+    			style="position: absolute ;vertical-align:middle;height:26px;width:25px;left:287px;top:0px;;text-align:center">
+    			<xf:label>8</xf:label>
+    			<script ev:event="onclick" type="javascript"><![CDATA[ 
+    				fn_Page_onclick(this);
+    			]]></script>
+    		</xf:output>
+    		<xf:output class="paging" id="out_Page9" label=""
+    			style="position: absolute ;vertical-align:middle;height:26px;width:25px;left:319px;top:0px;;text-align:center">
+    			<xf:label>9</xf:label>
+    			<script ev:event="onclick" type="javascript"><![CDATA[ 
+    				fn_Page_onclick(this);
+    			]]></script>
+    		</xf:output>
+    		<xf:output class="paging" id="out_Page10" label=""
+    			style="position: absolute ;vertical-align:middle;height:26px;width:25px;left:351px;top:0px;;text-align:center">
+    			<xf:label>10</xf:label>
+    			<script ev:event="onclick" type="javascript"><![CDATA[ 
+    				fn_Page_onclick(this);
+    			]]></script>
+    		</xf:output>
+    		<xf:output class="paging" id="out_Next" label=""
+    			style="position: absolute ;vertical-align:middle;height:26px;width:25px;left:383px;top:0px;;text-align:center">
+    			<xf:label>&gt;</xf:label>
+    			<script ev:event="onclick" type="javascript"><![CDATA[ 
+    				fn_Navigate_onclick(this.id);
+    			]]></script>
+    		</xf:output>
+    		<xf:output class="paging" id="out_Last" label=""
+    			style="position: absolute ;vertical-align:middle;height:26px;width:25px;left:415px;top:0px;;text-align:center">
+    			<xf:label>&gt;&gt;</xf:label>
+    			<script ev:event="onclick" type="javascript"><![CDATA[ 
+    				fn_Navigate_onclick(this.id);
+    			]]></script>
+    		</xf:output>
+    	</xf:group>
+    </body>
+</html>

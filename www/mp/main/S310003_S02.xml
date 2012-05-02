@@ -1,0 +1,172 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?xml-stylesheet href="/mp/css/style.css" type="text/css"?>
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:ev="http://www.w3.org/2001/xml-events"
+    xmlns:w2="http://www.inswave.com/websquare" xmlns:xf="http://www.w3.org/2002/xforms">
+    <head>
+    	<w2:buildDate />
+    	<xf:model>
+    		<xf:instance>
+        		<data xmlns="" />
+    		</xf:instance>
+    		<xf:submission id="submissionResult" ref="request" target="resResult"
+        		action=""
+        		method="post" mediatype="application/xml" encoding="UTF-8" instance="" replace="instance"
+        		errorHandler="" customHandler="" mode="synchronous"
+        		processMsg="처리중입니다.">
+        		<script type="javascript" ev:event="xforms-submit-done"><![CDATA[
+            		grd_ResultList.setXML(WebSquare.ModelUtil.findInstanceNode("resResult/root/dataset[@id='ds_ResultList']"));
+    				fn_AfterSearch();
+            	]]></script>
+        	</xf:submission>
+    	</xf:model>
+    	<script type="javascript" src="/mp/js/common.js"></script>
+		<script type="javascript" src="/mp/js/WebSquare.js"></script>
+    	<script type="javascript"><![CDATA[
+     	var FV_SEARCH_CNT = 12;		// 조회 건수
+		var FV_nMAXCNT = -1;		// 전체 데이터 수
+		wfrm_Page.visible(false);       
+        /****************************************************************
+		* 조회
+		* @param  : 페이지번호
+		* @return : 없음
+		******************************************************************/ 
+        function fn_Search(pageNo){
+			parent.parent.fn_SpinnerShow();
+        	if(pageNo == null){
+				FV_nMAXCNT = -1;
+				pageNo = 1;
+				fn_InitPage();
+			}
+        	
+        	setTitSendInfo("request", "", "", "mdms/mp/main:S310003_P01_S02@" + pageNo + "/" + FV_SEARCH_CNT);
+      		setInputParamData("RESERVED", "91"); 
+        	setInputParamData("SUBJECT", parent.edt_Subject.getValue());
+        	setInputParamData("DESTCALLNO", parent.edt_DestCallNo.getValue().replaceAll("-",""));   
+        	setInputParamData("FROM_DT", parent.from_dt.getValue().replaceAll("-",""));
+        	setInputParamData("TO_DT", parent.to_dt.getValue().replaceAll("-",""));   
+    		setSubmissison("submissionResult");
+        }
+        /****************************************************************
+		* callback (조회)
+		* @param  : 없음
+		* @return : 없음
+		******************************************************************/
+        function fn_AfterSearch(){
+        	var nRownum = (FV_nCurrPage-1) * FV_SEARCH_CNT;
+        	
+        	if(FV_nCurrPage == -1 && grd_ResultList.getRowCount() > 0){
+				FV_nMAXCNT = grd_ResultList.getCellData(0,0);
+				fn_SetPageInfo(1,FV_nMAXCNT,FV_SEARCH_CNT);
+				nRownum = 0;
+			}
+			
+			for(var i=0; i<grd_ResultList.getRowCount(); i++){
+        		grd_ResultList.setCellData(i, 1, (i+1)+nRownum);
+        	}
+			parent.parent.fn_SpinnerHide();
+        }
+        
+        fn_Search();
+        ]]></script>
+    </head>
+    <body>
+    	<w2:grid autoFit="" baseNode="dataset" class="grid"
+    		evenRowBackgroundColor="#e1ebf5" focusMode="row"
+    		id="grd_ResultList" oddEvenColorDisplay="true"
+    		oddRowBackgroundColor="#ffffff" overflowX="hidden"
+    		overflowY="hidden" readOnly="true" repeatNode="record" resize=""
+    		style="position:absolute;height:291px;width:859px;left:3px;top:5px;">
+    		<w2:header class="gridHeaderTable"
+    			columnClass="gridHeaderTD1" id="header9" style="" width="472">
+    			<w2:row id="row20" style="">
+    				<w2:column id="column394" style="height:26px"
+    					hidden="" inputType="text" width="70" valueType="binary">
+    				</w2:column>
+    				<w2:column colSpan="" hidden="" id="column369"
+    					inputType="text" rowSpan="" style="height:26px;" value="N0"
+    					valueType="binary" width="40">
+    				</w2:column>
+    				<w2:column colSpan="" hidden="" id="column371"
+    					inputType="text" rowSpan="" style="height:26px;" value="수신자명"
+    					valueType="binary" width="80">
+    				</w2:column>
+    				<w2:column id="column387" style="height:26px"
+    					hidden="" inputType="text" width="70" valueType="binary"
+    					value="수식식별">
+    				</w2:column>
+    				<w2:column colSpan="" hidden="" id="column372"
+    					inputType="text" rowSpan="" style="height:26px;" value="수신번호"
+    					valueType="binary" width="82">
+    				</w2:column>
+    				<w2:column colSpan="" hidden="" id="column373"
+    					inputType="text" rowSpan="" style="height:26px;" value="회신번호"
+    					valueType="binary" width="82">
+    				</w2:column>
+    				<w2:column colSpan="" hidden="" id="column375"
+    					inputType="text" rowSpan="" style="height:26px;" value="접수시간"
+    					valueType="binary" width="114">
+    				</w2:column>
+    				<w2:column hidden="" id="column376" inputType="text"
+    					style="height:26px" value="예약시간" valueType="binary"
+    					width="110">
+    				</w2:column>
+    				<w2:column hidden="" id="column377" inputType="text"
+    					style="height:26px" value="관리번호" valueType="binary"
+    					width="80">
+    				</w2:column>
+    				<w2:column id="column389" style="height:26px"
+    					hidden="" inputType="text" width="200" valueType="binary"
+    					value="결과">
+    				</w2:column>
+    			</w2:row>
+    		</w2:header>
+    		<w2:gBody class="gridBodyTable" columnClass="gridBodyTD"
+    			id="gBody9" style="">
+    			<w2:row id="row21" style="">
+    				<w2:column id="_T_CNT" style="height:22px"
+    					hidden="true" inputType="text" width="70" valueType="binary">
+    				</w2:column>
+    				<w2:column hidden="" id="column378" inputType="text"
+    					style="height:21px;" value="" valueType="binary" width="50"
+    					textAlign="left">
+    				</w2:column>
+    				<w2:column hidden="" id="SUBJECT" inputType="text"
+    					style="height:21px" valueType="binary" width="70"
+    					textAlign="left">
+    				</w2:column>
+    				<w2:column id="JEOBSU_NO" style="height:21px"
+    					hidden="" inputType="text" width="70" valueType="binary" textAlign="left">
+    				</w2:column>
+    				<w2:column hidden="" id="DESTCALLNO"
+    					inputType="text" style="height:21px" valueType="binary"
+    					width="70" textAlign="left">
+    				</w2:column>
+    				<w2:column hidden="" id="CALLBACKNO"
+    					inputType="text" style="height:21px" valueType="binary"
+    					width="70" textAlign="left">
+    				</w2:column>
+    				<w2:column hidden="" id="JEOBSU_TIME"
+    					inputType="text" style="height:21px" valueType="binary"
+    					width="45">
+    				</w2:column>
+    				<w2:column hidden="" id="YEYAK_TIME"
+    					inputType="text" style="height:21px" valueType="binary"
+    					width="70">
+    				</w2:column>
+    				<w2:column hidden="" id="JEOBSU_SUB_NO"
+    					inputType="text" style="height:21px" valueType="binary"
+    					width="70">
+    				</w2:column>
+    				<w2:column id="RESULT_NM" style="height:21px"
+    					hidden="" inputType="text" width="70" valueType="binary"
+    					allOption="" chooseOption="" textAlign="left">
+    				</w2:column>
+    			</w2:row>
+    		</w2:gBody>
+    	</w2:grid>
+    	<w2:wframe id="wfrm_Page" mode="async"
+    		src="/mp/comm/Paging.xml"
+    		style="position: absolute ;left:235px;top:304px;width:443px;height:28px;">
+    	</w2:wframe>
+    </body>
+</html>

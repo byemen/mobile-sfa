@@ -1,0 +1,164 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?xml-stylesheet href="/mp/css/frame.css" type="text/css"?>
+<html xmlns="http://www.w3.org/1999/xhtml"
+    xmlns:ev="http://www.w3.org/2001/xml-events"
+    xmlns:w2="http://www.inswave.com/websquare" xmlns:xf="http://www.w3.org/2002/xforms">
+    <head>
+        <w2:buildDate/>
+        <xf:model>
+            <xf:instance>
+                <data xmlns=""/>
+            </xf:instance>
+		    <xf:submission id="submissionDeliver" ref="request" target="resTrend"
+        		action=""
+        		method="post" mediatype="application/xml" encoding="UTF-8" instance="" replace="instance"
+        		errorHandler="" customHandler="" mode="asynchronous"
+        		processMsg="">
+        		<script type="javascript" ev:event="xforms-submit-done"><![CDATA[
+            		grd_DailyDeliver.setXML(WebSquare.ModelUtil.findInstanceNode("resTrend/root/dataset[@id='ds_DailyDeliver']"));
+            	]]></script>
+        	</xf:submission>
+		    <xf:submission id="submissionContract" ref="request" target="resTrend"
+        		action=""
+        		method="post" mediatype="application/xml" encoding="UTF-8" instance="" replace="instance"
+        		errorHandler="" customHandler="" mode="asynchronous"
+        		processMsg="">
+        		<script type="javascript" ev:event="xforms-submit-done"><![CDATA[
+            		grd_DailyContract.setXML(WebSquare.ModelUtil.findInstanceNode("resTrend/root/dataset[@id='ds_DailyContract']"));
+            	]]></script>
+        	</xf:submission>
+        </xf:model>
+        <script type="javascript" src="/mp/js/common.js"></script>
+		<script type="javascript" src="/mp/js/WebSquare.js"></script>
+        <script type="javascript"><![CDATA[
+			var FV_sSvcNm = parent.FV_SvcNm;
+			var FV_sUpGroupId = GV_UP_GROUP_ID;
+			var FV_sDealerId = GV_GROUP_ID;
+			parent.fn_SpinnerShow();
+			setTimeout("parent.fn_SpinnerHide()", 3000);
+
+			var actionNm = "";
+			if(FV_sSvcNm == "T"){
+				actionNm = "TOYOTAAction";
+			}
+
+			setTitSendInfo("request", actionNm, "", "mdms/mp/eis:S210009_W01_S01");
+	       	setInputParamData("DEALER_ID", FV_sUpGroupId);
+	   		setSubmissison("submissionDeliver");
+			setTitSendInfo("request", actionNm, "", "mdms/mp/eis:S210009_W01_S02");
+	       	setInputParamData("DEALER_ID", FV_sUpGroupId);
+	   		setSubmissison("submissionContract");
+        ]]></script>
+    </head>
+    <body>
+    	<xf:output class="sub_title_b" id="output30" label=""
+    		style="position: absolute ;height:20px;width:204px;left:20px;top:11px;">
+    		<xf:label>Delivery &amp; Contract of Today</xf:label>
+    	</xf:output>
+    	<xf:output id="sub_title"
+    		style="position: absolute ;height:20px;width:204px;left:20px;top:10px;"
+    		class="sub_title" label="">
+    		<xf:label>Delivery &amp; Contract of Today</xf:label>
+    	</xf:output>
+    	<xf:image id="image26"
+    		style="position: absolute ;height:582px;width:512px;left:0px;top:26px;"
+    		src="/mp/images/eis/shape_7.png">
+    	</xf:image>
+    	<xf:image id="image30"
+    		style="position: absolute ;height:582px;width:512px;left:506px;top:26px;"
+    		src="/mp/images/eis/shape_7.png">
+    	</xf:image>
+    	<w2:grid baseNode="dataset" class="grid" id="grd_DailyDeliver"
+    		repeatNode="record"
+    		style="position: absolute ;height:550px;width:478px;left:16px;top:41px;" overflowX="hidden" overflowY="hidden" rowMouseOver="false" oddEvenColorDisplay="false" selectedCellColor="#484848">
+    		<w2:header class="gridHeaderTable"
+    			columnClass="gridHeaderTD" id="header3" style="">
+    			<w2:row id="row9" style="">
+    				<w2:column colSpan="4" hidden="" id="column58"
+    					inputType="text" rowSpan="" style="height:20px" value="Today Register"
+    					valueType="binary" width="279">
+    				</w2:column>
+    			</w2:row>
+    			<w2:row id="row10" style="">
+    				<w2:column hidden="" id="column59" inputType="text"
+    					style="height:20px" value="SC" valueType="binary" width="119">
+    				</w2:column>
+    				<w2:column hidden="" id="column60" inputType="text"
+    					style="height:20px" value="Team" valueType="binary" width="100">
+    				</w2:column>
+    				<w2:column hidden="" id="column61" inputType="text"
+    					style="height:20px" value="Variant" valueType="binary"
+    					width="139">
+    				</w2:column>
+    				<w2:column hidden="" id="column62" inputType="text"
+    					style="height:20px" value="Customer" valueType="binary"
+    					width="119">
+    				</w2:column>
+    			</w2:row>
+    		</w2:header>
+    		<w2:gBody class="gridBodyTable" columnClass="gridBodyTD"
+    			id="gBody3" style="">
+    			<w2:row id="row11" style="">
+    				<w2:column hidden="" id="SC_NM" inputType="text"
+    					style="color:#00CDFF;height:20px" valueType="binary" width="70">
+    				</w2:column>
+    				<w2:column hidden="" id="TEAM_NM" inputType="text"
+    					style="height:20px" valueType="binary" width="70">
+    				</w2:column>
+    				<w2:column hidden="" id="VARIANT_NM" inputType="text"
+    					style="height:20px" valueType="binary" width="69">
+    				</w2:column>
+    				<w2:column hidden="" id="CUST_NM" inputType="text"
+    					style="height:20px" valueType="binary" width="70">
+    				</w2:column>
+    			</w2:row>
+    		</w2:gBody>
+    	</w2:grid>
+    	<w2:grid baseNode="dataset" repeatNode="record" id="grd_DailyContract"
+    		class="grid"
+    		style="position: absolute ;height:550px;width:478px;left:522px;top:41px;" rowMouseOver="false" overflowX="hidden" overflowY="hidden" oddEvenColorDisplay="false" selectedCellColor="#484848">
+    		<w2:header id="header2" style="" class="gridHeaderTable"
+    			columnClass="gridHeaderTD">
+    			<w2:row id="row6" style="">
+    				<w2:column id="column52" style="height:20px"
+    					hidden="" inputType="text" width="210" valueType="binary"
+    					colSpan="4" rowSpan="" value="Today Contract">
+    				</w2:column>
+    			</w2:row>
+    			<w2:row id="row8" style="">
+    				<w2:column hidden="" id="column59" inputType="text"
+    					style="height:20px" value="SC" valueType="binary" width="119">
+    				</w2:column>
+    				<w2:column hidden="" id="column60" inputType="text"
+    					style="height:20px" value="Team" valueType="binary" width="100">
+    				</w2:column>
+    				<w2:column hidden="" id="column61" inputType="text"
+    					style="height:20px" value="Variant" valueType="binary"
+    					width="139">
+    				</w2:column>
+    				<w2:column hidden="" id="column62" inputType="text"
+    					style="height:20px" value="Customer" valueType="binary"
+    					width="119">
+    				</w2:column>
+    			</w2:row>
+    		</w2:header>
+    		<w2:gBody id="gBody2" style="" class="gridBodyTable"
+    			columnClass="gridBodyTD">
+    			<w2:row id="row7" style="">
+    				<w2:column hidden="" id="SC_NM" inputType="text"
+    					style="color:#00CDFF;height:20px" valueType="binary" width="70">
+    				</w2:column>
+    				<w2:column hidden="" id="TEAM_NM" inputType="text"
+    					style="height:20px" valueType="binary" width="70">
+    				</w2:column>
+    				<w2:column hidden="" id="VARIANT_NM" inputType="text"
+    					style="height:20px" valueType="binary" width="69">
+    				</w2:column>
+    				<w2:column hidden="" id="CUST_NM" inputType="text"
+    					style="height:20px" valueType="binary" width="70">
+    				</w2:column>
+    			</w2:row>
+    		</w2:gBody>
+    	</w2:grid>
+    </body>
+</html>

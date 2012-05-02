@@ -1,0 +1,109 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<html xmlns="http://www.w3.org/1999/xhtml"
+    xmlns:ev="http://www.w3.org/2001/xml-events"
+    xmlns:w2="http://www.inswave.com/websquare" xmlns:xf="http://www.w3.org/2002/xforms">
+    <head>
+        <w2:buildDate/>
+        <xf:model>
+            <xf:instance>
+                <data xmlns=""/>
+            </xf:instance>
+        </xf:model>
+        <script type="javascript"><![CDATA[
+        	
+        	//modelUtils 컨트롤
+        	function modelUtilControl(){
+        		var tmpString = "";
+        		var tmpDoc;
+        		
+        		textarea1.setValue(WebSquare.xml.indent(WebSquare.ModelUtil.findInstanceNode(".")));
+        		
+        		alert("다음");
+        		
+        		tmpString = "<test>aaa</test>"; 
+        		tmpDoc = WebSquare.xml.parse( tmpString );
+        		WebSquare.ModelUtil.setInstanceNode( tmpDoc, ".","", "append");
+        		
+        		textarea1.setValue(WebSquare.xml.indent(WebSquare.ModelUtil.findInstanceNode(".")));
+        		
+        		alert("다음");
+        		
+        		tmpString = "<node value='12321'/>";
+        		tmpDoc = WebSquare.xml.parse( tmpString );
+        		
+        		WebSquare.ModelUtil.setInstanceNode( tmpDoc, ".", "", "append" );
+        		
+        		textarea1.setValue(WebSquare.xml.indent(WebSquare.ModelUtil.findInstanceNode(".")));
+        		
+        		alert("다음");
+        		
+        		tmpString = "<childNode value='aaa'/>";
+        		tmpDoc = WebSquare.xml.parse( tmpString );
+        		
+        		WebSquare.ModelUtil.setInstanceNode( tmpDoc, "node", "", "append" );
+        		
+        		textarea1.setValue(WebSquare.xml.indent(WebSquare.ModelUtil.findInstanceNode(".")));
+        		
+        	}
+        	
+        	
+        	//xml 컨트롤
+        	function XmlUtilControl(){
+        		var tmpString = "";
+        		var tmpDoc;
+        		
+        		tmpString = "<childNode value='aaa'/>";
+        		tmpDoc = WebSquare.xml.parse( tmpString );
+        		textarea1.setValue(WebSquare.xml.indent(tmpDoc));
+        		
+        		alert("다음");        		
+        		
+        		
+        		var appendXml = WebSquare.xml.parse( "<abc></abc>" );
+        		WebSquare.xml.setValue( appendXml, "abc", "STRING" );
+        		textarea1.setValue(WebSquare.xml.indent(appendXml));
+        		
+        		alert("다음");
+        		
+        		//xml의 append 같은 경우는 노드 타입으로 넣어주어야 하기 때문에 doc 타입의 데이터를 한번 더 findNode로 데이터를 꺼내와야 추가가 됩니다.
+        		WebSquare.xml.appendChild( WebSquare.xml.findNode( tmpDoc, "childNode" ), WebSquare.xml.findNode(appendXml,"abc"));
+        		
+        		//WebSquare.xml.setAttribute( tmpDoc, "abc", "id", "name" );
+        		
+        		//WebSquare.xml.setString( tmpDoc, "testData", "TEXT" );
+        		//WebSquare.xml.setValue( tmpDoc, "abc", "TEXT" );
+        		WebSquare.xml.setValue( tmpDoc, "childNode/abc", "TEXT" );
+        		//testDoc(tmpDoc, "childNode/abc", "TEXT");
+        		
+        		//WebSquare.xml.setValue( tmpDoc, "testData", "TEXT");
+        		
+        		textarea1.setValue(WebSquare.xml.indent(tmpDoc));
+        		
+        		
+        	}
+        	
+        	
+        ]]></script>
+    </head>
+    <body>
+    	<xf:textarea id="textarea1"
+    		style="position: absolute ;left:41px;top:89px;width: 447px;height: 189px;">
+    	</xf:textarea>
+    	
+    	<xf:trigger type="button" id="trigger1"
+    		style="position: absolute ;left:41px;top:17px;width: 183px;height: 54px;">
+    		<xf:label>modelUtil</xf:label>
+    		<script type="javascript" ev:event="onclick"><![CDATA[
+    			modelUtilControl();
+    		]]></script>
+    	</xf:trigger>
+    	<xf:trigger id="trigger3"
+    		style="position: absolute ;left:270px;top:18px;width: 183px;height: 54px;"
+    		type="button">
+    		<xf:label>xmlUtil</xf:label>
+    		<script type="javascript" ev:event="onclick"><![CDATA[
+    			XmlUtilControl();
+    		]]></script>
+    	</xf:trigger>
+    </body>
+</html>

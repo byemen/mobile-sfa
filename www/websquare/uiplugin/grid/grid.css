@@ -1,0 +1,96 @@
+td{padding:0px 0px 0px 0px }
+
+
+
+
+.gridHeaderTableDefault{ border-top:3px solid #6CA5E3; border-bottom:1px solid #B1C5D5; border-left:1px solid #B1C5D5; border-right:1px solid #B1C5D5}
+.gridHeaderTRDefault{}
+.gridHeaderTDDefault{
+	text-align:center; 
+	overflow:hidden;
+	border:1px solid #B1C5D5;
+	background-color:#D9E6F3; 
+	font-size:12px; 
+	font-weight:normal;
+	vertical-align:middle; 
+	color:#066196;
+	white-space:nowrap;
+	cursor:default;
+}
+.gridHeaderTDDefault_rowNumber{
+}
+.gridHeaderTDDefault_rowStatus{
+}
+
+
+
+.gridBodyTableDefault{}
+.gridBodyTRDefault{}
+.gridBodyDefault{
+	cursor:default;
+	border:1px solid #B1C5D6; 
+	font-size:12px; 
+	overflow:hidden; 
+	font-family:tahoma,dotum; 
+	text-align:center; 
+	background-color:#ffffff;
+	white-space:nowrap;
+	text-overflow:ellipsis;
+}
+
+.gridBodyDefault_select{
+	background-repeat:no-repeat;
+	background-position:right center;
+	background-image:url(uiplugin/selectbox/images/select_arrow.gif); 
+}
+
+
+.gridSubtotalTRDefault{}
+.gridSubtotalDefault{
+	cursor:default;
+	font-size:12px; 
+	overflow:hidden; 
+	font-family:tahoma,dotum; 
+	text-align:center; 
+	border:#629A83 1px solid;
+	background-color:#AACDB6; 
+	white-space:nowrap;
+	text-overflow:ellipsis;
+}
+.gridBodyDefault_rowNumber{
+}
+.gridBodyDefault_rowStatus{
+}
+	
+
+.gridFooterTableDefault{ cursor:default; background-color:#95CDB6; font-weight:normal; border:0px solid #C0C0C0; text-align:center; vertical-align:middle; color:#163D13; border:#629A83 1px solid;}
+.gridFooterTRDefault{}
+.gridFooterTDDefault{
+	overflow:hidden; 
+	background-color:#95CDB6; 
+	font-family:tahoma,dotum; 
+	font-size:12px; 
+	font-weight:normal; 
+	text-align:center; 
+	vertical-align:middle; 
+	color:#163D13; 
+	border:#629A83 1px solid;
+	white-space:nowrap;
+}
+.gridFooterTDDefault_rowNumber{
+}
+.gridFooterTDDefault_rowStatus{
+}
+
+
+.focusedTd1{ background-color:#FCA73C }
+
+.w2grid_tooltip {
+	display : none;
+	position : absolute;
+	border:2px solid #7BAFE4; 
+	background-color:#ffffff;
+	cursor : default;
+	font-size : 15px;
+}
+

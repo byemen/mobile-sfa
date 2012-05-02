@@ -1,0 +1,170 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?xml-stylesheet href="/mp/css/style.css" type="text/css"?>
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:ev="http://www.w3.org/2001/xml-events"
+    xmlns:w2="http://www.inswave.com/websquare" xmlns:xf="http://www.w3.org/2002/xforms">
+    <head>
+    	<w2:buildDate />
+    	<xf:model>
+    		<xf:instance>
+    			<data xmlns="" />
+    		</xf:instance>
+    		<xf:submission id="submissionFamily" ref="request" target="resFamily"
+        		action=""
+        		method="post" mediatype="application/xml" encoding="UTF-8" instance="" replace="instance"
+        		errorHandler="" customHandler="" mode="asynchronous"
+        		processMsg="처리중입니다.">
+        		<script type="javascript" ev:event="xforms-submit-done"><![CDATA[
+            		grd_Family.setXML(WebSquare.ModelUtil.findInstanceNode("resFamily/root/dataset[@id='ds_Family']"));
+			
+    				fn_AfterSearch();
+            	]]></script>
+        	</xf:submission>
+    	</xf:model>
+    	<script type="javascript" src="/mp/js/common.js"></script>
+		<script type="javascript" src="/mp/js/WebSquare.js"></script>
+    	<script type="javascript"><![CDATA[		
+		/****************************************************************
+		* 화면로드
+		* @param  : 없음
+		* @return : 없음
+		******************************************************************/
+		btn_Family.visible(false);
+        function fn_OnLoad(){
+        	if(!gfn_IsNullVal(parent.FV_sCustSeq)){
+        		fn_Search();
+        	}
+        }        
+        /****************************************************************
+		* 조회
+		* @param  : 없음
+		* @return : 없음
+		******************************************************************/ 
+        function fn_Search(){     	
+        	var sSqlid = "mdms/mp/cust:S310102_S04_S01"; 
+        	setTitSendInfo("request", "", "", sSqlid);
+			setInputParamData("CUST_SEQ", parent.FV_sCustSeq);			
+			setSubmissison("submissionFamily");
+        }
+        /****************************************************************
+		* callback (조회)
+		* @param  : 없음
+		* @return : 없음
+		******************************************************************/
+        function fn_AfterSearch(){
+			for(var i=0; i<grd_Family.getRowCount(); i++){
+        		grd_Family.setCellData(i, 1, i+1);
+        	}
+        	
+			var nTotalCnt = grd_Family.getRowCount();
+			
+			if(gfn_IsNullVal(nTotalCnt))	nTotalCnt = 0;
+			
+			parent.tab_SubList.setLabelText(3,"관계인(" + nTotalCnt + ")");
+        }
+        /****************************************************************
+		* 등록/수정
+		* @param  : 없음
+		* @return : 없음
+		******************************************************************/             
+		function fn_Family(){
+			if(gfn_IsNullVal(parent.FV_sCustSeq)){
+				alert("고객을 먼저 지정하세요.");
+				return;
+			}	
+			       	 
+			var sSrc = "/mp/cust/S310102_P02.xml";			
+			
+			parent.FV_sCustSeq = parent.FV_sCustSeq;		
+			parent.FV_sDealerId = parent.edt_DealerId.getValue();
+			parent.FV_sMngScId = parent.edt_MngScId.getValue();
+			
+			parent.fn_Popup(sSrc,"관계인 등록",744,505,125,46);
+		}
+        ]]></script>
+    </head>
+    <body>
+    	<w2:grid autoFit="" baseNode="dataset" class="grid"
+    		evenRowBackgroundColor="#e1ebf5" focusMode="row" id="grd_Family"
+    		oddEvenColorDisplay="true" oddRowBackgroundColor="#ffffff"
+    		overflowX="hidden" overflowY="hidden"
+    		readOnly="true" repeatNode="record" resize=""
+    		style="position:absolute;height:196px;width:967px;left:3px;top:3px;">
+    		<w2:header class="gridHeaderTable"
+    			columnClass="gridHeaderTD1" id="header13" style="" width="840">
+    			<w2:row id="row28" style="">
+    				<w2:column hidden="" id="column413" inputType="text"
+    					style="height:26px" valueType="binary" width="40">
+    				</w2:column>
+    				<w2:column colSpan="" hidden="" id="column414"
+    					inputType="text" rowSpan="" style="height:26px;" value="No"
+    					valueType="binary" width="40">
+    				</w2:column>
+    				<w2:column colSpan="" hidden="" id="column415"
+    					inputType="text" rowSpan="" style="height:26px;" value="관계"
+    					valueType="binary" width="110">
+    				</w2:column>
+    				<w2:column hidden="" id="column416" inputType="text"
+    					style="height:26px;" value="성명" valueType="binary"
+    					width="120">
+    				</w2:column>
+    				<w2:column hidden="" id="column417" inputType="text"
+    					style="height:26px;" value="성별" valueType="binary"
+    					width="70">
+    				</w2:column>
+    				<w2:column hidden="" id="column418" inputType="text"
+    					style="height:26px" value="생일" valueType="binary" width="90">
+    				</w2:column>
+    				<w2:column hidden="" id="column419" inputType="text"
+    					style="height:26px" value="핸드폰" valueType="binary"
+    					width="100">
+    				</w2:column>
+    				<w2:column hidden="" id="column420" inputType="text"
+    					style="height:26px" value="메모" valueType="binary"
+    					width="436">
+    				</w2:column>
+    			</w2:row>
+    		</w2:header>
+    		<w2:gBody class="gridBodyTable" columnClass="gridBodyTD"
+    			id="gBody13" style="" width="840">
+    			<w2:row id="row29" style="">
+    				<w2:column hidden="true" id="_T_CNT"
+    					inputType="text" style="height:21px" valueType="binary"
+    					width="40">
+    				</w2:column>
+    				<w2:column hidden="" id="column426" inputType="text"
+    					style="height:21px;" value="" valueType="binary" width="60" textAlign="left">
+    				</w2:column>
+    				<w2:column hidden="" id="FAMILY_NM" inputType="text"
+    					style="height:21px;" textAlign="left" value=""
+    					valueType="binary" width="130">
+    				</w2:column>
+    				<w2:column hidden="" id="FAMILY_NAME"
+    					inputType="text" style="height:21px;" textAlign="left"
+    					value="" valueType="binary" width="90">
+    				</w2:column>
+    				<w2:column hidden="" id="SEX_NM" inputType="text"
+    					style="height:21px;" textAlign="" value=""
+    					valueType="binary" width="90">
+    				</w2:column>
+    				<w2:column hidden="" id="BIRTH_DT" inputType="text"
+    					style="height:21px" valueType="binary" width="60" dataType="date">
+    				</w2:column>
+    				<w2:column hidden="" id="HP_NO" inputType="text"
+    					style="height:21px" valueType="binary" width="150" textAlign="left">
+    				</w2:column>
+    				<w2:column hidden="" id="MEMO" inputType="text"
+    					style="height:21px" valueType="binary" width="342" textAlign="left">
+    				</w2:column>
+    			</w2:row>
+    		</w2:gBody>
+    	</w2:grid>
+    	<xf:trigger class="btn_n" id="btn_Family"
+    		style="position: absolute ;height:30px;width:94px;left:878px;top:-1px;visibility:hidden;"
+    		type="image">
+    		<xf:label>등록/수정</xf:label>
+    		<script ev:event="onclick" type="javascript"><![CDATA[ 
+    			fn_Family();
+    		]]></script>
+    	</xf:trigger>
+    </body>
+</html>

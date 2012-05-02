@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?xml-stylesheet href="/mp/css/style.css" type="text/css"?>
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:ev="http://www.w3.org/2001/xml-events"
+    xmlns:w2="http://www.inswave.com/websquare" xmlns:xf="http://www.w3.org/2002/xforms">
+    <head>
+    <script type="text/javascript" src="/mp/js/common.js"></script>
+	<script type="text/javascript" src="/mp/js/WebSquare.js"></script>		
+	<script type="text/javascript" src="/mp/js/jquery/jquery.min.js"></script>
+	<script type="text/javascript" src="/mp/js/jquery/jquery.bpopup-0.4.1.min.js"></script>
+    <script type="javascript"><![CDATA[
+       parent.fn_SpinnerHide();
+    ]]></script>
+    </head>
+    <body>
+		<xf:image id="image_uc"
+    		style="position: absolute ;height:200px;width:600px;left:165px;top:205px;"
+    		src="/mp/images/temp_msg.gif">
+    	</xf:image>
+    </body>
+</html>

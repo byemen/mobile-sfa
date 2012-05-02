@@ -1,0 +1,1137 @@
+<?xml-stylesheet href="/mp/css/frame.css" type="text/css"?>
+<html xmlns='http://www.w3.org/1999/xhtml' xmlns:ev='http://www.w3.org/2001/xml-events' xmlns:w2='http://www.inswave.com/websquare' xmlns:xf='http://www.w3.org/2002/xforms'>
+    
+    <head>
+        
+        <w2:buildDate/>
+        
+        <xf:model>
+            
+            <xf:instance>
+                
+                <data xmlns=''>               
+                
+                    <request>
+                        <root>
+                            <params>
+                                <param id='actionName' type='STRING'/>
+                                <param id='cmd' type='STRING'>execute</param>
+                                <param id='sqlid' type='STRING'>mdms/mp/eis:S210001_W01_S01</param>
+                                <param id='GV_GROUP_ID' type='STRING'>TM00000</param>
+                                <param id='GV_UP_GROUP_ID' type='STRING'>TM00000</param>
+                                <param id='GV_USER_GROUP' type='STRING'>*|TP|TPB</param>
+                                <param id='GV_USER_ID' type='STRING'>TMR081003</param>
+                                <param id='GV_BRAND_CD' type='STRING'>L</param>
+                                <param id='DEALER_ID' type='STRING'/>
+                                <param id='FR8_DATE' type='STRING'>20110301</param>
+                                <param id='FR10_DATE' type='STRING'>2011-03-01</param>
+                                <param id='TO10_DATE' type='STRING'>2011-03-04</param>
+                                <param id='TO10_DATE31' type='STRING'>2011-03-31</param>
+                                <param id='TARGET_DAY' type='STRING'>04</param>
+                                <param id='TOMONTH_DAY' type='STRING'>2011-03</param>
+                                <param id='BEFORE_TARGET' type='STRING'>02</param>
+                                <param id='BEFORE_DAY' type='STRING'>2011-03-02</param>
+                            </params>
+                        </root>
+                    </request>
+                    <resTrend>
+                        <root>
+    
+                            <params>
+        
+                                <param id='ErrorCode' type='STRING'>0</param>
+        
+                                <param id='ErrorMsg' type='STRING'>OK</param>
+    
+                            </params>
+    
+                            <dataset id='ds_DailyTrend'>
+        
+                                <colinfo id='AVAILABLE_CNT' size='22' type='DECIMAL'/>
+        
+                                <colinfo id='BF_CO_TARGET' size='40' type='STRING'/>
+        
+                                <colinfo id='BF_CO_TOTAL' size='22' type='DECIMAL'/>
+        
+                                <colinfo id='BF_RS_TARGET' size='40' type='STRING'/>
+        
+                                <colinfo id='BF_RS_TOTAL' size='22' type='DECIMAL'/>
+        
+                                <colinfo id='BOC_CNT' size='22' type='DECIMAL'/>
+        
+                                <colinfo id='BRAND_CD' size='1' type='STRING'/>
+        
+                                <colinfo id='CANCEL_DAILY_QTY' size='22' type='DECIMAL'/>
+        
+                                <colinfo id='CANCEL_TOTAL' size='22' type='DECIMAL'/>
+        
+                                <colinfo id='CO_DAILY_QTY' size='22' type='DECIMAL'/>
+        
+                                <colinfo id='CO_DAILY_TARGET' size='40' type='STRING'/>
+        
+                                <colinfo id='CO_TARGET_QTY' size='40' type='STRING'/>
+        
+                                <colinfo id='CO_TOTAL' size='22' type='DECIMAL'/>
+        
+                                <colinfo id='MODEL_CD' size='4' type='STRING'/>
+        
+                                <colinfo id='RS_DAILY_TARGET' size='40' type='STRING'/>
+        
+                                <colinfo id='RS_TOTAL' size='22' type='DECIMAL'/>
+        
+                                <colinfo id='SALES_DAILY_QTY' size='22' type='DECIMAL'/>
+        
+                                <colinfo id='SALES_TARGET_QTY' size='40' type='STRING'/>
+        
+                                <colinfo id='VARIANT_CD' size='20' type='STRING'/>
+        
+                                <colinfo id='VARIANT_NM' size='20' type='STRING'/>
+        
+                                <record>
+            
+                                    <AVAILABLE_CNT>18</AVAILABLE_CNT>
+            
+                                    <BF_CO_TARGET>0</BF_CO_TARGET>
+            
+                                    <BF_CO_TOTAL>1</BF_CO_TOTAL>
+            
+                                    <BF_RS_TARGET>0</BF_RS_TARGET>
+            
+                                    <BF_RS_TOTAL>3</BF_RS_TOTAL>
+            
+                                    <BOC_CNT>7</BOC_CNT>
+            
+                                    <BRAND_CD>L</BRAND_CD>
+            
+                                    <CANCEL_DAILY_QTY>0</CANCEL_DAILY_QTY>
+            
+                                    <CANCEL_TOTAL>0</CANCEL_TOTAL>
+            
+                                    <CO_DAILY_QTY>0</CO_DAILY_QTY>
+            
+                                    <CO_DAILY_TARGET>0</CO_DAILY_TARGET>
+            
+                                    <CO_TARGET_QTY>15</CO_TARGET_QTY>
+            
+                                    <CO_TOTAL>1</CO_TOTAL>
+            
+                                    <MODEL_CD>LS</MODEL_CD>
+            
+                                    <RS_DAILY_TARGET>0</RS_DAILY_TARGET>
+            
+                                    <RS_TOTAL>3</RS_TOTAL>
+            
+                                    <SALES_DAILY_QTY>0</SALES_DAILY_QTY>
+            
+                                    <SALES_TARGET_QTY>14</SALES_TARGET_QTY>
+            
+                                    <VARIANT_CD>USF41L-AEZGHA</VARIANT_CD>
+            
+                                    <VARIANT_NM>LS460L</VARIANT_NM>
+        
+                                </record>
+        
+                                <record>
+            
+                                    <AVAILABLE_CNT>38</AVAILABLE_CNT>
+            
+                                    <BF_CO_TARGET>0</BF_CO_TARGET>
+            
+                                    <BF_CO_TOTAL>1</BF_CO_TOTAL>
+            
+                                    <BF_RS_TARGET>0</BF_RS_TARGET>
+            
+                                    <BF_RS_TOTAL>0</BF_RS_TOTAL>
+            
+                                    <BOC_CNT>2</BOC_CNT>
+            
+                                    <BRAND_CD>L</BRAND_CD>
+            
+                                    <CANCEL_DAILY_QTY>0</CANCEL_DAILY_QTY>
+            
+                                    <CANCEL_TOTAL>0</CANCEL_TOTAL>
+            
+                                    <CO_DAILY_QTY>0</CO_DAILY_QTY>
+            
+                                    <CO_DAILY_TARGET>0</CO_DAILY_TARGET>
+            
+                                    <CO_TARGET_QTY>16</CO_TARGET_QTY>
+            
+                                    <CO_TOTAL>1</CO_TOTAL>
+            
+                                    <MODEL_CD>LS</MODEL_CD>
+            
+                                    <RS_DAILY_TARGET>0</RS_DAILY_TARGET>
+            
+                                    <RS_TOTAL>0</RS_TOTAL>
+            
+                                    <SALES_DAILY_QTY>0</SALES_DAILY_QTY>
+            
+                                    <SALES_TARGET_QTY>15</SALES_TARGET_QTY>
+            
+                                    <VARIANT_CD>USF40L-AEZGHA</VARIANT_CD>
+            
+                                    <VARIANT_NM>LS460</VARIANT_NM>
+        
+                                </record>
+        
+                                <record>
+            
+                                    <AVAILABLE_CNT>14</AVAILABLE_CNT>
+            
+                                    <BF_CO_TARGET>0</BF_CO_TARGET>
+            
+                                    <BF_CO_TOTAL>1</BF_CO_TOTAL>
+            
+                                    <BF_RS_TARGET>0</BF_RS_TARGET>
+            
+                                    <BF_RS_TOTAL>1</BF_RS_TOTAL>
+            
+                                    <BOC_CNT>1</BOC_CNT>
+            
+                                    <BRAND_CD>L</BRAND_CD>
+            
+                                    <CANCEL_DAILY_QTY>0</CANCEL_DAILY_QTY>
+            
+                                    <CANCEL_TOTAL>0</CANCEL_TOTAL>
+            
+                                    <CO_DAILY_QTY>0</CO_DAILY_QTY>
+            
+                                    <CO_DAILY_TARGET>0</CO_DAILY_TARGET>
+            
+                                    <CO_TARGET_QTY>11</CO_TARGET_QTY>
+            
+                                    <CO_TOTAL>1</CO_TOTAL>
+            
+                                    <MODEL_CD>LS</MODEL_CD>
+            
+                                    <RS_DAILY_TARGET>0</RS_DAILY_TARGET>
+            
+                                    <RS_TOTAL>1</RS_TOTAL>
+            
+                                    <SALES_DAILY_QTY>0</SALES_DAILY_QTY>
+            
+                                    <SALES_TARGET_QTY>11</SALES_TARGET_QTY>
+            
+                                    <VARIANT_CD>USF45L-AEZGHA</VARIANT_CD>
+            
+                                    <VARIANT_NM>LS460AW</VARIANT_NM>
+        
+                                </record>
+        
+                                <record>
+            
+                                    <AVAILABLE_CNT>6</AVAILABLE_CNT>
+            
+                                    <BF_CO_TARGET>0</BF_CO_TARGET>
+            
+                                    <BF_CO_TOTAL>0</BF_CO_TOTAL>
+            
+                                    <BF_RS_TARGET>0</BF_RS_TARGET>
+            
+                                    <BF_RS_TOTAL>0</BF_RS_TOTAL>
+            
+                                    <BOC_CNT>2</BOC_CNT>
+            
+                                    <BRAND_CD>L</BRAND_CD>
+            
+                                    <CANCEL_DAILY_QTY>0</CANCEL_DAILY_QTY>
+            
+                                    <CANCEL_TOTAL>0</CANCEL_TOTAL>
+            
+                                    <CO_DAILY_QTY>0</CO_DAILY_QTY>
+            
+                                    <CO_DAILY_TARGET>0</CO_DAILY_TARGET>
+            
+                                    <CO_TARGET_QTY>5</CO_TARGET_QTY>
+            
+                                    <CO_TOTAL>0</CO_TOTAL>
+            
+                                    <MODEL_CD>LS</MODEL_CD>
+            
+                                    <RS_DAILY_TARGET>0</RS_DAILY_TARGET>
+            
+                                    <RS_TOTAL>0</RS_TOTAL>
+            
+                                    <SALES_DAILY_QTY>0</SALES_DAILY_QTY>
+            
+                                    <SALES_TARGET_QTY>5</SALES_TARGET_QTY>
+            
+                                    <VARIANT_CD>UVF46L-AEXGHA</VARIANT_CD>
+            
+                                    <VARIANT_NM>LS600hL</VARIANT_NM>
+        
+                                </record>
+        
+                                <record>
+            
+                                    <AVAILABLE_CNT>0</AVAILABLE_CNT>
+            
+                                    <BF_CO_TARGET>0</BF_CO_TARGET>
+            
+                                    <BF_CO_TOTAL>0</BF_CO_TOTAL>
+            
+                                    <BF_RS_TARGET>0</BF_RS_TARGET>
+            
+                                    <BF_RS_TOTAL>0</BF_RS_TOTAL>
+            
+                                    <BOC_CNT>0</BOC_CNT>
+            
+                                    <BRAND_CD>L</BRAND_CD>
+            
+                                    <CANCEL_DAILY_QTY>0</CANCEL_DAILY_QTY>
+            
+                                    <CANCEL_TOTAL>0</CANCEL_TOTAL>
+            
+                                    <CO_DAILY_QTY>0</CO_DAILY_QTY>
+            
+                                    <CO_DAILY_TARGET>0</CO_DAILY_TARGET>
+            
+                                    <CO_TARGET_QTY>0</CO_TARGET_QTY>
+            
+                                    <CO_TOTAL>0</CO_TOTAL>
+            
+                                    <MODEL_CD>GS</MODEL_CD>
+            
+                                    <RS_DAILY_TARGET>0</RS_DAILY_TARGET>
+            
+                                    <RS_TOTAL>0</RS_TOTAL>
+            
+                                    <SALES_DAILY_QTY>0</SALES_DAILY_QTY>
+            
+                                    <SALES_TARGET_QTY>0</SALES_TARGET_QTY>
+            
+                                    <VARIANT_CD>URS190L-BEZQHA</VARIANT_CD>
+            
+                                    <VARIANT_NM>GS460</VARIANT_NM>
+        
+                                </record>
+        
+                                <record>
+            
+                                    <AVAILABLE_CNT>16</AVAILABLE_CNT>
+            
+                                    <BF_CO_TARGET>0</BF_CO_TARGET>
+            
+                                    <BF_CO_TOTAL>2</BF_CO_TOTAL>
+            
+                                    <BF_RS_TARGET>0</BF_RS_TARGET>
+            
+                                    <BF_RS_TOTAL>1</BF_RS_TOTAL>
+            
+                                    <BOC_CNT>1</BOC_CNT>
+            
+                                    <BRAND_CD>L</BRAND_CD>
+            
+                                    <CANCEL_DAILY_QTY>0</CANCEL_DAILY_QTY>
+            
+                                    <CANCEL_TOTAL>0</CANCEL_TOTAL>
+            
+                                    <CO_DAILY_QTY>0</CO_DAILY_QTY>
+            
+                                    <CO_DAILY_TARGET>0</CO_DAILY_TARGET>
+            
+                                    <CO_TARGET_QTY>2</CO_TARGET_QTY>
+            
+                                    <CO_TOTAL>2</CO_TOTAL>
+            
+                                    <MODEL_CD>GS</MODEL_CD>
+            
+                                    <RS_DAILY_TARGET>0</RS_DAILY_TARGET>
+            
+                                    <RS_TOTAL>1</RS_TOTAL>
+            
+                                    <SALES_DAILY_QTY>0</SALES_DAILY_QTY>
+            
+                                    <SALES_TARGET_QTY>2</SALES_TARGET_QTY>
+            
+                                    <VARIANT_CD>GRS191L-BETQHA</VARIANT_CD>
+            
+                                    <VARIANT_NM>GS350</VARIANT_NM>
+        
+                                </record>
+        
+                                <record>
+            
+                                    <AVAILABLE_CNT>18</AVAILABLE_CNT>
+            
+                                    <BF_CO_TARGET>0</BF_CO_TARGET>
+            
+                                    <BF_CO_TOTAL>0</BF_CO_TOTAL>
+            
+                                    <BF_RS_TARGET>0</BF_RS_TARGET>
+            
+                                    <BF_RS_TOTAL>0</BF_RS_TOTAL>
+            
+                                    <BOC_CNT>1</BOC_CNT>
+            
+                                    <BRAND_CD>L</BRAND_CD>
+            
+                                    <CANCEL_DAILY_QTY>0</CANCEL_DAILY_QTY>
+            
+                                    <CANCEL_TOTAL>0</CANCEL_TOTAL>
+            
+                                    <CO_DAILY_QTY>0</CO_DAILY_QTY>
+            
+                                    <CO_DAILY_TARGET>0</CO_DAILY_TARGET>
+            
+                                    <CO_TARGET_QTY>2</CO_TARGET_QTY>
+            
+                                    <CO_TOTAL>0</CO_TOTAL>
+            
+                                    <MODEL_CD>GS</MODEL_CD>
+            
+                                    <RS_DAILY_TARGET>0</RS_DAILY_TARGET>
+            
+                                    <RS_TOTAL>0</RS_TOTAL>
+            
+                                    <SALES_DAILY_QTY>0</SALES_DAILY_QTY>
+            
+                                    <SALES_TARGET_QTY>2</SALES_TARGET_QTY>
+            
+                                    <VARIANT_CD>GWS191L-BEXQHA</VARIANT_CD>
+            
+                                    <VARIANT_NM>GS450h</VARIANT_NM>
+        
+                                </record>
+        
+                                <record>
+            
+                                    <AVAILABLE_CNT>44</AVAILABLE_CNT>
+            
+                                    <BF_CO_TARGET>2</BF_CO_TARGET>
+            
+                                    <BF_CO_TOTAL>17</BF_CO_TOTAL>
+            
+                                    <BF_RS_TARGET>0</BF_RS_TARGET>
+            
+                                    <BF_RS_TOTAL>7</BF_RS_TOTAL>
+            
+                                    <BOC_CNT>66</BOC_CNT>
+            
+                                    <BRAND_CD>L</BRAND_CD>
+            
+                                    <CANCEL_DAILY_QTY>3</CANCEL_DAILY_QTY>
+            
+                                    <CANCEL_TOTAL>7</CANCEL_TOTAL>
+            
+                                    <CO_DAILY_QTY>1</CO_DAILY_QTY>
+            
+                                    <CO_DAILY_TARGET>12</CO_DAILY_TARGET>
+            
+                                    <CO_TARGET_QTY>260</CO_TARGET_QTY>
+            
+                                    <CO_TOTAL>18</CO_TOTAL>
+            
+                                    <MODEL_CD>ES</MODEL_CD>
+            
+                                    <RS_DAILY_TARGET>7</RS_DAILY_TARGET>
+            
+                                    <RS_TOTAL>8</RS_TOTAL>
+            
+                                    <SALES_DAILY_QTY>1</SALES_DAILY_QTY>
+            
+                                    <SALES_TARGET_QTY>220</SALES_TARGET_QTY>
+            
+                                    <VARIANT_CD>GSV40L-BETGKA</VARIANT_CD>
+            
+                                    <VARIANT_NM>ES350</VARIANT_NM>
+        
+                                </record>
+        
+                                <record>
+            
+                                    <AVAILABLE_CNT>16</AVAILABLE_CNT>
+            
+                                    <BF_CO_TARGET>0</BF_CO_TARGET>
+            
+                                    <BF_CO_TOTAL>0</BF_CO_TOTAL>
+            
+                                    <BF_RS_TARGET>0</BF_RS_TARGET>
+            
+                                    <BF_RS_TOTAL>1</BF_RS_TOTAL>
+            
+                                    <BOC_CNT>6</BOC_CNT>
+            
+                                    <BRAND_CD>L</BRAND_CD>
+            
+                                    <CANCEL_DAILY_QTY>0</CANCEL_DAILY_QTY>
+            
+                                    <CANCEL_TOTAL>0</CANCEL_TOTAL>
+            
+                                    <CO_DAILY_QTY>0</CO_DAILY_QTY>
+            
+                                    <CO_DAILY_TARGET>0</CO_DAILY_TARGET>
+            
+                                    <CO_TARGET_QTY>42</CO_TARGET_QTY>
+            
+                                    <CO_TOTAL>0</CO_TOTAL>
+            
+                                    <MODEL_CD>IS</MODEL_CD>
+            
+                                    <RS_DAILY_TARGET>0</RS_DAILY_TARGET>
+            
+                                    <RS_TOTAL>1</RS_TOTAL>
+            
+                                    <SALES_DAILY_QTY>0</SALES_DAILY_QTY>
+            
+                                    <SALES_TARGET_QTY>35</SALES_TARGET_QTY>
+            
+                                    <VARIANT_CD>GSE20L-AETLHA</VARIANT_CD>
+            
+                                    <VARIANT_NM>IS250</VARIANT_NM>
+        
+                                </record>
+        
+                                <record>
+            
+                                    <AVAILABLE_CNT>2</AVAILABLE_CNT>
+            
+                                    <BF_CO_TARGET>0</BF_CO_TARGET>
+            
+                                    <BF_CO_TOTAL>0</BF_CO_TOTAL>
+            
+                                    <BF_RS_TARGET>0</BF_RS_TARGET>
+            
+                                    <BF_RS_TOTAL>0</BF_RS_TOTAL>
+            
+                                    <BOC_CNT>1</BOC_CNT>
+            
+                                    <BRAND_CD>L</BRAND_CD>
+            
+                                    <CANCEL_DAILY_QTY>0</CANCEL_DAILY_QTY>
+            
+                                    <CANCEL_TOTAL>0</CANCEL_TOTAL>
+            
+                                    <CO_DAILY_QTY>0</CO_DAILY_QTY>
+            
+                                    <CO_DAILY_TARGET>0</CO_DAILY_TARGET>
+            
+                                    <CO_TARGET_QTY>1</CO_TARGET_QTY>
+            
+                                    <CO_TOTAL>0</CO_TOTAL>
+            
+                                    <MODEL_CD>IS</MODEL_CD>
+            
+                                    <RS_DAILY_TARGET>0</RS_DAILY_TARGET>
+            
+                                    <RS_TOTAL>0</RS_TOTAL>
+            
+                                    <SALES_DAILY_QTY>0</SALES_DAILY_QTY>
+            
+                                    <SALES_TARGET_QTY>1</SALES_TARGET_QTY>
+            
+                                    <VARIANT_CD>GSE20L-AKTLHA</VARIANT_CD>
+            
+                                    <VARIANT_NM>IS250C</VARIANT_NM>
+        
+                                </record>
+        
+                                <record>
+            
+                                    <AVAILABLE_CNT>30</AVAILABLE_CNT>
+            
+                                    <BF_CO_TARGET>0</BF_CO_TARGET>
+            
+                                    <BF_CO_TOTAL>0</BF_CO_TOTAL>
+            
+                                    <BF_RS_TARGET>0</BF_RS_TARGET>
+            
+                                    <BF_RS_TOTAL>0</BF_RS_TOTAL>
+            
+                                    <BOC_CNT>1</BOC_CNT>
+            
+                                    <BRAND_CD>L</BRAND_CD>
+            
+                                    <CANCEL_DAILY_QTY>0</CANCEL_DAILY_QTY>
+            
+                                    <CANCEL_TOTAL>0</CANCEL_TOTAL>
+            
+                                    <CO_DAILY_QTY>0</CO_DAILY_QTY>
+            
+                                    <CO_DAILY_TARGET>0</CO_DAILY_TARGET>
+            
+                                    <CO_TARGET_QTY>2</CO_TARGET_QTY>
+            
+                                    <CO_TOTAL>0</CO_TOTAL>
+            
+                                    <MODEL_CD>IS</MODEL_CD>
+            
+                                    <RS_DAILY_TARGET>0</RS_DAILY_TARGET>
+            
+                                    <RS_TOTAL>0</RS_TOTAL>
+            
+                                    <SALES_DAILY_QTY>0</SALES_DAILY_QTY>
+            
+                                    <SALES_TARGET_QTY>2</SALES_TARGET_QTY>
+            
+                                    <VARIANT_CD>USE20L-FEZRHA</VARIANT_CD>
+            
+                                    <VARIANT_NM>IS-F</VARIANT_NM>
+        
+                                </record>
+        
+                                <record>
+            
+                                    <AVAILABLE_CNT>10</AVAILABLE_CNT>
+            
+                                    <BF_CO_TARGET>0</BF_CO_TARGET>
+            
+                                    <BF_CO_TOTAL>2</BF_CO_TOTAL>
+            
+                                    <BF_RS_TARGET>0</BF_RS_TARGET>
+            
+                                    <BF_RS_TOTAL>0</BF_RS_TOTAL>
+            
+                                    <BOC_CNT>5</BOC_CNT>
+            
+                                    <BRAND_CD>L</BRAND_CD>
+            
+                                    <CANCEL_DAILY_QTY>0</CANCEL_DAILY_QTY>
+            
+                                    <CANCEL_TOTAL>0</CANCEL_TOTAL>
+            
+                                    <CO_DAILY_QTY>0</CO_DAILY_QTY>
+            
+                                    <CO_DAILY_TARGET>0</CO_DAILY_TARGET>
+            
+                                    <CO_TARGET_QTY>3</CO_TARGET_QTY>
+            
+                                    <CO_TOTAL>2</CO_TOTAL>
+            
+                                    <MODEL_CD>RX</MODEL_CD>
+            
+                                    <RS_DAILY_TARGET>0</RS_DAILY_TARGET>
+            
+                                    <RS_TOTAL>0</RS_TOTAL>
+            
+                                    <SALES_DAILY_QTY>0</SALES_DAILY_QTY>
+            
+                                    <SALES_TARGET_QTY>3</SALES_TARGET_QTY>
+            
+                                    <VARIANT_CD>GYL15L-AWXGKA</VARIANT_CD>
+            
+                                    <VARIANT_NM>RX450h</VARIANT_NM>
+        
+                                </record>
+        
+                                <record>
+            
+                                    <AVAILABLE_CNT>20</AVAILABLE_CNT>
+            
+                                    <BF_CO_TARGET>0</BF_CO_TARGET>
+            
+                                    <BF_CO_TOTAL>2</BF_CO_TOTAL>
+            
+                                    <BF_RS_TARGET>0</BF_RS_TARGET>
+            
+                                    <BF_RS_TOTAL>1</BF_RS_TOTAL>
+            
+                                    <BOC_CNT>6</BOC_CNT>
+            
+                                    <BRAND_CD>L</BRAND_CD>
+            
+                                    <CANCEL_DAILY_QTY>0</CANCEL_DAILY_QTY>
+            
+                                    <CANCEL_TOTAL>0</CANCEL_TOTAL>
+            
+                                    <CO_DAILY_QTY>0</CO_DAILY_QTY>
+            
+                                    <CO_DAILY_TARGET>0</CO_DAILY_TARGET>
+            
+                                    <CO_TARGET_QTY>11</CO_TARGET_QTY>
+            
+                                    <CO_TOTAL>2</CO_TOTAL>
+            
+                                    <MODEL_CD>RX</MODEL_CD>
+            
+                                    <RS_DAILY_TARGET>0</RS_DAILY_TARGET>
+            
+                                    <RS_TOTAL>2</RS_TOTAL>
+            
+                                    <SALES_DAILY_QTY>1</SALES_DAILY_QTY>
+            
+                                    <SALES_TARGET_QTY>10</SALES_TARGET_QTY>
+            
+                                    <VARIANT_CD>GGL15L-AWTGKA</VARIANT_CD>
+            
+                                    <VARIANT_NM>RX350(N)</VARIANT_NM>
+        
+                                </record>
+        
+                                <record>
+            
+                                    <AVAILABLE_CNT>140</AVAILABLE_CNT>
+            
+                                    <BF_CO_TARGET>4</BF_CO_TARGET>
+            
+                                    <BF_CO_TOTAL>18</BF_CO_TOTAL>
+            
+                                    <BF_RS_TARGET>2</BF_RS_TARGET>
+            
+                                    <BF_RS_TOTAL>11</BF_RS_TOTAL>
+            
+                                    <BOC_CNT>76</BOC_CNT>
+            
+                                    <BRAND_CD>L</BRAND_CD>
+            
+                                    <CANCEL_DAILY_QTY>3</CANCEL_DAILY_QTY>
+            
+                                    <CANCEL_TOTAL>11</CANCEL_TOTAL>
+            
+                                    <CO_DAILY_QTY>1</CO_DAILY_QTY>
+            
+                                    <CO_DAILY_TARGET>10</CO_DAILY_TARGET>
+            
+                                    <CO_TARGET_QTY>230</CO_TARGET_QTY>
+            
+                                    <CO_TOTAL>19</CO_TOTAL>
+            
+                                    <MODEL_CD>CT</MODEL_CD>
+            
+                                    <RS_DAILY_TARGET>6</RS_DAILY_TARGET>
+            
+                                    <RS_TOTAL>13</RS_TOTAL>
+            
+                                    <SALES_DAILY_QTY>2</SALES_DAILY_QTY>
+            
+                                    <SALES_TARGET_QTY>200</SALES_TARGET_QTY>
+            
+                                    <VARIANT_CD>ZWA10L-AHXBBA</VARIANT_CD>
+            
+                                    <VARIANT_NM>CT200h</VARIANT_NM>
+        
+                                </record>
+    
+                            </dataset>
+
+                        </root>
+                    </resTrend>
+                </data>
+            
+            </xf:instance>
+            
+            <xf:submission id='submissionTrend' ref='request' target='resTrend' action='' method='post' mediatype='application/xml' encoding='UTF-8' instance='' replace='instance' errorHandler='' customHandler='' mode='asynchronous' processMsg=''>
+                
+                <script type='javascript' ev:event='xforms-submit-done'><![CDATA[
+                    grd_DailyTrend.setXML(WebSquare.ModelUtil.findInstanceNode("resTrend/root/dataset[@id='ds_DailyTrend']"));
+                    grd_DailyTrend.setHeaderValue( "column01", "Result of "+parent.yesterday );
+//                    document.getElementById("column01").value = "Result of "+parent.yesterday;
+                ]]></script>
+            
+            </xf:submission>
+        
+        </xf:model>
+        
+        <script type='javascript' src='/mp/js/common.js'/>
+        
+        <script type='javascript' src='/mp/js/WebSquare.js'/>
+        
+        <script type='javascript'><![CDATA[
+
+           var FV_sSvcNm = parent.FV_SvcNm;
+           var FV_sUpGroupId = GV_UP_GROUP_ID;
+	        var FV_sDealerId = parent.FV_DealerId;    //GV_GROUP_ID;
+	        var FV_sToMonthDay = gfn_GetDate(0,0,0).substring(0,7);
+	        var FV_sBeMonth = gfn_GetDate(0,-1,0,"FM").substring(0,7);
+	        var FV_sTargetDay = gfn_GetDate(0,0,0).substring(8);
+	        var FV_sToday = gfn_GetDate(0,0,0);
+	        var FV_BEFORE_TARGET = gfn_GetDate(0,0,0,"FW").substring(8);
+	        var FV_BEFORE_DAY = gfn_GetDate(0,0,0,"FW");
+	        var FV_frm1 = false;
+	        var FV_frm2 = false;
+	        var FV_frm3 = false;
+	        var FV_frm4 = false;
+
+        /*
+        if(GV_UP_GROUP_ID != "TM00000" && FV_sDealerId.length == 0){
+            FV_sDealerId = GV_UP_GROUP_ID;
+        }
+		*/
+        function fn_Search(){
+        	alert("123");
+        	grd_DailyTrend.setXML(WebSquare.ModelUtil.findInstanceNode("resTrend/root/dataset[@id='ds_DailyTrend']"));
+            alert("12");
+            grd_DailyTrend.setHeaderValue( "column01", "Result of "+parent.yesterday );
+        	alert("1");
+        	return;
+            // To show Loading Image
+            parent.fn_SpinnerShow();
+            setTimeout("parent.fn_SpinnerHide()", 3000);
+            ifrm_1.setSrc("/mp/FusionCharts/Code/S210001_C01.jsp");    
+            ifrm_2.setSrc("/mp/FusionCharts/Code/S210001_C02.jsp");    
+            ifrm_3.setSrc("/mp/FusionCharts/Code/S210001_C03.jsp");    
+            ifrm_4.setSrc("/mp/FusionCharts/Code/S210001_C04.jsp");    
+            var actionNm = "";
+            if(FV_sSvcNm == "T"){
+                actionNm = "TOYOTAAction";
+            }
+            setTitSendInfo("request", actionNm, "", "mdms/mp/eis:S210001_W01_S01");
+               setInputParamData("DEALER_ID", FV_sDealerId);
+               setInputParamData("FR8_DATE", gfn_GetDate(0,0,0,"FM").replaceAll("-",""));
+               setInputParamData("FR10_DATE", gfn_GetDate(0,0,0,"FM")); 
+               setInputParamData("TO10_DATE", gfn_GetDate(0,0,0));
+               setInputParamData("TO10_DATE31", gfn_GetDate(0,0,0,"TM")); 
+               setInputParamData("TARGET_DAY", FV_sTargetDay);
+               setInputParamData("TOMONTH_DAY", FV_sToMonthDay);          
+               setInputParamData("BEFORE_TARGET", "02");          
+               setInputParamData("BEFORE_DAY", "2011-03-02");          
+               setSubmissison("submissionTrend");
+           }
+           /****************************************************************
+        * 팝업 닫기
+        * @param  : flag    팝업 닫은 후 재조회 여부
+        * @return : 없음
+        ******************************************************************/
+        function fn_PopupClose(){
+            gfn_PopupClose();
+        }
+
+        fn_Search();
+
+        /****************************************************************
+        * 로딩 이미지 hiding
+        * @param  : 각 frame id
+        * @return : 없음
+        ******************************************************************/
+           function fn_hideLoading(f_id){
+               switch(f_id){
+            case "1":
+                FV_frm1 = true;
+                break;
+            case "2":
+                FV_frm2 = true;
+                break;
+            case "3":
+                FV_frm3 = true;
+                break;
+            case "4":
+                FV_frm4 = true;
+                break;
+            }
+            if(FV_frm1 == true&&FV_frm2==true&&FV_frm3==true&&FV_frm4==true) {
+                  parent.fn_SpinnerHide();
+              }
+           }
+        ]]></script>
+    
+    </head>
+    
+    <body>
+        
+        <xf:image id='image2' style='position: absolute ;height:384px;width:514px;left:-1px;top:26px;' src='/mp/images/shape_1.png'>
+        </xf:image>
+        
+        <w2:grid baseNode='dataset' repeatNode='record' id='grd_DailyTrend' style='position: absolute;left:13px;top:37px;width:485px;height:357px;' class='grid' resize='' overflowX='hidden' overflowY='hidden' valueNode='' readOnly='true'>
+            
+            <w2:header id='header1' style='' class='gridHeaderTable' columnClass='gridHeaderTD'>
+                
+                <w2:row id='row1' style=''>
+                    
+                    <w2:column id='column01' height='18' hidden='' inputType='text' width='154' valueType='binary' colSpan='4' rowSpan='' value='Result of Yesterday'>
+                    </w2:column>
+                    
+                    <w2:column id='column03' height='18' hidden='' width='58' inputType='text' valueType='binary' value='Model' colSpan='' rowSpan='2'>
+                    </w2:column>
+                    
+                    <w2:column id='column7' height='18' hidden='' inputType='text' width='117' valueType='binary' colSpan='3' rowSpan='' value='Sales'>
+                    </w2:column>
+                    
+                    <w2:column id='column4' height='18' hidden='' inputType='text' width='142' valueType='binary' colSpan='4' rowSpan='' value='Contract'>
+                    </w2:column>
+                    
+                    <w2:column id='column116' height='18' hidden='' inputType='text' width='44' valueType='binary' colSpan='' rowSpan='' value='Cancel'>
+                    </w2:column>
+                    
+                    <w2:column id='column1' height='18' hidden='' width='34' inputType='text' valueType='binary' value='STK' colSpan='' rowSpan='2'>
+                    </w2:column>
+                
+                </w2:row>
+                
+                <w2:row id='row4' style=''>
+                    
+                    <w2:column id='column10' style='color:#F0B500;' height='18' hidden='' width='40' inputType='text' valueType='binary' value='Sales'>
+                    </w2:column>
+                    
+                    <w2:column id='column87' height='18' hidden='' inputType='text' width='29' valueType='binary' value='P.tgt'>
+                    </w2:column>
+                    
+                    <w2:column id='column92' style='color:#F0B500;' height='18' hidden='' inputType='text' width='34' valueType='binary' value='Cont'>
+                    </w2:column>
+                    
+                    <w2:column id='column102' height='18' hidden='' inputType='text' width='31' valueType='binary' value='P.tgt'>
+                    </w2:column>
+                    
+                    <w2:column id='column11' style='color:#F0B500;' height='18' hidden='' width='29' inputType='text' valueType='binary' value='Mon'>
+                    </w2:column>
+                    
+                    <w2:column id='column14' height='18' hidden='' inputType='text' width='33' valueType='binary' value='M.tgt'>
+                    </w2:column>
+                    
+                    <w2:column id='column18' style='color:#F0B500;' height='18' hidden='' inputType='text' width='30' valueType='binary' value='Day'>
+                    </w2:column>
+                    
+                    <w2:column id='column010' style='color:#F0B500;' height='18' hidden='' width='30' inputType='text' valueType='binary' value='Mon'>
+                    </w2:column>
+                    
+                    <w2:column id='column870' height='18' hidden='' inputType='text' width='32' valueType='binary' value='M.tgt'>
+                    </w2:column>
+                    
+                    <w2:column id='column920' style='color:#F0B500;' height='18' hidden='' inputType='text' width='30' valueType='binary' value='Day'>
+                    </w2:column>
+                    
+                    <w2:column id='column1020' height='18' hidden='' inputType='text' width='30' valueType='binary' value='BOC'>
+                    </w2:column>
+                    
+                    <w2:column id='column117' height='18' hidden='' inputType='text' width='-1' valueType='binary' value='Month'>
+                    </w2:column>
+                
+                </w2:row>
+            
+            </w2:header>
+            
+            <w2:gBody id='gBody1' style='' class='gridBodyTable' columnClass='gridBodyTD'>
+                
+                <w2:row id='row2' style=''>
+                    
+                    <w2:column id='BF_RS_TOTAL' style='color:#F0B500;' height='18' hidden='' inputType='text' width='40' valueType='binary' textAlign='right'>
+                    </w2:column>
+                    
+                    <w2:column id='BF_RS_TARGET' height='18' hidden='' inputType='text' width='19' valueType='binary' textAlign='right'>
+                    </w2:column>
+                    
+                    <w2:column id='BF_CO_TOTAL' style='color:#F0B500;' height='18' hidden='' inputType='text' width='19' valueType='binary' textAlign='right'>
+                    </w2:column>
+                    
+                    <w2:column id='BF_CO_TARGET' height='18' hidden='' inputType='text' width='26' valueType='binary' textAlign='right'>
+                    </w2:column>
+                    
+                    <w2:column id='VARIANT_NM' height='18' hidden='' width='0' inputType='text' valueType='binary' value='' textAlign='center'>
+                    </w2:column>
+                    
+                    <w2:column id='RS_TOTAL' style='color:#F0B500;' height='18' hidden='' inputType='text' width='29' valueType='binary' value='0' textAlign='right'>
+                    </w2:column>
+                    
+                    <w2:column id='SALES_TARGET_QTY' height='18' hidden='' inputType='text' width='23' valueType='binary' textAlign='right'>
+                    </w2:column>
+                    
+                    <w2:column id='SALES_DAILY_QTY' style='color:#F0B500;' height='18' hidden='' inputType='text' width='15' valueType='binary' textAlign='right'>
+                    </w2:column>
+                    
+                    <w2:column id='CO_TOTAL' style='color:#F0B500;' height='18' hidden='' inputType='text' width='30' valueType='binary' textAlign='right'>
+                    </w2:column>
+                    
+                    <w2:column id='CO_TARGET_QTY' height='18' hidden='' inputType='text' width='22' valueType='binary' textAlign='right'>
+                    </w2:column>
+                    
+                    <w2:column id='CO_DAILY_QTY' style='color:#F0B500;' height='18' hidden='' inputType='text' width='15' valueType='binary' textAlign='right'>
+                    </w2:column>
+                    
+                    <w2:column id='BOC_CNT' height='18' hidden='' inputType='text' width='25' valueType='binary' textAlign='right'>
+                    </w2:column>
+                    
+                    <w2:column id='CANCEL_TOTAL' height='18' hidden='' inputType='text' width='-1' valueType='binary' textAlign='right'>
+                    </w2:column>
+                    
+                    <w2:column id='AVAILABLE_CNT' height='18' hidden='' inputType='text' width='31' valueType='binary' textAlign='right'>
+                    </w2:column>
+                
+                </w2:row>
+            
+            </w2:gBody>
+            
+            <w2:footer id='footer1' style='' columnClass='gridFooterTD' class='gridFooterTable'>
+                
+                <w2:row id='row3' style=''>
+                    
+                    <w2:column id='column600' style='color:#F0B500;' height='18' hidden='' inputType='expression' width='65' valueType='binary' value='0' expression="sum('BF_RS_TOTAL')" textAlign='right'>
+                    </w2:column>
+                    
+                    <w2:column id='column890' height='18' hidden='' inputType='expression' width='54' valueType='binary' value='0' expression="sum('BF_RS_TARGET')" textAlign='right'>
+                    </w2:column>
+                    
+                    <w2:column id='column940' style='color:#F0B500;' height='18' hidden='' inputType='expression' width='59' valueType='binary' value='0' expression="sum('BF_CO_TOTAL')" textAlign='right'>
+                    </w2:column>
+
+                    
+                    <w2:column id='column1090' sheight='18' hidden='' inputType='expression' width='66' valueType='binary' value='0' expression="sum('BF_CO_TARGET')" textAlign='right'>
+                    </w2:column>
+                    
+                    <w2:column id='column3' height='18' hidden='' width='20' inputType='text' valueType='binary' value='SUM'>
+                    </w2:column>
+                    
+                    <w2:column id='column9' style='color:#F0B500;' height='18' hidden='' inputType='expression' width='57' valueType='binary' value='0' expression="sum('RS_TOTAL')" textAlign='right'>
+                    </w2:column>
+                    
+                    <w2:column id='column16' height='18' hidden='' inputType='expression' width='58' valueType='binary' value='0' expression="sum('SALES_TARGET_QTY')" textAlign='right'>
+                    </w2:column>
+                    
+                    <w2:column id='column20' style='color:#F0B500;' height='18' hidden='' inputType='expression' width='55' valueType='binary' value='0' expression="sum('SALES_DAILY_QTY')" textAlign='right'>
+                    </w2:column>
+                    
+                    <w2:column id='column6' style='color:#F0B500;' height='18' hidden='' inputType='expression' width='55' valueType='binary' value='0' expression="sum('CO_TOTAL')" textAlign='right'>
+                    </w2:column>
+                    
+                    <w2:column id='column89' height='18' hidden='' inputType='expression' width='57' valueType='binary' value='0' expression="sum('CO_TARGET_QTY')" textAlign='right'>
+                    </w2:column>
+                    
+                    <w2:column id='column94' style='color:#F0B500;' height='18' hidden='' inputType='expression' width='55' valueType='binary' value='0' expression="sum('CO_DAILY_QTY')" textAlign='right'>
+                    </w2:column>
+
+                    
+                    <w2:column id='column109' sheight='18' hidden='' inputType='expression' width='65' valueType='binary' value='0' expression="sum('BOC_CNT')" textAlign='right'>
+                    </w2:column>
+                    
+                    <w2:column id='column119' height='18' hidden='' inputType='expression' width='24' valueType='binary' value='0' expression="sum('CANCEL_TOTAL')" textAlign='right'>
+                    </w2:column>
+                    
+                    <w2:column id='column124' height='18' hidden='' inputType='expression' width='71' valueType='binary' value='0' expression="sum('AVAILABLE_CNT')" textAlign='right'>
+                    </w2:column>
+                
+                </w2:row>
+                
+                <w2:row id='row5' style=''>
+                    
+                    <w2:column id='column250' height='18' hidden='' width='69' inputType='expression' valueType='binary' colSpan='2' rowSpan='' value='0%' expression="if(sum('BF_RS_TARGET')==0) '0%'; else ((sum('BF_RS_TOTAL')/sum('BF_RS_TARGET')) * 100).toFixed(1) + '%';">
+                    </w2:column>
+                    
+                    <w2:column id='column1050' height='18' hidden='' inputType='expression' width='65' valueType='binary' colSpan='2' rowSpan='' expression="if(sum('BF_CO_TARGET')==0) '0%'; else ((sum('BF_CO_TOTAL')/sum('BF_CO_TARGET')) * 100).toFixed(1) + '%';">
+                    </w2:column>
+                    
+                    <w2:column id='column30' height='18' hidden='' width='20' inputType='text' valueType='binary' value='A/R'>
+                    </w2:column>
+                    
+                    <w2:column id='column29' height='18' hidden='' width='97' inputType='expression' valueType='binary' colSpan='3' rowSpan='' value='0%' expression="if(sum('SALES_TARGET_QTY')==0) '0%'; else ((sum('RS_TOTAL')/sum('SALES_TARGET_QTY')) * 100).toFixed(1) + '%';">
+                    </w2:column>
+                    
+                    <w2:column id='column25' height='18' hidden='' width='97' inputType='expression' valueType='binary' colSpan='3' rowSpan='' value='0%' expression="if(sum('CO_TARGET_QTY')==0) '0%'; else ((sum('CO_TOTAL')/sum('CO_TARGET_QTY')) * 100).toFixed(1) + '%';">
+                    </w2:column>
+                    
+                    <w2:column id='column105' height='18' hidden='' inputType='expression' width='65' valueType='binary' expression="sum('BOC_CNT')" textAlign='right'>
+                    </w2:column>
+                    
+                    <w2:column id='column120' height='18' hidden='' inputType='expression' width='24' valueType='binary' expression="sum('CANCEL_TOTAL')" textAlign='right'>
+                    </w2:column>
+                    
+                    <w2:column id='column125' height='18' hidden='' inputType='expression' width='71' valueType='binary' expression="sum('AVAILABLE_CNT')" textAlign='right'>
+                    </w2:column>
+                
+                </w2:row>
+            
+            </w2:footer>
+        
+        </w2:grid>
+        
+        <xf:image id='image15' src='/mp/images/shape_2.png' style='position: absolute ;height:202px;width:514px;left:506px;top:25px;'>
+        </xf:image>
+        
+        <xf:image id='image17' src='/mp/images/shape_2.png' style='position: absolute ;height:167px;width:514px;left:506px;top:242px;'>
+        </xf:image>
+        
+        <xf:image id='image18' src='/mp/images/shape_3.png' style='position: absolute ;height:167px;width:514px;left:-1px;top:425px;'>
+        </xf:image>
+        
+        <xf:image id='image19' src='/mp/images/shape_3.png' style='position: absolute ;height:167px;width:514px;left:506px;top:425px;'>
+        </xf:image>
+        
+        <w2:textbox class='sub_title_b' id='output30' label='Daily Trend' style='position: absolute ;height:20px;width:204px;left:20px;top:11px;'>
+        </w2:textbox>
+        
+        <w2:textbox id='sub_title' style='position: absolute ;height:20px;width:204px;left:20px;top:10px;' class='sub_title' label='Daily Trend'>
+        </w2:textbox>
+        
+        <xf:output class='sub_title_b' id='output31' label='' style='position: absolute ;height:20px;width:204px;left:524px;top:11px;'>
+            
+            <xf:label>Monthly Sales Progrese</xf:label>
+        
+        </xf:output>
+        
+        <xf:output class='sub_title' id='output32' label='' style='position: absolute ;height:20px;width:204px;left:524px;top:11px;'>
+            
+            <xf:label>Monthly Sales Progress</xf:label>
+        
+        </xf:output>
+        
+        <xf:output id='output35' style='position: absolute ;height:20px;width:204px;left:524px;top:410px;' class='sub_title_b' label=''>
+            
+            <xf:label>Test Drive</xf:label>
+        
+        </xf:output>
+        
+        <xf:output id='output36' style='position: absolute ;height:20px;width:204px;left:524px;top:410px;' class='sub_title' label=''>
+            
+            <xf:label>Test Drive</xf:label>
+        
+        </xf:output>
+        
+        <xf:output id='output37' style='position: absolute ;height:20px;width:204px;left:20px;top:409px;' class='sub_title_b' label=''>
+            
+            <xf:label>Showroom Traffic (Visitor)</xf:label>
+        
+        </xf:output>
+        
+        <xf:output id='output38' style='position: absolute ;height:20px;width:204px;left:20px;top:409px;' class='sub_title' label=''>
+            
+            <xf:label>Showroom Traffic (Visitor)</xf:label>
+        
+        </xf:output>
+        
+        <w2:iframe id='ifrm_1' style='position: absolute ;left:519px;top:38px;width:488px;height:176px;' src='' scrolling='no'>
+        </w2:iframe>
+        
+        <w2:iframe id='ifrm_2' src='' style='position: absolute ;left:519px;top:253px;width:488px;height:144px;' scrolling='no'>
+        </w2:iframe>
+        
+        <w2:iframe id='ifrm_4' scrolling='no' src='' style='position: absolute ;left:519px;top:437px;width:488px;height:144px;'>
+        </w2:iframe>
+        
+        <w2:iframe id='ifrm_3' scrolling='no' src='' style='position: absolute ;left:12px;top:437px;width:488px;height:144px;'>
+        </w2:iframe>
+        
+        <xf:image id='btn_P01' style='position: absolute ;left:981px;top:5px;width: 32px;height: 24px;;cursor:pointer' src='/mp/images/bt_pop_01.png' localeRef=''>
+            
+            <script type='javascript' ev:event='onclick'><![CDATA[
+                gfn_OpenPopup("/mp/eis/S210001_P01.xml","Annual Sales Trend vs Last Year",831,579,65,10);
+            ]]></script>
+        
+        </xf:image>
+        
+        <xf:output class='sub_title_b' id='output48' label='' style='position: absolute ;height:20px;width:204px;left:524px;top:226px;'>
+            
+            <xf:label>Monthly Contract Progrese</xf:label>
+        
+        </xf:output>
+        
+        <xf:output class='sub_title' id='output47' label='' style='position: absolute ;height:20px;width:204px;left:524px;top:226px;'>
+            
+            <xf:label>Monthly Contract Progress</xf:label>
+        
+        </xf:output>
+        
+        <xf:image id='btn_P02' localeRef='' src='/mp/images/bt_pop_01.png' style='position: absolute ;cursor:pointer;height: 24px;width: 32px;left:981px;top:222px;'>
+            
+            <script ev:event='onclick' type='javascript'><![CDATA[
+                gfn_OpenPopup("/mp/eis/S210001_P02.xml","Annual Contract Trend vs Last Year",831,579,65,10);
+            ]]></script>
+        
+        </xf:image>
+        
+        <xf:image id='btn_P03' localeRef='' src='/mp/images/bt_pop_01.png' style='position: absolute ;left:474px;top:406px;width: 32px;height: 24px;;cursor:pointer'>
+            
+            <script ev:event='onclick' type='javascript'><![CDATA[
+                gfn_OpenPopup("/mp/eis/S210001_P03.xml","Showroom Traffic(Visitor)",831,579,65,10);
+            ]]></script>
+        
+        </xf:image>
+        
+        <xf:image id='btn_P04' localeRef='' src='/mp/images/bt_pop_01.png' style='position: absolute ;cursor:pointer;height: 24px;width: 32px;left:981px;top:406px;'>
+            
+            <script ev:event='onclick' type='javascript'><![CDATA[
+                gfn_OpenPopup("/mp/eis/S210001_P04.xml","Test Drive",828,578,65,10);
+            ]]></script>
+        
+        </xf:image>
+    
+    </body>
+
+</html>

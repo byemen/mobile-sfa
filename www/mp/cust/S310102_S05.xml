@@ -1,0 +1,211 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?xml-stylesheet href="/mp/css/style.css" type="text/css"?>
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:ev="http://www.w3.org/2001/xml-events"
+    xmlns:w2="http://www.inswave.com/websquare" xmlns:xf="http://www.w3.org/2002/xforms">
+    <head>
+    	<w2:buildDate />
+    	<xf:model>
+    		<xf:instance>
+    			<data xmlns="" />
+    		</xf:instance>
+    		<xf:submission id="submissionMemo" ref="request" target="resMemo"
+        		action=""
+        		method="post" mediatype="application/xml" encoding="UTF-8" instance="" replace="instance"
+        		errorHandler="" customHandler="" mode="asynchronous"
+        		processMsg="처리중입니다.">
+        		<script type="javascript" ev:event="xforms-submit-done"><![CDATA[            			
+            		grd_Memo.setXML(WebSquare.ModelUtil.findInstanceNode("resMemo/root/dataset[@id='ds_Memo']"));
+			
+    				fn_AfterSearch();
+            	]]></script>
+        	</xf:submission>
+    	</xf:model>
+    	<script type="javascript" src="/mp/js/common.js"></script>
+		<script type="javascript" src="/mp/js/WebSquare.js"></script>
+    	<script type="javascript"><![CDATA[
+		/****************************************************************
+		* 화면로드
+		* @param  : 없음
+		* @return : 없음
+		******************************************************************/
+        function fn_OnLoad(){
+        	if(!gfn_IsNullVal(parent.FV_sCustSeq)){
+        		fn_Search();
+        	}
+        }        
+        /****************************************************************
+		* 조회
+		* @param  : 없음
+		* @return : 없음
+		******************************************************************/ 
+        function fn_Search(){
+        	
+        	var sSqlid = "mdms/mp/cust:S310102_S05_S01";        	
+        	setTitSendInfo("request", "", "", sSqlid);
+			setInputParamData("CUST_SEQ", parent.FV_sCustSeq);
+			setSubmissison("submissionMemo");
+        }
+        /****************************************************************
+		* callback (조회)
+		* @param  : 없음
+		* @return : 없음
+		******************************************************************/
+        function fn_AfterSearch(){
+			for(var i=0; i<grd_Memo.getRowCount(); i++){
+        		grd_Memo.setCellData(i, 3, i+1);
+        	}
+        	
+			var nTotalCnt = grd_Memo.getRowCount();
+			
+			if(gfn_IsNullVal(nTotalCnt))	nTotalCnt = 0;
+			
+			parent.tab_SubList.setLabelText(4,"메모(" + nTotalCnt + ")");
+        }        
+		/****************************************************************
+		* 신규등록
+		* @param  : 없음
+		* @return : 없음
+		******************************************************************/        
+		function fn_NewMemo(){
+			var sCustSeq = parent.edt_CustSeq.getValue();
+			
+			if(gfn_IsNullVal(sCustSeq)){
+				alert("고객을 먼저 지정하세요.");
+				return;
+			}
+				
+			var sSrc = "/mp/cust/S310102_P03.xml";
+			
+			parent.FV_sFlag = "I";
+			parent.FV_sCustSeq = sCustSeq;
+			parent.FV_sDealerId = parent.edt_DealerId.getValue();
+			parent.FV_sMngScId = parent.edt_MngScId.getValue();
+			
+			parent.fn_Popup(sSrc,"메모 등록",614,289,190,50);
+		}       
+		/****************************************************************
+		* 수정
+		* @param  : 없음
+		* @return : 없음
+		******************************************************************/  
+		function fn_ModifyMemo(row){
+			var sRegId = grd_Memo.getCellData(row,9);
+			
+			if(sRegId != GV_USER_ID){
+				alert("다른 사람이 등록한 메모는 수정/삭제할 수 없습니다.");
+				return;
+			}
+					
+			var sSrc = "/mp/cust/S310102_P03.xml";
+			
+			parent.FV_sFlag = "U";
+			parent.FV_sCustSeq = grd_Memo.getCellData(row,1);
+			parent.FV_sSeq = grd_Memo.getCellData(row,2);
+			parent.FV_sDealerId = parent.edt_DealerId.getValue();
+			parent.FV_sMngScId = parent.edt_MngScId.getValue();
+			
+			parent.fn_Popup(sSrc,"메모 수정",614,289,190,50);
+		}  
+        ]]></script>
+    </head>
+    <body>
+    	<w2:grid autoFit="" baseNode="dataset" class="grid"
+    		evenRowBackgroundColor="#e1ebf5" focusMode="row" id="grd_Memo"
+    		oddEvenColorDisplay="true" oddRowBackgroundColor="#ffffff"
+    		overflowX="hidden" overflowY="hidden"
+    		readOnly="true" repeatNode="record" resize=""
+    		style="position:absolute;height:196px;width:967px;left:3px;top:28px;">
+    		<w2:header class="gridHeaderTable"
+    			columnClass="gridHeaderTD1" id="header13" style="" width="840">
+    			<w2:row id="row28" style="">
+    				<w2:column hidden="" id="column413" inputType="text"
+    					style="height:26px" valueType="binary" width="40">
+    				</w2:column>
+    				<w2:column id="column429" style="height:26px"
+    					hidden="" inputType="text" width="70" valueType="binary">
+    				</w2:column>
+    				<w2:column id="column431" style="height:26px"
+    					hidden="" inputType="text" width="70" valueType="binary">
+    				</w2:column>
+    				<w2:column colSpan="" hidden="" id="column414"
+    					inputType="text" rowSpan="" style="height:26px;" value="No"
+    					valueType="binary" width="40">
+    				</w2:column>
+    				<w2:column colSpan="" hidden="" id="column415"
+    					inputType="text" rowSpan="" style="height:26px;" value="등록일시"
+    					valueType="binary" width="150">
+    				</w2:column>
+    				<w2:column hidden="" id="column416" inputType="text"
+    					style="height:26px;" value="메모구분" valueType="binary"
+    					width="100">
+    				</w2:column>
+    				<w2:column hidden="" id="column417" inputType="text"
+    					style="height:26px;" value="등록자" valueType="binary"
+    					width="110">
+    				</w2:column>
+    				<w2:column hidden="" id="column420" inputType="text"
+    					style="height:26px" value="메모내용" valueType="binary"
+    					width="486">
+    				</w2:column>
+    				<w2:column hidden="" id="column421" inputType="text"
+    					style="height:26px" value="공개여부" valueType="binary"
+    					width="80">
+    				</w2:column>
+    				<w2:column id="column427" style="height:26px"
+    					hidden="" inputType="text" width="70" valueType="binary">
+    				</w2:column>
+    			</w2:row>
+    		</w2:header>
+    		<w2:gBody class="gridBodyTable" columnClass="gridBodyTD"
+    			id="gBody13" style="" width="840">
+    			<w2:row id="row29" style="">
+    				<w2:column hidden="true" id="_T_CNT" inputType="text"
+    					style="height:21px" valueType="binary" width="40">
+    				</w2:column>
+    				<w2:column id="CUST_SEQ" style="height:21px"
+    					hidden="true" inputType="text" width="70" valueType="binary">
+    				</w2:column>
+    				<w2:column id="MEMO_SEQ" style="height:21px"
+    					hidden="true" inputType="text" width="70" valueType="binary">
+    				</w2:column>
+    				<w2:column hidden="" id="column426" inputType="text"
+    					style="height:21px;" value="" valueType="binary" width="60" textAlign="left">
+    				</w2:column>
+    				<w2:column hidden="" id="REG_DT" inputType="text"
+    					style="height:21px;" textAlign="left" value=""
+    					valueType="binary" width="150">
+    				</w2:column>
+    				<w2:column hidden="" id="MEMO_TYPE_NM" inputType="text"
+    					style="height:21px;" textAlign="left" value=""
+    					valueType="binary" width="90">
+    				</w2:column>
+    				<w2:column hidden="" id="REG_USER_NM"
+    					inputType="text" style="height:21px;" textAlign="left"
+    					value="" valueType="binary" width="90">
+    				</w2:column>
+    				<w2:column hidden="" id="MEMO_CONT" inputType="text"
+    					style="height:21px" valueType="binary" width="402" textAlign="left">
+    				</w2:column>
+    				<w2:column hidden="" id="OPEN_YN" inputType="text"
+    					style="height:21px" valueType="binary" width="80">
+    				</w2:column>
+    				<w2:column id="REG_USER_ID" style="height:21px"
+    					hidden="true" inputType="text" width="70" valueType="binary">
+    				</w2:column>
+    			</w2:row>
+    		</w2:gBody>
+    		<script ev:event="onCellClick( row , col )" type="javascript"><![CDATA[ 
+    			fn_ModifyMemo(row);
+    		]]></script>
+    	</w2:grid>
+    	<xf:trigger class="btn_n" id="btn_NewMemo"
+    		style="position: absolute ;height:30px;width:94px;left:878px;top:-1px;"
+    		type="image">
+    		<xf:label>신규등록</xf:label>
+    		<script ev:event="onclick" type="javascript"><![CDATA[ 
+    			fn_NewMemo();
+    		]]></script>
+    	</xf:trigger>
+    	
+    </body>
+</html>

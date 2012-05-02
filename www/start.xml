@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<html xmlns="http://www.w3.org/1999/xhtml"
+    xmlns:ev="http://www.w3.org/2001/xml-events"
+    xmlns:w2="http://www.inswave.com/websquare" xmlns:xf="http://www.w3.org/2002/xforms">
+    <head>
+        <w2:buildDate/>
+        <xf:model>
+            <xf:instance>
+                <data xmlns=""/>
+            </xf:instance>
+        </xf:model>
+        <script type="javascript"><![CDATA[ ]]></script>
+    </head>
+    <body>
+    	<w2:anchor id="anchor1"
+    		style="position: absolute ;left:28px;top:27px;width: 261px;height: 32px;">
+    		<xf:label>리스트</xf:label>
+    		<script type="javascript" ev:event="onclick"><![CDATA[
+    			document.location.href="websquare.html?w2xPath=../list.xml";
+    		 ]]></script>
+    	</w2:anchor>
+    	
+    	<w2:anchor id="anchor3"
+    		style="position: absolute ;left:28px;top:82px;width: 261px;height: 32px;">
+    		<xf:label>리스트 2</xf:label>
+    		<script ev:event="onclick" type="javascript"><![CDATA[
+    			document.location.href="websquare.html?w2xPath=../list2.xml";
+    		 ]]></script>
+    	</w2:anchor><w2:anchor id="anchor2" style="position: absolute ;left:28px;top:136px;width: 261px;height: 32px;">
+    		<xf:label>디바이스 연동</xf:label>
+    		<script ev:event="onclick" type="javascript"><![CDATA[
+    			document.location.href="websquare.html?w2xPath=../sample.xml";
+    		 ]]></script>
+    	</w2:anchor>
+    </body>
+</html>

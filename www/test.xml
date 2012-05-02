@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<html xmlns="http://www.w3.org/1999/xhtml"
+    xmlns:ev="http://www.w3.org/2001/xml-events"
+    xmlns:w2="http://www.inswave.com/websquare" xmlns:xf="http://www.w3.org/2002/xforms">
+    <head>
+        <w2:buildDate/>
+        <xf:model>
+            <xf:instance>
+                <data xmlns=""/>
+            </xf:instance>
+        </xf:model>
+        <script type="javascript"><![CDATA[
+    
+		
+		 
+        
+        ]]></script>
+    </head>
+    <body>
+    	<xf:trigger type="button" id="trigger2"
+    		style="position: absolute ;left: 146px;top: 258px;width: 100px;height: 40px;">
+    		<xf:label>trigger</xf:label>
+            <script ev:event="onclick" type="javascript"><![CDATA[ 
+    		location.href='http://m.daum.net'; 
+    		]]></script>
+    	</xf:trigger>
+		<w2:calendar id="calendar1"
+    		style="position: absolute ;left: 101px;top: 373px;">
+    	</w2:calendar>
+    	
+    </body>
+</html>

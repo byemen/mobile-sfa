@@ -1,0 +1,2243 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?xml-stylesheet href="/mp/css/frame.css" type="text/css"?>
+<html xmlns="http://www.w3.org/1999/xhtml"
+    xmlns:ev="http://www.w3.org/2001/xml-events"
+    xmlns:w2="http://www.inswave.com/websquare" xmlns:xf="http://www.w3.org/2002/xforms">
+    <head>
+        <w2:buildDate/>
+        <xf:model>
+            <xf:instance>
+                <data xmlns=""/>
+            </xf:instance>
+		    <xf:submission id="submissionFCST" ref="request" target="resContractFCST"
+        		action=""
+        		method="post" mediatype="application/xml" encoding="UTF-8" instance="" replace="instance"
+        		errorHandler="" customHandler="" mode="asynchronous"
+        		processMsg="">
+        		<script type="javascript" ev:event="xforms-submit-done"><![CDATA[
+					if(FV_sSvcNm == "T"){
+						fn_SetContractFCST_T();
+						fn_SetSalesFCST_T();
+					}else{
+						fn_SetContractFCST_L();
+						fn_SetSalesFCST_L();
+					}
+					fn_setTitle(FV_sSvcNm);
+			   		parent.fn_SpinnerHide();
+            	]]></script>
+        	</xf:submission>
+		    <xf:submission id="submissionDeliverypercent" ref="request" target="resCond"
+        		action=""
+        		method="post" mediatype="application/xml" encoding="UTF-8" instance="" replace="instance"
+        		errorHandler="" customHandler="" mode="asynchronous"
+        		processMsg="">
+        		<script type="javascript" ev:event="xforms-submit-done"><![CDATA[
+					FV_DELIVERY_PERCENT = WebSquare.ModelUtil.getInstanceValue("resCond/root/dataset[@id='ds_Cond']/record/DELIVERY_PERCENT");
+					//jhkim, 2012-04-03, FV_DELIVERY_PERCENT null 처리
+					FV_DELIVERY_PERCENT = (FV_DELIVERY_PERCENT == "") ? "0" : FV_DELIVERY_PERCENT;
+					fn_Search();
+            	]]></script>
+        	</xf:submission>
+        </xf:model>
+        <script type="javascript" src="/mp/js/common.js"></script>
+		<script type="javascript" src="/mp/js/WebSquare.js"></script>
+        <script type="javascript"><![CDATA[
+
+		var FV_sDealerId = parent.cb_LDealer.getValue(); //부모창의 딜러아이디.
+       	var FV_sSvcNm = parent.FV_SvcNm; //서비스
+		var FV_DELIVERY_PERCENT = ""; // 전역변수 (param)
+
+		//달력에 현재 날자 넣기
+		cal_date.setValue(gfn_GetDate(0,0,0));
+
+		/*********************************************
+		*토요타 또는 렉서스인 경우 서로 다른 그리드에 보여줌.
+		*********************************************/
+		if(FV_sSvcNm == "T"){
+       		switch_brand.setSelectedIndex(0);
+       	}else{
+       		switch_brand.setSelectedIndex(1);
+       	}
+
+		/************************************
+		*FV_DELIVERY_PERCENT 값 Setting
+		************************************/
+		function fn_weeks(){
+			parent.fn_SpinnerShow();
+			var sDate = gfn_addDate("d",-1,cal_date.getValue(),"-");
+			var actionNm = "";
+			if(FV_sSvcNm == "T"){
+				actionNm = "TOYOTAAction";
+			}
+			setTitSendInfo("request", actionNm, "", "mdms/mp/eis:S210015_W01_S03");
+	       	setInputParamData("APP_DATE", sDate);
+	   		setSubmissison("submissionDeliverypercent");
+		}
+
+		/************************************
+		*조회
+		************************************/
+		function fn_Search(){
+			var actionNm = "";
+			var sDate = gfn_addDate("d",-1,cal_date.getValue(),"-");
+			if(FV_sSvcNm == "T"){
+				actionNm = "TOYOTAAction";
+			}
+
+			setTitSendInfo("request", actionNm, "", "mdms/mp/eis:S210015_W01_S01,mdms/mp/eis:S210015_W01_S02");
+	       	setInputParamData("DEALER_ID", FV_sDealerId);
+	       	setInputParamData("APP_DATE", sDate);
+	       	setInputParamData("TARGET_DAY", sDate.substr(8,2)); 
+	       	setInputParamData("DELIVERY_PERCENT", FV_DELIVERY_PERCENT);
+	       	setInputParamData("GV_UP_GROUP_ID", GV_UP_GROUP_ID);
+	   		setSubmissison("submissionFCST");
+	   	}
+
+		/************************************
+		*컬럼 설명값 Setting
+		************************************/
+		function fn_setTitle(svc){
+			var sDate = gfn_addDate("d",-1,cal_date.getValue(),"-").substr(8,2);
+			if(svc == "L"){
+				grid1.setCellData(0,"column48","Daliy Target(~"+sDate+")");
+				grid1.setCellData(0,"column64","Actual(~"+sDate+")");
+				grid2.setCellData(0,"column161","② Contract(~"+sDate+")");
+				grid2.setCellData(0,"column193","④ BOC(~"+sDate+")");
+				grid2.setCellData(0,"column225","Delivery(⑤ × "+FV_DELIVERY_PERCENT+"%)");
+				grid2.setCellData(0,"column241","Sales(~"+sDate+")");
+			}else{
+				grid3.setCellData(0,"column385","Daliy Target(~"+sDate+")");
+				grid3.setCellData(0,"column401","Actual(~"+sDate+")");
+				grid4.setCellData(0,"column513","② Contract(~"+sDate+")");
+				grid4.setCellData(0,"column545","④ BOC(~"+sDate+")");
+				grid4.setCellData(0,"column577","Delivery(⑤ × "+FV_DELIVERY_PERCENT+"%)");
+				grid4.setCellData(0,"column593","Sales(~"+sDate+")");
+			}
+		}
+
+		/************************************
+		*Lexus Contract Grid
+		************************************/
+		function fn_SetContractFCST_L(){
+			var contract_Fcst = WebSquare.ModelUtil.findInstanceNodes("resContractFCST/root/dataset[@id='ds_Contract']/record");
+			grid1.insertRow(0);
+			var total = [0,0,0,0,0,0,0];
+			var header_cnt = 0;
+   			for(var i=0; i<contract_Fcst.length; i++){
+   				var sOrder = WebSquare.xml.getValue(contract_Fcst[i],"DISPLAY_ORDER");
+   				var sGubun = WebSquare.xml.getValue(contract_Fcst[i],"GUBUN").substr(0,2);
+				var sValue = WebSquare.xml.getValue(contract_Fcst[i],"VALUE");
+				var sVariant = WebSquare.xml.getValue(contract_Fcst[i],"VARIANT_CD");
+				switch(sGubun){
+					case "01":
+						grid1.setCellData(0,i+1,sValue);
+						total[0] += parseInt(sValue);
+						grid1.setHeaderValue("l_header_con_" + ++header_cnt,sVariant);
+						break;
+					case "02":
+						grid1.setCellData(0,i+3,sValue);
+						total[1] += parseInt(sValue);
+						break;
+					case "03":
+						grid1.setCellData(0,i+5,sValue);
+						total[2] += parseInt(sValue);
+						break;
+					case "04":
+						grid1.setCellData(0,i+7,sValue);
+						total[3] += parseInt(sValue);
+						break;
+					case "05":
+						grid1.setCellData(0,i+9,sValue);
+						total[4] += parseInt(sValue);
+						break;
+					case "06":
+						grid1.setCellData(0,i+11,sValue);
+						total[5] += parseInt(sValue);
+						break;
+					case "07":
+						grid1.setCellData(0,i+13,sValue);
+						total[6] += parseInt(sValue);
+						grid1.setColumnColor(0,i+13,"#2fe9ee");
+						break;
+				}
+				/*if(sGubun=="02Daily Target"){
+					var total = 0;
+					if(sOrder=="1"){
+					}
+					grid1.setCellData(0,i+3,sValue);
+					total[1] += parseInt(sValue);
+				}*/
+			}
+			grid1.setCellData(0,"column32",total[0]);
+			grid1.setCellData(0,"column33",total[1]);
+			grid1.setCellData(0,"column49",total[2]);
+			grid1.setCellData(0,"column65",Math.round((total[2]/total[1])*100,1)+"%");
+			grid1.setCellData(0,"column81",total[4]);
+			grid1.setCellData(0,"column97",total[5]);
+			grid1.setCellData(0,"column113",total[6]);
+			grid1.setColumnColor("column112","#2fe9ee");
+			grid1.setColumnColor("column128","#2fe9ee");
+		}
+
+		/************************************
+		*Lexus Sales Grid
+		************************************/
+		function fn_SetSalesFCST_L(){
+			var sales_Fcst = WebSquare.ModelUtil.findInstanceNodes("resContractFCST/root/dataset[@id='ds_Sale']/record");
+			grid2.insertRow(0);
+			var total = [0,0,0,0,0,0,0,0,0,0,0,0,0];
+			var header_cnt = 0;
+   			for(var i=0; i<sales_Fcst.length; i++){
+   				var sOrder = WebSquare.xml.getValue(sales_Fcst[i],"DISPLAY_ORDER");
+   				var sGubun = WebSquare.xml.getValue(sales_Fcst[i],"GUBUN").substr(0,2);
+				var sValue = WebSquare.xml.getValue(sales_Fcst[i],"VALUE");
+				var sVariant = WebSquare.xml.getValue(sales_Fcst[i],"VARIANT_CD");
+				switch(sGubun){
+					case "01":
+						grid2.setCellData(0,i+1,sValue);
+						total[0] += parseInt(sValue);
+						grid2.setHeaderValue("l_header_sa_" + ++header_cnt,sVariant);
+						break;
+					case "02":
+						grid2.setCellData(0,i+3,sValue);
+						total[1] += parseInt(sValue);
+						break;
+					case "03":
+						grid2.setCellData(0,i+5,sValue);
+						total[2] += parseInt(sValue);
+						break;
+					case "04":
+						grid2.setCellData(0,i+7,sValue);
+						total[3] += parseInt(sValue);
+						break;
+					case "05":
+						grid2.setCellData(0,i+9,sValue);
+						total[4] += parseInt(sValue);
+						break;
+					case "06":
+						grid2.setCellData(0,i+11,sValue);
+						total[5] += parseInt(sValue);
+						break;
+					case "07":
+						grid2.setCellData(0,i+13,sValue);
+						total[6] += parseInt(sValue);
+						break;
+					case "08":
+						grid2.setCellData(0,i+15,sValue);
+						total[7] += parseInt(sValue);
+						break;
+					case "09":
+						grid2.setCellData(0,i+17,sValue);
+						total[8] += parseInt(sValue);
+						break;
+					case "10":
+						grid2.setCellData(0,i+19,sValue);
+						total[9] += parseInt(sValue);
+						break;
+					case "11":
+						grid2.setCellData(0,i+21,sValue);
+						total[10] += parseInt(sValue);
+						break;
+					case "12":
+						grid2.setCellData(0,i+23,sValue);
+						total[11] += parseInt(sValue);
+						break;
+					case "13":
+						grid2.setCellData(0,i+25,sValue);
+						total[12] += parseInt(sValue);
+						break;
+				}
+			}
+			grid2.setCellData(0,"column160",total[0]);
+			grid2.setCellData(0,"column176",total[1]);
+			grid2.setCellData(0,"column192",total[2]);
+			grid2.setCellData(0,"column208",total[3]);
+			grid2.setCellData(0,"column224",total[4]);
+			grid2.setCellData(0,"column240",total[5]);
+			grid2.setCellData(0,"column256",total[6]);
+			grid2.setCellData(0,"column257",total[7]);
+			grid2.setCellData(0,"column273",total[8]);
+			grid2.setCellData(0,"column289",total[9]);
+			grid2.setCellData(0,"column305",total[10]);
+			grid2.setCellData(0,"column321",total[11]);
+			grid2.setCellData(0,"column337",total[12]);
+			grid2.setColumnColor("column304","#2fe9ee");
+			grid2.setColumnColor("column320","#2fe9ee");
+			grid2.setColumnColor("column336","#2fe9ee");
+		}
+
+		/************************************
+		*Toyota Contract Grid
+		************************************/
+		function fn_SetContractFCST_T(){
+			var contract_Fcst = WebSquare.ModelUtil.findInstanceNodes("resContractFCST/root/dataset[@id='ds_Contract']/record");
+			grid3.insertRow(0);
+			var total = [0,0,0,0,0,0,0];
+			var header_cnt = 0;
+   			for(var i=0; i<contract_Fcst.length; i++){
+   				var sOrder = WebSquare.xml.getValue(contract_Fcst[i],"DISPLAY_ORDER");
+   				var sGubun = WebSquare.xml.getValue(contract_Fcst[i],"GUBUN").substr(0,2);
+				var sValue = WebSquare.xml.getValue(contract_Fcst[i],"VALUE");
+				var sVariant = WebSquare.xml.getValue(contract_Fcst[i],"VARIANT_CD");
+				switch(sGubun){
+					case "01":
+						grid3.setCellData(0,i+1,sValue);
+						total[0] += parseInt(sValue);
+						grid3.setHeaderValue("t_header_con_" + ++header_cnt,sVariant);
+						break;
+					case "02":
+						grid3.setCellData(0,i+3,sValue);
+						total[1] += parseInt(sValue);
+						break;
+					case "03":
+						grid3.setCellData(0,i+5,sValue);
+						total[2] += parseInt(sValue);
+						break;
+					case "04":
+						grid3.setCellData(0,i+7,sValue);
+						total[3] += parseInt(sValue);
+						break;
+					case "05":
+						grid3.setCellData(0,i+9,sValue);
+						total[4] += parseInt(sValue);
+						break;
+					case "06":
+						grid3.setCellData(0,i+11,sValue);
+						total[5] += parseInt(sValue);
+						break;
+					case "07":
+						grid3.setCellData(0,i+13,sValue);
+						total[6] += parseInt(sValue);
+						grid3.setColumnColor(0,i+13,"#2fe9ee");
+						break;
+				}
+			}
+			grid3.setCellData(0,"column384",total[0]);
+			grid3.setCellData(0,"column400",total[1]);
+			grid3.setCellData(0,"column416",total[2]);
+			grid3.setCellData(0,"column432",Math.round((total[2]/total[1])*100,1)+"%");
+			grid3.setCellData(0,"column448",total[4]);
+			grid3.setCellData(0,"column464",total[5]);
+			grid3.setCellData(0,"column480",total[6]);
+			grid3.setColumnColor("column449","#2fe9ee");
+			grid3.setColumnColor("column465","#2fe9ee");
+		}
+
+		/************************************
+		*Toyota Sales Grid
+		************************************/
+		function fn_SetSalesFCST_T(){
+			var sales_Fcst = WebSquare.ModelUtil.findInstanceNodes("resContractFCST/root/dataset[@id='ds_Sale']/record");
+			grid4.insertRow(0);
+			var total = [0,0,0,0,0,0,0,0,0,0,0,0,0];
+			var header_cnt = 0;
+   			for(var i=0; i<sales_Fcst.length; i++){
+   				var sOrder = WebSquare.xml.getValue(sales_Fcst[i],"DISPLAY_ORDER");
+   				var sGubun = WebSquare.xml.getValue(sales_Fcst[i],"GUBUN").substr(0,2);
+				var sValue = WebSquare.xml.getValue(sales_Fcst[i],"VALUE");
+				var sVariant = WebSquare.xml.getValue(sales_Fcst[i],"VARIANT_CD");
+				switch(sGubun){
+					case "01":
+						grid4.setCellData(0,i+1,sValue);
+						total[0] += parseInt(sValue);
+						grid4.setHeaderValue("t_header_sa_" + ++header_cnt,sVariant);
+						break;
+					case "02":
+						grid4.setCellData(0,i+3,sValue);
+						total[1] += parseInt(sValue);
+						break;
+					case "03":
+						grid4.setCellData(0,i+5,sValue);
+						total[2] += parseInt(sValue);
+						break;
+					case "04":
+						grid4.setCellData(0,i+7,sValue);
+						total[3] += parseInt(sValue);
+						break;
+					case "05":
+						grid4.setCellData(0,i+9,sValue);
+						total[4] += parseInt(sValue);
+						break;
+					case "06":
+						grid4.setCellData(0,i+11,sValue);
+						total[5] += parseInt(sValue);
+						break;
+					case "07":
+						grid4.setCellData(0,i+13,sValue);
+						total[6] += parseInt(sValue);
+						break;
+					case "08":
+						grid4.setCellData(0,i+15,sValue);
+						total[7] += parseInt(sValue);
+						break;
+					case "09":
+						grid4.setCellData(0,i+17,sValue);
+						total[8] += parseInt(sValue);
+						break;
+					case "10":
+						grid4.setCellData(0,i+19,sValue);
+						total[9] += parseInt(sValue);
+						break;
+					case "11":
+						grid4.setCellData(0,i+21,sValue);
+						total[10] += parseInt(sValue);
+						break;
+					case "12":
+						grid4.setCellData(0,i+23,sValue);
+						total[11] += parseInt(sValue);
+						break;
+					case "13":
+						grid4.setCellData(0,i+25,sValue);
+						total[12] += parseInt(sValue);
+						break;
+				}
+			}
+			grid4.setCellData(0,"column512",total[0]);
+			grid4.setCellData(0,"column528",total[1]);
+			grid4.setCellData(0,"column544",total[2]);
+			grid4.setCellData(0,"column560",total[3]);
+			grid4.setCellData(0,"column576",total[4]);
+			grid4.setCellData(0,"column592",total[5]);
+			grid4.setCellData(0,"column608",total[6]);
+			grid4.setCellData(0,"column624",total[7]);
+			grid4.setCellData(0,"column640",total[8]);
+			grid4.setCellData(0,"column656",total[9]);
+			grid4.setCellData(0,"column672",total[10]);
+			grid4.setCellData(0,"column688",total[11]);
+			grid4.setCellData(0,"column704",total[12]);
+			grid4.setColumnColor("column641","#2fe9ee");
+			grid4.setColumnColor("column657","#2fe9ee");
+			grid4.setColumnColor("column673","#2fe9ee");
+		}
+		]]></script>
+    </head>
+    <body>
+    	<xf:output class="sub_title_b" id="output1" label=""
+    		style="position: absolute ;height:20px;width:204px;left:15px;top:11px;">
+    		<xf:label>Contract &amp; Sales Forecast</xf:label>
+    	</xf:output>
+    	<xf:output class="sub_title" id="output2" label=""
+    		style="position: absolute ;height:20px;width:204px;left:15px;top:10px;">
+    		<xf:label>Contract &amp; Sales Forecast</xf:label>
+    	</xf:output>
+    	<xf:image id="image1" src="/mp/images/eis/shape_5.png"
+    		style="position: absolute ;height:591px;width:1024px;left:0px;top:24px;">
+    	</xf:image>
+    	<w2:inputCalendar calendarValueType="yearMonthDate"
+    		class="input_edit_eis" id="cal_date"
+    		style="position: absolute ; imgUrl:/mp/images/eis/m_bt_cal_pop.png;height:22px;width:98px;left:890px;top:6px;"
+			calendarImage="/mp/images/eis/m_bt_cal_pop.png"
+			calendarImageOver="/mp/images/eis/m_bt_cal_pop.png">
+    		<script ev:event="onchange" type="javascript"><![CDATA[ fn_weeks(); ]]></script>
+    	</w2:inputCalendar>
+    	<xf:switch id="switch_brand" class="" caseClass=""
+    		style="position: absolute ;left:23px;top:46px;width:985px;height:556px;">
+    		<xf:case id="case1" class=""
+    			style="position:absolute;top:2px;left:2px;width:981px;height:552px;">
+    			<w2:grid baseNode="" class="grid" id="grid3"
+    				overflowX="hidden" overflowY="hidden" repeatNode=""
+    				rowMouseOver="false" readOnly="true"
+    				style="position: absolute ;left:0px;top:0px;width:976px;height:191px">
+    				<w2:header class="gridHeaderTable"
+    					columnClass="gridHeaderTD" id="header1" style="">
+    					<w2:row id="row23" style="">
+    						<w2:column hidden="" id="column353"
+    							inputType="text" style="height:24px;" value="Contract"
+    							valueType="binary" width="174">
+    						</w2:column>
+    						<w2:column hidden="" id="t_header_con_1"
+    							inputType="text" style="height:24px;color:#F0B500;"
+    							value="" valueType="binary" width="80">
+    						</w2:column>
+    						<w2:column hidden="" id="t_header_con_2"
+    							inputType="text" style="height:24px;color:#F0B500;"
+    							value="" valueType="binary" width="80">
+    						</w2:column>
+    						<w2:column hidden="" id="t_header_con_3"
+    							inputType="text" style="height:24px;color:#F0B500;"
+    							value="" valueType="binary" width="80">
+    						</w2:column>
+    						<w2:column hidden="" id="t_header_con_4"
+    							inputType="text" style="height:24px;color:#F0B500;"
+    							value="" valueType="binary" width="80">
+    						</w2:column>
+    						<w2:column hidden="" id="t_header_con_5"
+    							inputType="text" style="height:24px;color:#F0B500;"
+    							value="" valueType="binary" width="80">
+    						</w2:column>
+    						<w2:column hidden="" id="t_header_con_6"
+    							inputType="text" style="height:24px;color:#F0B500;"
+    							value="" valueType="binary" width="80">
+    						</w2:column>
+    						<w2:column hidden="" id="t_header_con_7"
+    							inputType="text" style="height:24px;color:#F0B500;"
+    							value="" valueType="binary" width="80">
+    						</w2:column>
+    						<w2:column hidden="" id="t_header_con_8"
+    							inputType="text" style="height:24px;color:#F0B500;"
+    							value="" valueType="binary" width="80">
+    						</w2:column>
+    						<w2:column hidden="" id="t_header_con_9"
+    							inputType="text" style="height:24px;color:#F0B500;"
+    							value="" valueType="binary" width="80">
+    						</w2:column>
+    						<w2:column hidden="" id="column368"
+    							inputType="text" style="height:24px;color:#F0B500;"
+    							value="Total" valueType="binary" width="80">
+    						</w2:column>
+    					</w2:row>
+    				</w2:header>
+    				<w2:gBody class="gridBodyTable"
+    					columnClass="gridBodyTD" id="gBody3" style="">
+    					<w2:row id="row24" style="">
+    						<w2:column hidden="" id="column369"
+    							inputType="text" style="height:22px;" textAlign="left"
+    							value="Target" valueType="binary" width="174">
+    						</w2:column>
+    						<w2:column hidden="" id="column378"
+    							inputType="text" style="height:22px;" valueType="binary"
+    							width="53">
+    						</w2:column>
+    						<w2:column hidden="" id="column379"
+    							inputType="text" style="height:22px;" valueType="binary"
+    							width="53">
+    						</w2:column>
+    						<w2:column hidden="" id="column380"
+    							inputType="text" style="height:22px;" valueType="binary"
+    							width="53">
+    						</w2:column>
+    						<w2:column hidden="" id="column381"
+    							inputType="text" style="height:22px;" valueType="binary"
+    							width="53">
+    						</w2:column>
+    						<w2:column hidden="" id="column382"
+    							inputType="text" style="height:22px;" valueType="binary"
+    							width="53">
+    						</w2:column>
+    						<w2:column hidden="" id="column383"
+    							inputType="text" style="height:22px;" valueType="binary"
+    							width="53">
+    						</w2:column>
+    						<w2:column hidden="" id="column1001"
+    							inputType="text" style="height:22px;" valueType="binary"
+    							width="53">
+    						</w2:column>
+    						<w2:column hidden="" id="column1002"
+    							inputType="text" style="height:22px;" valueType="binary"
+    							width="53">
+    						</w2:column>    						
+    						<w2:column hidden="" id="column1054"
+    							inputType="text" style="height:22px;" valueType="binary"
+    							width="53">
+    						</w2:column>
+    						<w2:column hidden="" id="column384"
+    							inputType="text" style="height:22px;" valueType="binary"
+    							width="88">
+    						</w2:column>
+    					</w2:row>
+    					<w2:row id="row25" style="">
+    						<w2:column hidden="" id="column385"
+    							inputType="text" style="height:22px;" textAlign="left"
+    							value="Daliy Target(~)" valueType="binary" width="174">
+    						</w2:column>
+    						<w2:column hidden="" id="column394"
+    							inputType="text" style="height:22px;" valueType="binary"
+    							width="53">
+    						</w2:column>
+    						<w2:column hidden="" id="column395"
+    							inputType="text" style="height:22px;" valueType="binary"
+    							width="53">
+    						</w2:column>
+    						<w2:column hidden="" id="column396"
+    							inputType="text" style="height:22px;" valueType="binary"
+    							width="53">
+    						</w2:column>
+    						<w2:column hidden="" id="column397"
+    							inputType="text" style="height:22px;" valueType="binary"
+    							width="53">
+    						</w2:column>
+    						<w2:column hidden="" id="column398"
+    							inputType="text" style="height:22px;" valueType="binary"
+    							width="53">
+    						</w2:column>
+    						<w2:column hidden="" id="column399"
+    							inputType="text" style="height:22px;" valueType="binary"
+    							width="53">
+    						</w2:column>
+    						<w2:column hidden="" id="column1003"
+    							inputType="text" style="height:22px;" valueType="binary"
+    							width="53">
+    						</w2:column>
+    						<w2:column hidden="" id="column1004"
+    							inputType="text" style="height:22px;" valueType="binary"
+    							width="53">
+    						</w2:column>
+    						<w2:column hidden="" id="column1055"
+    							inputType="text" style="height:22px;" valueType="binary"
+    							width="53">
+    						</w2:column>
+    						<w2:column hidden="" id="column400"
+    							inputType="text" style="height:22px;" valueType="binary"
+    							width="88">
+    						</w2:column>
+    					</w2:row>
+    					<w2:row id="row26" style="">
+    						<w2:column hidden="" id="column401"
+    							inputType="text" style="height:22px;" textAlign="left"
+    							value="Actual(~)" valueType="binary" width="174">
+    						</w2:column>
+    						<w2:column hidden="" id="column410"
+    							inputType="text" style="height:22px;" valueType="binary"
+    							width="53">
+    						</w2:column>
+    						<w2:column hidden="" id="column411"
+    							inputType="text" style="height:22px;" valueType="binary"
+    							width="53">
+    						</w2:column>
+    						<w2:column hidden="" id="column412"
+    							inputType="text" style="height:22px;" valueType="binary"
+    							width="53">
+    						</w2:column>
+    						<w2:column hidden="" id="column413"
+    							inputType="text" style="height:22px;" valueType="binary"
+    							width="53">
+    						</w2:column>
+    						<w2:column hidden="" id="column414"
+    							inputType="text" style="height:22px;" valueType="binary"
+    							width="53">
+    						</w2:column>
+    						<w2:column hidden="" id="column415"
+    							inputType="text" style="height:22px;" valueType="binary"
+    							width="53">
+    						</w2:column>
+    						<w2:column hidden="" id="column1005"
+    							inputType="text" style="height:22px;" valueType="binary"
+    							width="53">
+    						</w2:column>
+    						<w2:column hidden="" id="column1006"
+    							inputType="text" style="height:22px;" valueType="binary"
+    							width="53">
+    						</w2:column>
+    						<w2:column hidden="" id="column1056"
+    							inputType="text" style="height:22px;" valueType="binary"
+    							width="53">
+    						</w2:column>
+    						<w2:column hidden="" id="column416"
+    							inputType="text" style="height:22px;" valueType="binary"
+    							width="88">
+    						</w2:column>
+    					</w2:row>
+    					<w2:row id="row27" style="">
+    						<w2:column hidden="" id="column417"
+    							inputType="text" style="height:22px;" textAlign="right"
+    							value="A/R" valueType="binary" width="174">
+    						</w2:column>
+    						<w2:column hidden="" id="column426"
+    							inputType="text" style="height:22px;" valueType="binary"
+    							width="53">
+    						</w2:column>
+    						<w2:column hidden="" id="column427"
+    							inputType="text" style="height:22px;" valueType="binary"
+    							width="53">
+    						</w2:column>
+    						<w2:column hidden="" id="column428"
+    							inputType="text" style="height:22px;" valueType="binary"
+    							width="53">
+    						</w2:column>
+    						<w2:column hidden="" id="column429"
+    							inputType="text" style="height:22px;" valueType="binary"
+    							width="53">
+    						</w2:column>
+    						<w2:column hidden="" id="column430"
+    							inputType="text" style="height:22px;" valueType="binary"
+    							width="53">
+    						</w2:column>
+    						<w2:column hidden="" id="column431"
+    							inputType="text" style="height:22px;" valueType="binary"
+    							width="53">
+    						</w2:column>
+    						<w2:column hidden="" id="column1007"
+    							inputType="text" style="height:22px;" valueType="binary"
+    							width="53">
+    						</w2:column>
+    						<w2:column hidden="" id="column1008"
+    							inputType="text" style="height:22px;" valueType="binary"
+    							width="53">
+    						</w2:column>
+    						<w2:column hidden="" id="column1057"
+    							inputType="text" style="height:22px;" valueType="binary"
+    							width="53">
+    						</w2:column>
+    						<w2:column hidden="" id="column432"
+    							inputType="text" style="height:22px;" valueType="binary"
+    							width="88">
+    						</w2:column>
+    					</w2:row>
+    					<w2:row id="row28" style="">
+    						<w2:column hidden="" id="column433"
+    							inputType="text" style="height:22px;" textAlign="left"
+    							value="Forecast" valueType="binary" width="174">
+    						</w2:column>
+    						<w2:column hidden="" id="column442"
+    							inputType="text" style="height:22px;" valueType="binary"
+    							width="53">
+    						</w2:column>
+    						<w2:column hidden="" id="column443"
+    							inputType="text" style="height:22px;" valueType="binary"
+    							width="53">
+    						</w2:column>
+    						<w2:column hidden="" id="column444"
+    							inputType="text" style="height:22px;" valueType="binary"
+    							width="53">
+    						</w2:column>
+    						<w2:column hidden="" id="column445"
+    							inputType="text" style="height:22px;" valueType="binary"
+    							width="53">
+    						</w2:column>
+    						<w2:column hidden="" id="column446"
+    							inputType="text" style="height:22px;" valueType="binary"
+    							width="53">
+    						</w2:column>
+    						<w2:column hidden="" id="column447"
+    							inputType="text" style="height:22px;" valueType="binary"
+    							width="53">
+    						</w2:column>
+    						<w2:column hidden="" id="column1009"
+    							inputType="text" style="height:22px;" valueType="binary"
+    							width="53">
+    						</w2:column>
+    						<w2:column hidden="" id="column1010"
+    							inputType="text" style="height:22px;" valueType="binary"
+    							width="53">
+    						</w2:column>
+    						<w2:column hidden="" id="column1058"
+    							inputType="text" style="height:22px;" valueType="binary"
+    							width="53">
+    						</w2:column>
+    						<w2:column hidden="" id="column448"
+    							inputType="text" style="height:22px;" valueType="binary"
+    							width="88">
+    						</w2:column>
+    					</w2:row>
+    					<w2:row id="row29" style="">
+    						<w2:column hidden="" id="column449"
+    							inputType="text" style="height:24px;color:#2fe9ee;"
+    							textAlign="left" value="Contract FCST(Adj.)"
+    							valueType="binary" width="174">
+    						</w2:column>
+    						<w2:column hidden="" id="column458"
+    							inputType="text" style="height:24px;color:#2fe9ee;"
+    							valueType="binary" width="53">
+    						</w2:column>
+    						<w2:column hidden="" id="column459"
+    							inputType="text" style="height:24px;color:#2fe9ee;"
+    							valueType="binary" width="53">
+    						</w2:column>
+    						<w2:column hidden="" id="column460"
+    							inputType="text" style="height:24px;color:#2fe9ee;"
+    							valueType="binary" width="53">
+    						</w2:column>
+    						<w2:column hidden="" id="column461"
+    							inputType="text" style="height:24px;color:#2fe9ee;"
+    							valueType="binary" width="53">
+    						</w2:column>
+    						<w2:column hidden="" id="column462"
+    							inputType="text" style="height:24px;color:#2fe9ee;"
+    							valueType="binary" width="53">
+    						</w2:column>
+    						<w2:column hidden="" id="column463"
+    							inputType="text" style="height:24px;color:#2fe9ee;"
+    							valueType="binary" width="53">
+    						</w2:column>
+    						<w2:column hidden="" id="column1011"
+    							inputType="text" style="height:24px;color:#2fe9ee;"
+    							valueType="binary" width="53">
+    						</w2:column>
+    						<w2:column hidden="" id="column1012"
+    							inputType="text" style="height:24px;color:#2fe9ee;"
+    							valueType="binary" width="53">
+    						</w2:column>
+    						<w2:column hidden="" id="column1059"
+    							inputType="text" style="height:22px;" valueType="binary"
+    							width="53">
+    						</w2:column>
+    						<w2:column hidden="" id="column464"
+    							inputType="text" style="height:24px;color:#2fe9ee;"
+    							valueType="binary" width="88">
+    						</w2:column>
+    					</w2:row>
+    					<w2:row id="row30" style="">
+    						<w2:column hidden="" id="column465"
+    							inputType="text" style="height:24px;color:#2fe9ee;"
+    							textAlign="right" value="vs Target" valueType="binary"
+    							width="174">
+    						</w2:column>
+    						<w2:column hidden="" id="column474"
+    							inputType="text" style="height:24px;color:#2fe9ee;"
+    							valueType="binary" width="53">
+    						</w2:column>
+    						<w2:column hidden="" id="column475"
+    							inputType="text" style="height:24px;color:#2fe9ee;"
+    							valueType="binary" width="53">
+    						</w2:column>
+    						<w2:column hidden="" id="column476"
+    							inputType="text" style="height:24px;color:#2fe9ee;"
+    							valueType="binary" width="53">
+    						</w2:column>
+    						<w2:column hidden="" id="column477"
+    							inputType="text" style="height:24px;color:#2fe9ee;"
+    							valueType="binary" width="53">
+    						</w2:column>
+    						<w2:column hidden="" id="column478"
+    							inputType="text" style="height:24px;color:#2fe9ee;"
+    							valueType="binary" width="53">
+    						</w2:column>
+    						<w2:column hidden="" id="column479"
+    							inputType="text" style="height:24px;color:#2fe9ee;"
+    							valueType="binary" width="53">
+    						</w2:column>
+    						<w2:column hidden="" id="column1013"
+    							inputType="text" style="height:24px;color:#2fe9ee;"
+    							valueType="binary" width="53">
+    						</w2:column>
+    						<w2:column hidden="" id="column1014"
+    							inputType="text" style="height:24px;color:#2fe9ee;"
+    							valueType="binary" width="53">
+    						</w2:column>
+    						<w2:column hidden="" id="column1060"
+    							inputType="text" style="height:22px;" valueType="binary"
+    							width="53">
+    						</w2:column>
+    						<w2:column hidden="" id="column480"
+    							inputType="text" style="height:24px;color:#2fe9ee;"
+    							valueType="binary" width="88">
+    						</w2:column>
+    					</w2:row>
+    				</w2:gBody>
+    			</w2:grid>
+    			<w2:grid baseNode="vector" class="grid" id="grid4"
+    				overflowX="hidden" overflowY="hidden" repeatNode="data/INFO"
+    				rowMouseOver="false" readOnly="true"
+    				style="position: absolute ;left:0px;top:213px;width:976px;height:331px">
+    				<w2:header class="gridHeaderTable"
+    					columnClass="gridHeaderTD" id="header2" style="">
+    					<w2:row id="row31" style="">
+    						<w2:column hidden="" id="column481"
+    							inputType="text" style="height:24px;" value="Sales"
+    							valueType="binary" width="174">
+    						</w2:column>
+    						<w2:column hidden="" id="t_header_sa_1"
+    							inputType="text" style="height:24px;color:#F0B500;"
+    							value="" valueType="binary" width="80">
+    						</w2:column>
+    						<w2:column hidden="" id="t_header_sa_2"
+    							inputType="text" style="height:24px;color:#F0B500;"
+    							value="" valueType="binary" width="80">
+    						</w2:column>
+    						<w2:column hidden="" id="t_header_sa_3"
+    							inputType="text" style="height:24px;color:#F0B500;"
+    							value="" valueType="binary" width="80">
+    						</w2:column>
+    						<w2:column hidden="" id="t_header_sa_4"
+    							inputType="text" style="height:24px;color:#F0B500;"
+    							value="" valueType="binary" width="80">
+    						</w2:column>
+    						<w2:column hidden="" id="t_header_sa_5"
+    							inputType="text" style="height:24px;color:#F0B500;"
+    							value="" valueType="binary" width="80">
+    						</w2:column>
+    						<w2:column hidden="" id="t_header_sa_6"
+    							inputType="text" style="height:24px;color:#F0B500;"
+    							value="" valueType="binary" width="80">
+    						</w2:column>
+    						<w2:column hidden="" id="t_header_sa_7"
+    							inputType="text" style="height:24px;color:#F0B500;"
+    							value="" valueType="binary" width="80">
+    						</w2:column>
+    						<w2:column hidden="" id="t_header_sa_8"
+    							inputType="text" style="height:24px;color:#F0B500;"
+    							value="" valueType="binary" width="80">
+    						</w2:column>
+    						<w2:column hidden="" id="t_header_sa_9"
+    							inputType="text" style="height:24px;color:#F0B500;"
+    							value="" valueType="binary" width="80">
+    						</w2:column>
+    						<w2:column hidden="" id="column496"
+    							inputType="text" style="height:24px;color:#F0B500;"
+    							value="Total" valueType="binary" width="80">
+    						</w2:column>
+    					</w2:row>
+    				</w2:header>
+    				<w2:gBody class="gridBodyTable"
+    					columnClass="gridBodyTD" id="gBody4" style="">
+    					<w2:row id="row32" style="">
+    						<w2:column hidden="" id="column497"
+    							inputType="text" style="height:22px;" textAlign="left"
+    							value="① Contract FCST" valueType="binary" width="174">
+    						</w2:column>
+    						<w2:column hidden="" id="column506"
+    							inputType="text" style="height:22px;" valueType="binary"
+    							width="53">
+    						</w2:column>
+    						<w2:column hidden="" id="column507"
+    							inputType="text" style="height:22px;" valueType="binary"
+    							width="53">
+    						</w2:column>
+    						<w2:column hidden="" id="column508"
+    							inputType="text" style="height:22px;" valueType="binary"
+    							width="53">
+    						</w2:column>
+    						<w2:column hidden="" id="column509"
+    							inputType="text" style="height:22px;" valueType="binary"
+    							width="53">
+    						</w2:column>
+    						<w2:column hidden="" id="column510"
+    							inputType="text" style="height:22px;" valueType="binary"
+    							width="53">
+    						</w2:column>
+    						<w2:column hidden="" id="column511"
+    							inputType="text" style="height:22px;" valueType="binary"
+    							width="53">
+    						</w2:column>
+    						<w2:column hidden="" id="column1015"
+    							inputType="text" style="height:22px;" valueType="binary"
+    							width="53">
+    						</w2:column>
+    						<w2:column hidden="" id="column1016"
+    							inputType="text" style="height:22px;" valueType="binary"
+    							width="53">
+    						</w2:column>
+    						<w2:column hidden="" id="column1041"
+    							inputType="text" style="height:22px;" valueType="binary"
+    							width="53">
+    						</w2:column>
+    						<w2:column hidden="" id="column512"
+    							inputType="text" style="height:22px;" valueType="binary"
+    							width="88">
+    						</w2:column>
+    					</w2:row>
+    					<w2:row id="row33" style="">
+    						<w2:column hidden="" id="column513"
+    							inputType="text" style="height:22px;" textAlign="left"
+    							value="② Contract(~)" valueType="binary" width="174">
+    						</w2:column>
+    						<w2:column hidden="" id="column522"
+    							inputType="text" style="height:22px;" valueType="binary"
+    							width="53">
+    						</w2:column>
+    						<w2:column hidden="" id="column523"
+    							inputType="text" style="height:22px;" valueType="binary"
+    							width="53">
+    						</w2:column>
+    						<w2:column hidden="" id="column524"
+    							inputType="text" style="height:22px;" valueType="binary"
+    							width="53">
+    						</w2:column>
+    						<w2:column hidden="" id="column525"
+    							inputType="text" style="height:22px;" valueType="binary"
+    							width="53">
+    						</w2:column>
+    						<w2:column hidden="" id="column526"
+    							inputType="text" style="height:22px;" valueType="binary"
+    							width="53">
+    						</w2:column>
+    						<w2:column hidden="" id="column527"
+    							inputType="text" style="height:22px;" valueType="binary"
+    							width="53">
+    						</w2:column>
+    						<w2:column hidden="" id="column1017"
+    							inputType="text" style="height:22px;" valueType="binary"
+    							width="53">
+    						</w2:column>
+    						<w2:column hidden="" id="column1018"
+    							inputType="text" style="height:22px;" valueType="binary"
+    							width="53">
+    						</w2:column>
+    						<w2:column hidden="" id="column1042"
+    							inputType="text" style="height:22px;" valueType="binary"
+    							width="53">
+    						</w2:column>
+    						<w2:column hidden="" id="column528"
+    							inputType="text" style="height:22px;" valueType="binary"
+    							width="88">
+    						</w2:column>
+    					</w2:row>
+    					<w2:row id="row34" style="">
+    						<w2:column hidden="" id="column529"
+    							inputType="text" style="height:22px;" textAlign="left"
+    							value="③ (① - ②)" valueType="binary" width="174">
+    						</w2:column>
+    						<w2:column hidden="" id="column538"
+    							inputType="text" style="height:22px;" valueType="binary"
+    							width="53">
+    						</w2:column>
+    						<w2:column hidden="" id="column539"
+    							inputType="text" style="height:22px;" valueType="binary"
+    							width="53">
+    						</w2:column>
+    						<w2:column hidden="" id="column540"
+    							inputType="text" style="height:22px;" valueType="binary"
+    							width="53">
+    						</w2:column>
+    						<w2:column hidden="" id="column541"
+    							inputType="text" style="height:22px;" valueType="binary"
+    							width="53">
+    						</w2:column>
+    						<w2:column hidden="" id="column542"
+    							inputType="text" style="height:22px;" valueType="binary"
+    							width="53">
+    						</w2:column>
+    						<w2:column hidden="" id="column543"
+    							inputType="text" style="height:22px;" valueType="binary"
+    							width="53">
+    						</w2:column>
+    						<w2:column hidden="" id="column1019"
+    							inputType="text" style="height:22px;" valueType="binary"
+    							width="53">
+    						</w2:column>
+    						<w2:column hidden="" id="column1020"
+    							inputType="text" style="height:22px;" valueType="binary"
+    							width="53">
+    						</w2:column>
+    						<w2:column hidden="" id="column1043"
+    							inputType="text" style="height:22px;" valueType="binary"
+    							width="53">
+    						</w2:column>
+    						<w2:column hidden="" id="column544"
+    							inputType="text" style="height:22px;" valueType="binary"
+    							width="88">
+    						</w2:column>
+    					</w2:row>
+    					<w2:row id="row35" style="">
+    						<w2:column hidden="" id="column545"
+    							inputType="text" style="height:22px;" textAlign="right"
+    							value="④ BOC(~)" valueType="binary" width="174">
+    						</w2:column>
+    						<w2:column hidden="" id="column554"
+    							inputType="text" style="height:22px;" valueType="binary"
+    							width="53">
+    						</w2:column>
+    						<w2:column hidden="" id="column555"
+    							inputType="text" style="height:22px;" valueType="binary"
+    							width="53">
+    						</w2:column>
+    						<w2:column hidden="" id="column556"
+    							inputType="text" style="height:22px;" valueType="binary"
+    							width="53">
+    						</w2:column>
+    						<w2:column hidden="" id="column557"
+    							inputType="text" style="height:22px;" valueType="binary"
+    							width="53">
+    						</w2:column>
+    						<w2:column hidden="" id="column558"
+    							inputType="text" style="height:22px;" valueType="binary"
+    							width="53">
+    						</w2:column>
+    						<w2:column hidden="" id="column559"
+    							inputType="text" style="height:22px;" valueType="binary"
+    							width="53">
+    						</w2:column>
+    						<w2:column hidden="" id="column1021"
+    							inputType="text" style="height:22px;" valueType="binary"
+    							width="53">
+    						</w2:column>
+    						<w2:column hidden="" id="column1022"
+    							inputType="text" style="height:22px;" valueType="binary"
+    							width="53">
+    						</w2:column>
+    						<w2:column hidden="" id="column1044"
+    							inputType="text" style="height:22px;" valueType="binary"
+    							width="53">
+    						</w2:column>
+    						<w2:column hidden="" id="column560"
+    							inputType="text" style="height:22px;" valueType="binary"
+    							width="88">
+    						</w2:column>
+    					</w2:row>
+    					<w2:row id="row36" style="">
+    						<w2:column hidden="" id="column561"
+    							inputType="text" style="height:22px;" textAlign="left"
+    							value="⑤ (③ + ④)" valueType="binary" width="174">
+    						</w2:column>
+    						<w2:column hidden="" id="column570"
+    							inputType="text" style="height:22px;" valueType="binary"
+    							width="53">
+    						</w2:column>
+    						<w2:column hidden="" id="column571"
+    							inputType="text" style="height:22px;" valueType="binary"
+    							width="53">
+    						</w2:column>
+    						<w2:column hidden="" id="column572"
+    							inputType="text" style="height:22px;" valueType="binary"
+    							width="53">
+    						</w2:column>
+    						<w2:column hidden="" id="column573"
+    							inputType="text" style="height:22px;" valueType="binary"
+    							width="53">
+    						</w2:column>
+    						<w2:column hidden="" id="column574"
+    							inputType="text" style="height:22px;" valueType="binary"
+    							width="53">
+    						</w2:column>
+    						<w2:column hidden="" id="column575"
+    							inputType="text" style="height:22px;" valueType="binary"
+    							width="53">
+    						</w2:column>
+    						<w2:column hidden="" id="column1023"
+    							inputType="text" style="height:22px;" valueType="binary"
+    							width="53">
+    						</w2:column>
+    						<w2:column hidden="" id="column1024"
+    							inputType="text" style="height:22px;" valueType="binary"
+    							width="53">
+    						<w2:column hidden="" id="column1045"
+    							inputType="text" style="height:22px;" valueType="binary"
+    							width="53">
+    						</w2:column>
+    						</w2:column>
+    						<w2:column hidden="" id="column576"
+    							inputType="text" style="height:22px;" valueType="binary"
+    							width="88">
+    						</w2:column>
+    					</w2:row>
+    					<w2:row id="row37" style="">
+    						<w2:column hidden="" id="column577"
+    							inputType="text" readOnly="" style="height:22px;"
+    							textAlign="left" value="Delivery(⑤ × %)" valueType="binary"
+    							width="174">
+    						</w2:column>
+    						<w2:column hidden="" id="column586"
+    							inputType="text" style="height:22px;" valueType="binary"
+    							width="53">
+    						</w2:column>
+    						<w2:column hidden="" id="column587"
+    							inputType="text" style="height:22px;" valueType="binary"
+    							width="53">
+    						</w2:column>
+    						<w2:column hidden="" id="column588"
+    							inputType="text" style="height:22px;" valueType="binary"
+    							width="53">
+    						</w2:column>
+    						<w2:column hidden="" id="column589"
+    							inputType="text" style="height:22px;" valueType="binary"
+    							width="53">
+    						</w2:column>
+    						<w2:column hidden="" id="column590"
+    							inputType="text" style="height:22px;" valueType="binary"
+    							width="53">
+    						</w2:column>
+    						<w2:column hidden="" id="column591"
+    							inputType="text" style="height:22px;" valueType="binary"
+    							width="53">
+    						</w2:column>
+    						<w2:column hidden="" id="column1025"
+    							inputType="text" style="height:22px;" valueType="binary"
+    							width="53">
+    						</w2:column>
+    						<w2:column hidden="" id="column1026"
+    							inputType="text" style="height:22px;" valueType="binary"
+    							width="53">
+    						</w2:column>
+    						<w2:column hidden="" id="column1046"
+    							inputType="text" style="height:22px;" valueType="binary"
+    							width="53">
+    						</w2:column>
+    						<w2:column hidden="" id="column592"
+    							inputType="text" style="height:22px;" valueType="binary"
+    							width="88">
+    						</w2:column>
+    					</w2:row>
+    					<w2:row id="row38" style="">
+    						<w2:column hidden="" id="column593"
+    							inputType="text" style="height:22px;" textAlign="right"
+    							value="Sales(~)" valueType="binary" width="174">
+    						</w2:column>
+    						<w2:column hidden="" id="column602"
+    							inputType="text" style="height:22px;" valueType="binary"
+    							width="53">
+    						</w2:column>
+    						<w2:column hidden="" id="column603"
+    							inputType="text" style="height:22px;" valueType="binary"
+    							width="53">
+    						</w2:column>
+    						<w2:column hidden="" id="column604"
+    							inputType="text" style="height:22px;" valueType="binary"
+    							width="53">
+    						</w2:column>
+    						<w2:column hidden="" id="column605"
+    							inputType="text" style="height:22px;" valueType="binary"
+    							width="53">
+    						</w2:column>
+    						<w2:column hidden="" id="column606"
+    							inputType="text" style="height:22px;" valueType="binary"
+    							width="53">
+    						</w2:column>
+    						<w2:column hidden="" id="column607"
+    							inputType="text" style="height:22px;" valueType="binary"
+    							width="53">
+    						</w2:column>
+    						<w2:column hidden="" id="column1027"
+    							inputType="text" style="height:22px;" valueType="binary"
+    							width="53">
+    						</w2:column>
+    						<w2:column hidden="" id="column1028"
+    							inputType="text" style="height:22px;" valueType="binary"
+    							width="53">
+    						</w2:column>
+    						<w2:column hidden="" id="column1047"
+    							inputType="text" style="height:22px;" valueType="binary"
+    							width="53">
+    						</w2:column>
+    						<w2:column hidden="" id="column608"
+    							inputType="text" style="height:22px;" valueType="binary"
+    							width="88">
+    						</w2:column>
+    					</w2:row>
+    					<w2:row id="row39" style="">
+    						<w2:column hidden="" id="column609"
+    							inputType="text" style="height:22px;" textAlign="left"
+    							value="Total Sales" valueType="binary" width="174">
+    						</w2:column>
+    						<w2:column hidden="" id="column618"
+    							inputType="text" style="height:22px;" valueType="binary"
+    							width="40">
+    						</w2:column>
+    						<w2:column hidden="" id="column619"
+    							inputType="text" style="height:22px;" valueType="binary"
+    							width="40">
+    						</w2:column>
+    						<w2:column hidden="" id="column620"
+    							inputType="text" style="height:22px;" valueType="binary"
+    							width="40">
+    						</w2:column>
+    						<w2:column hidden="" id="column621"
+    							inputType="text" style="height:22px;" valueType="binary"
+    							width="40">
+    						</w2:column>
+    						<w2:column hidden="" id="column622"
+    							inputType="text" style="height:22px;" valueType="binary"
+    							width="40">
+    						</w2:column>
+    						<w2:column hidden="" id="column623"
+    							inputType="text" style="height:22px;" valueType="binary"
+    							width="40">
+    						</w2:column>
+    						<w2:column hidden="" id="column1029"
+    							inputType="text" style="height:22px;" valueType="binary"
+    							width="40">
+    						</w2:column>
+    						<w2:column hidden="" id="column1030"
+    							inputType="text" style="height:22px;" valueType="binary"
+    							width="40">
+    						</w2:column>
+    						<w2:column hidden="" id="column1048"
+    							inputType="text" style="height:22px;" valueType="binary"
+    							width="53">
+    						</w2:column>
+    						<w2:column hidden="" id="column624"
+    							inputType="text" style="height:22px;" valueType="binary"
+    							width="80">
+    						</w2:column>
+    					</w2:row>
+    					<w2:row id="row40" style="">
+    						<w2:column hidden="" id="column625"
+    							inputType="text" style="height:22px;" textAlign="left"
+    							value="Available Stock(Revised)" valueType="binary"
+    							width="174">
+    						</w2:column>
+    						<w2:column hidden="" id="column634"
+    							inputType="text" style="height:22px;" valueType="binary"
+    							width="40">
+    						</w2:column>
+    						<w2:column hidden="" id="column635"
+    							inputType="text" style="height:22px;" valueType="binary"
+    							width="40">
+    						</w2:column>
+    						<w2:column hidden="" id="column636"
+    							inputType="text" style="height:22px;" valueType="binary"
+    							width="40">
+    						</w2:column>
+    						<w2:column hidden="" id="column637"
+    							inputType="text" style="height:22px;" valueType="binary"
+    							width="40">
+    						</w2:column>
+    						<w2:column hidden="" id="column638"
+    							inputType="text" style="height:22px;" valueType="binary"
+    							width="40">
+    						</w2:column>
+    						<w2:column hidden="" id="column639"
+    							inputType="text" style="height:22px;" valueType="binary"
+    							width="40">
+    						</w2:column>
+    						<w2:column hidden="" id="column1031"
+    							inputType="text" style="height:22px;" valueType="binary"
+    							width="40">
+    						</w2:column>
+    						<w2:column hidden="" id="column1032"
+    							inputType="text" style="height:22px;" valueType="binary"
+    							width="40">
+    						</w2:column>
+    						<w2:column hidden="" id="column1049"
+    							inputType="text" style="height:22px;" valueType="binary"
+    							width="53">
+    						</w2:column>
+    						<w2:column hidden="" id="column640"
+    							inputType="text" style="height:22px;" valueType="binary"
+    							width="80">
+    						</w2:column>
+    					</w2:row>
+    					<w2:row id="row41" style="">
+    						<w2:column hidden="" id="column641"
+    							inputType="text" style="height:24px;color:#2fe9ee;"
+    							textAlign="left" value="Sales FCST(Adj.)" valueType="binary"
+    							width="174">
+    						</w2:column>
+    						<w2:column hidden="" id="column650"
+    							inputType="text" style="height:24px;color:#2fe9ee;"
+    							valueType="binary" width="40">
+    						</w2:column>
+    						<w2:column hidden="" id="column651"
+    							inputType="text" style="height:24px;color:#2fe9ee;"
+    							valueType="binary" width="40">
+    						</w2:column>
+    						<w2:column hidden="" id="column652"
+    							inputType="text" style="height:24px;color:#2fe9ee;"
+    							valueType="binary" width="40">
+    						</w2:column>
+    						<w2:column hidden="" id="column653"
+    							inputType="text" style="height:24px;color:#2fe9ee;"
+    							valueType="binary" width="40">
+    						</w2:column>
+    						<w2:column hidden="" id="column654"
+    							inputType="text" style="height:24px;color:#2fe9ee;"
+    							valueType="binary" width="40">
+    						</w2:column>
+    						<w2:column hidden="" id="column655"
+    							inputType="text" style="height:24px;color:#2fe9ee;"
+    							valueType="binary" width="40">
+    						</w2:column>
+    						<w2:column hidden="" id="column1033"
+    							inputType="text" style="height:24px;color:#2fe9ee;"
+    							valueType="binary" width="40">
+    						</w2:column>
+    						<w2:column hidden="" id="column1034"
+    							inputType="text" style="height:24px;color:#2fe9ee;"
+    							valueType="binary" width="40">
+    						</w2:column>
+    						<w2:column hidden="" id="column1050"
+    							inputType="text" style="height:22px;" valueType="binary"
+    							width="53">
+    						</w2:column>
+    						<w2:column hidden="" id="column656"
+    							inputType="text" style="height:24px;color:#2fe9ee;"
+    							valueType="binary" width="80">
+    						</w2:column>
+    					</w2:row>
+    					<w2:row id="row42" style="">
+    						<w2:column hidden="" id="column657"
+    							inputType="text" style="height:24px;color:#2fe9ee;"
+    							textAlign="right" value="vs Target" valueType="binary"
+    							width="174">
+    						</w2:column>
+    						<w2:column hidden="" id="column666"
+    							inputType="text" style="height:24px;color:#2fe9ee;"
+    							valueType="binary" width="40">
+    						</w2:column>
+    						<w2:column hidden="" id="column667"
+    							inputType="text" style="height:24px;color:#2fe9ee;"
+    							valueType="binary" width="40">
+    						</w2:column>
+    						<w2:column hidden="" id="column668"
+    							inputType="text" style="height:24px;color:#2fe9ee;"
+    							valueType="binary" width="40">
+    						</w2:column>
+    						<w2:column hidden="" id="column669"
+    							inputType="text" style="height:24px;color:#2fe9ee;"
+    							valueType="binary" width="40">
+    						</w2:column>
+    						<w2:column hidden="" id="column670"
+    							inputType="text" style="height:24px;color:#2fe9ee;"
+    							valueType="binary" width="40">
+    						</w2:column>
+    						<w2:column hidden="" id="column671"
+    							inputType="text" style="height:24px;color:#2fe9ee;"
+    							valueType="binary" width="40">
+    						</w2:column>
+    						<w2:column hidden="" id="column1035"
+    							inputType="text" style="height:24px;color:#2fe9ee;"
+    							valueType="binary" width="40">
+    						</w2:column>
+    						<w2:column hidden="" id="column1036"
+    							inputType="text" style="height:24px;color:#2fe9ee;"
+    							valueType="binary" width="40">
+    						</w2:column>
+    						<w2:column hidden="" id="column1051"
+    							inputType="text" style="height:22px;" valueType="binary"
+    							width="53">
+    						</w2:column>
+    						<w2:column hidden="" id="column672"
+    							inputType="text" style="height:24px;color:#2fe9ee;"
+    							valueType="binary" width="80">
+    						</w2:column>
+    					</w2:row>
+    					<w2:row id="row43" style="">
+    						<w2:column hidden="" id="column673"
+    							inputType="text" style="height:24px;color:#2fe9ee;"
+    							textAlign="left" value="Sales Target" valueType="binary"
+    							width="174">
+    						</w2:column>
+    						<w2:column hidden="" id="column682"
+    							inputType="text" style="height:24px;color:#2fe9ee;"
+    							valueType="binary" width="40">
+    						</w2:column>
+    						<w2:column hidden="" id="column683"
+    							inputType="text" style="height:24px;color:#2fe9ee;"
+    							valueType="binary" width="40">
+    						</w2:column>
+    						<w2:column hidden="" id="column684"
+    							inputType="text" style="height:24px;color:#2fe9ee;"
+    							valueType="binary" width="40">
+    						</w2:column>
+    						<w2:column hidden="" id="column685"
+    							inputType="text" style="height:24px;color:#2fe9ee;"
+    							valueType="binary" width="40">
+    						</w2:column>
+    						<w2:column hidden="" id="column686"
+    							inputType="text" style="height:24px;color:#2fe9ee;"
+    							valueType="binary" width="40">
+    						</w2:column>
+    						<w2:column hidden="" id="column687"
+    							inputType="text" style="height:24px;color:#2fe9ee;"
+    							valueType="binary" width="40">
+    						</w2:column>
+    						<w2:column hidden="" id="column1037"
+    							inputType="text" style="height:24px;color:#2fe9ee;"
+    							valueType="binary" width="40">
+    						</w2:column>
+    						<w2:column hidden="" id="column1038"
+    							inputType="text" style="height:24px;color:#2fe9ee;"
+    							valueType="binary" width="40">
+    						</w2:column>
+    						<w2:column hidden="" id="column1052"
+    							inputType="text" style="height:22px;" valueType="binary"
+    							width="53">
+    						</w2:column>
+    						<w2:column hidden="" id="column688"
+    							inputType="text" style="height:24px;color:#2fe9ee;"
+    							valueType="binary" width="80">
+    						</w2:column>
+    					</w2:row>
+    					<w2:row id="row44" style="">
+    						<w2:column hidden="" id="column689"
+    							inputType="text" style="height:22px;" textAlign="left"
+    							value="BOC(End Of Month)" valueType="binary" width="174">
+    						</w2:column>
+    						<w2:column hidden="" id="column698"
+    							inputType="text" style="height:22px;" valueType="binary"
+    							width="40">
+    						</w2:column>
+    						<w2:column hidden="" id="column699"
+    							inputType="text" style="height:22px;" valueType="binary"
+    							width="40">
+    						</w2:column>
+    						<w2:column hidden="" id="column700"
+    							inputType="text" style="height:22px;" valueType="binary"
+    							width="40">
+    						</w2:column>
+    						<w2:column hidden="" id="column701"
+    							inputType="text" style="height:22px;" valueType="binary"
+    							width="40">
+    						</w2:column>
+    						<w2:column hidden="" id="column702"
+    							inputType="text" style="height:22px;" valueType="binary"
+    							width="40">
+    						</w2:column>
+    						<w2:column hidden="" id="column703"
+    							inputType="text" style="height:22px;" valueType="binary"
+    							width="40">
+    						</w2:column>
+    						<w2:column hidden="" id="column1039"
+    							inputType="text" style="height:22px;" valueType="binary"
+    							width="40">
+    						</w2:column>
+    						<w2:column hidden="" id="column1040"
+    							inputType="text" style="height:22px;" valueType="binary"
+    							width="40">
+    						</w2:column>
+    						<w2:column hidden="" id="column1053"
+    							inputType="text" style="height:22px;" valueType="binary"
+    							width="53">
+    						</w2:column>
+    						<w2:column hidden="" id="column704"
+    							inputType="text" style="height:22px;" valueType="binary"
+    							width="80">
+    						</w2:column>
+    					</w2:row>
+    				</w2:gBody>
+    			</w2:grid>
+    		</xf:case>
+    		<xf:case id="case2"
+    			style="position:absolute;top:2px;left:2px;width:981px;height:552px;"
+    			class="">
+    		<w2:grid baseNode="" class="grid" id="grid1" repeatNode="" style="position: absolute ;left:0px;top:0px;width:976px;height:191px" overflowX="hidden" overflowY="hidden"  readOnly="true" rowMouseOver="false">
+    		<w2:header class="gridHeaderTable" columnClass="gridHeaderTD" id="conheader1" style="">
+    			<w2:row id="row1" style="">
+    				<w2:column hidden="" id="column1" inputType="text" style="height:24px;" valueType="binary" width="174" value="Contract">
+    				</w2:column>
+    				<w2:column hidden="" id="l_header_con_1" inputType="text" style="height:24px;color:#F0B500;" valueType="binary" width="57" value="">
+    				</w2:column>
+    				<w2:column hidden="" id="l_header_con_2" inputType="text" style="height:24px;color:#F0B500;" valueType="binary" width="57" value="">
+    				</w2:column>
+    				<w2:column hidden="" id="l_header_con_3" inputType="text" style="height:24px;color:#F0B500;" valueType="binary" width="57" value="">
+    				</w2:column>
+    				<w2:column hidden="" id="l_header_con_4" inputType="text" style="height:24px;color:#F0B500;" valueType="binary" width="57" value="">
+    				</w2:column>
+    				<w2:column hidden="" id="l_header_con_5" inputType="text" style="height:24px;color:#F0B500;" valueType="binary" width="57" value="">
+    				</w2:column>
+    				<w2:column hidden="" id="l_header_con_6" inputType="text" style="height:24px;color:#F0B500;" valueType="binary" width="57" value="">
+    				</w2:column>
+    				<w2:column hidden="" id="l_header_con_7" inputType="text" style="height:24px;color:#F0B500;" valueType="binary" width="57" value="">
+    				</w2:column>
+    				<w2:column hidden="" id="l_header_con_8" inputType="text" style="height:24px;color:#F0B500;" valueType="binary" width="57" value="">
+    				</w2:column>
+    				<w2:column hidden="" id="l_header_con_9" inputType="text" style="height:24px;color:#F0B500;" valueType="binary" width="57" value="">
+    				</w2:column>
+    				<w2:column hidden="" id="l_header_con_10" inputType="text" style="height:24px;color:#F0B500;" valueType="binary" width="57" value="">
+    				</w2:column>
+    				<w2:column hidden="" id="l_header_con_11" inputType="text" style="height:24px;color:#F0B500;" valueType="binary" width="57" value="">
+    				</w2:column>
+    				<w2:column hidden="" id="l_header_con_12" inputType="text" style="height:24px;color:#F0B500;" valueType="binary" width="57" value="">
+    				</w2:column>
+    				<w2:column hidden="" id="l_header_con_13" inputType="text" style="height:24px;color:#F0B500;" valueType="binary" width="57" value="">
+    				</w2:column>
+    				<!-- w2:column hidden="" id="l_header_con_14" inputType="text" style="height:24px;color:#F0B500;" valueType="binary" width="57" value="">
+    				</w2:column -->
+    				<w2:column hidden="" id="column16" inputType="text" style="height:24px;color:#F0B500;" valueType="binary" width="57" value="Total">
+    				</w2:column>
+    			</w2:row>
+    		</w2:header>
+    		<w2:gBody class="gridBodyTable" columnClass="gridBodyTD" id="gBody1" style="">
+    			<w2:row id="row2" style="">
+    				<w2:column hidden="" id="column17" inputType="text" style="height:22px;" valueType="binary" width="174" value="Target" textAlign="left">
+    				</w2:column>
+    				<w2:column hidden="" id="column18" inputType="text" style="height:22px;" valueType="binary" width="70">
+    				</w2:column>
+    				<w2:column hidden="" id="column19" inputType="text" style="height:22px;" valueType="binary" width="70">
+    				</w2:column>
+    				<w2:column hidden="" id="column20" inputType="text" style="height:22px;" valueType="binary" width="70">
+    				</w2:column>
+    				<w2:column hidden="" id="column21" inputType="text" style="height:22px;" valueType="binary" width="70">
+    				</w2:column>
+    				<w2:column hidden="" id="column22" inputType="text" style="height:22px;" valueType="binary" width="70">
+    				</w2:column>
+    				<w2:column hidden="" id="column23" inputType="text" style="height:22px;" valueType="binary" width="70">
+    				</w2:column>
+    				<w2:column hidden="" id="column24" inputType="text" style="height:22px;" valueType="binary" width="70">
+    				</w2:column>
+    				<w2:column hidden="" id="column25" inputType="text" style="height:22px;" valueType="binary" width="70">
+    				</w2:column>
+    				<w2:column hidden="" id="column26" inputType="text" style="height:22px;" valueType="binary" width="70">
+    				</w2:column>
+    				<w2:column hidden="" id="column27" inputType="text" style="height:22px;" valueType="binary" width="70">
+    				</w2:column>
+    				<w2:column hidden="" id="column28" inputType="text" style="height:22px;" valueType="binary" width="70">
+    				</w2:column>
+    				<w2:column hidden="" id="column29" inputType="text" style="height:22px;" valueType="binary" width="70">
+    				</w2:column>
+    				<w2:column hidden="" id="column30" inputType="text" style="height:22px;" valueType="binary" width="70">
+    				</w2:column>
+    				<!-- w2:column hidden="" id="column31" inputType="text" style="height:22px;" valueType="binary" width="70">
+    				</w2:column -->
+    				<w2:column hidden="" id="column32" inputType="text" style="height:22px;" valueType="binary" width="70">
+    				</w2:column>
+    			</w2:row>
+    			<w2:row id="row3" style="">
+    				<w2:column id="column48" style="height:22px;" hidden="" width="174" inputType="text" valueType="binary" value="Daliy Target(~)" textAlign="left">
+    				</w2:column>
+    				<w2:column id="column47" style="height:22px;" hidden="" width="70" inputType="text" valueType="binary">
+    				</w2:column>
+    				<w2:column id="column46" style="height:22px;" hidden="" width="70" inputType="text" valueType="binary">
+    				</w2:column>
+    				<w2:column id="column45" style="height:22px;" hidden="" width="70" inputType="text" valueType="binary">
+    				</w2:column>
+    				<w2:column id="column44" style="height:22px;" hidden="" width="70" inputType="text" valueType="binary">
+    				</w2:column>
+    				<w2:column id="column43" style="height:22px;" hidden="" width="70" inputType="text" valueType="binary">
+    				</w2:column>
+    				<w2:column id="column42" style="height:22px;" hidden="" width="70" inputType="text" valueType="binary">
+    				</w2:column>
+    				<w2:column id="column41" style="height:22px;" hidden="" width="70" inputType="text" valueType="binary">
+    				</w2:column>
+    				<w2:column id="column40" style="height:22px;" hidden="" width="70" inputType="text" valueType="binary">
+    				</w2:column>
+    				<w2:column id="column39" style="height:22px;" hidden="" width="70" inputType="text" valueType="binary">
+    				</w2:column>
+    				<w2:column id="column38" style="height:22px;" hidden="" width="70" inputType="text" valueType="binary">
+    				</w2:column>
+    				<w2:column id="column37" style="height:22px;" hidden="" width="70" inputType="text" valueType="binary">
+    				</w2:column>
+    				<w2:column id="column36" style="height:22px;" hidden="" width="70" inputType="text" valueType="binary">
+    				</w2:column>
+    				<w2:column id="column35" style="height:22px;" hidden="" width="70" inputType="text" valueType="binary">
+    				</w2:column>
+    				<!-- w2:column id="column34" style="height:22px;" hidden="" width="70" inputType="text" valueType="binary">
+    				</w2:column -->
+    				<w2:column id="column33" style="height:22px;" hidden="" width="70" inputType="text" valueType="binary">
+    				</w2:column>
+    			</w2:row>
+    			<w2:row id="row4" style="">
+    				<w2:column id="column64" style="height:22px;" hidden="" width="174" inputType="text" valueType="binary" value="Actual(~)" textAlign="left">
+    				</w2:column>
+    				<w2:column id="column63" style="height:22px;" hidden="" width="70" inputType="text" valueType="binary">
+    				</w2:column>
+    				<w2:column id="column62" style="height:22px;" hidden="" width="70" inputType="text" valueType="binary">
+    				</w2:column>
+    				<w2:column id="column61" style="height:22px;" hidden="" width="70" inputType="text" valueType="binary">
+    				</w2:column>
+    				<w2:column id="column60" style="height:22px;" hidden="" width="70" inputType="text" valueType="binary">
+    				</w2:column>
+    				<w2:column id="column59" style="height:22px;" hidden="" width="70" inputType="text" valueType="binary">
+    				</w2:column>
+    				<w2:column id="column58" style="height:22px;" hidden="" width="70" inputType="text" valueType="binary">
+    				</w2:column>
+    				<w2:column id="column57" style="height:22px;" hidden="" width="70" inputType="text" valueType="binary">
+    				</w2:column>
+    				<w2:column id="column56" style="height:22px;" hidden="" width="70" inputType="text" valueType="binary">
+    				</w2:column>
+    				<w2:column id="column55" style="height:22px;" hidden="" width="70" inputType="text" valueType="binary">
+    				</w2:column>
+    				<w2:column id="column54" style="height:22px;" hidden="" width="70" inputType="text" valueType="binary">
+    				</w2:column>
+    				<w2:column id="column53" style="height:22px;" hidden="" width="70" inputType="text" valueType="binary">
+    				</w2:column>
+    				<w2:column id="column52" style="height:22px;" hidden="" width="70" inputType="text" valueType="binary">
+    				</w2:column>
+    				<w2:column id="column51" style="height:22px;" hidden="" width="70" inputType="text" valueType="binary">
+    				</w2:column>
+    				<!-- w2:column id="column50" style="height:22px;" hidden="" width="70" inputType="text" valueType="binary">
+    				</w2:column -->
+    				<w2:column id="column49" style="height:22px;" hidden="" width="70" inputType="text" valueType="binary">
+    				</w2:column>
+    			</w2:row>
+    			<w2:row id="row5" style="">
+    				<w2:column id="column80" style="height:22px;" hidden="" width="174" inputType="text" valueType="binary" value="A/R" textAlign="right">
+    				</w2:column>
+    				<w2:column id="column79" style="height:22px;" hidden="" width="70" inputType="text" valueType="binary">
+    				</w2:column>
+    				<w2:column id="column78" style="height:22px;" hidden="" width="70" inputType="text" valueType="binary">
+    				</w2:column>
+    				<w2:column id="column77" style="height:22px;" hidden="" width="70" inputType="text" valueType="binary">
+    				</w2:column>
+    				<w2:column id="column76" style="height:22px;" hidden="" width="70" inputType="text" valueType="binary">
+    				</w2:column>
+    				<w2:column id="column75" style="height:22px;" hidden="" width="70" inputType="text" valueType="binary">
+    				</w2:column>
+    				<w2:column id="column74" style="height:22px;" hidden="" width="70" inputType="text" valueType="binary">
+    				</w2:column>
+    				<w2:column id="column73" style="height:22px;" hidden="" width="70" inputType="text" valueType="binary">
+    				</w2:column>
+    				<w2:column id="column72" style="height:22px;" hidden="" width="70" inputType="text" valueType="binary">
+    				</w2:column>
+    				<w2:column id="column71" style="height:22px;" hidden="" width="70" inputType="text" valueType="binary">
+    				</w2:column>
+    				<w2:column id="column70" style="height:22px;" hidden="" width="70" inputType="text" valueType="binary">
+    				</w2:column>
+    				<w2:column id="column69" style="height:22px;" hidden="" width="70" inputType="text" valueType="binary">
+    				</w2:column>
+    				<w2:column id="column68" style="height:22px;" hidden="" width="70" inputType="text" valueType="binary">
+    				</w2:column>
+    				<w2:column id="column67" style="height:22px;" hidden="" width="70" inputType="text" valueType="binary">
+    				</w2:column>
+    				<!-- w2:column id="column66" style="height:22px;" hidden="" width="70" inputType="text" valueType="binary">
+    				</w2:column -->
+    				<w2:column id="column65" style="height:22px;" hidden="" width="70" inputType="text" valueType="binary">
+    				</w2:column>
+    			</w2:row>
+    			<w2:row id="row6" style="">
+    				<w2:column id="column96" style="height:22px;" hidden="" width="174" inputType="text" valueType="binary" value="Forecast" textAlign="left">
+    				</w2:column>
+    				<w2:column id="column95" style="height:22px;" hidden="" width="70" inputType="text" valueType="binary">
+    				</w2:column>
+    				<w2:column id="column94" style="height:22px;" hidden="" width="70" inputType="text" valueType="binary">
+    				</w2:column>
+    				<w2:column id="column93" style="height:22px;" hidden="" width="70" inputType="text" valueType="binary">
+    				</w2:column>
+    				<w2:column id="column92" style="height:22px;" hidden="" width="70" inputType="text" valueType="binary">
+    				</w2:column>
+    				<w2:column id="column91" style="height:22px;" hidden="" width="70" inputType="text" valueType="binary">
+    				</w2:column>
+    				<w2:column id="column90" style="height:22px;" hidden="" width="70" inputType="text" valueType="binary">
+    				</w2:column>
+    				<w2:column id="column89" style="height:22px;" hidden="" width="70" inputType="text" valueType="binary">
+    				</w2:column>
+    				<w2:column id="column88" style="height:22px;" hidden="" width="70" inputType="text" valueType="binary">
+    				</w2:column>
+    				<w2:column id="column87" style="height:22px;" hidden="" width="70" inputType="text" valueType="binary">
+    				</w2:column>
+    				<w2:column id="column86" style="height:22px;" hidden="" width="70" inputType="text" valueType="binary">
+    				</w2:column>
+    				<w2:column id="column85" style="height:22px;" hidden="" width="70" inputType="text" valueType="binary">
+    				</w2:column>
+    				<w2:column id="column84" style="height:22px;" hidden="" width="70" inputType="text" valueType="binary">
+    				</w2:column>
+    				<w2:column id="column83" style="height:22px;" hidden="" width="70" inputType="text" valueType="binary">
+    				</w2:column>
+    				<!-- w2:column id="column82" style="height:22px;" hidden="" width="70" inputType="text" valueType="binary">
+    				</w2:column -->
+    				<w2:column id="column81" style="height:22px;" hidden="" width="70" inputType="text" valueType="binary">
+    				</w2:column>
+    			</w2:row>
+    			<w2:row id="row7" style="">
+    				<w2:column id="column112" style="height:24px;color:#2fe9ee;" hidden="" width="174" inputType="text" valueType="binary" value="Contract FCST(Adj.)" textAlign="left">
+    				</w2:column>
+    				<w2:column id="column111" style="height:24px;color:#2fe9ee;" hidden="" width="70" inputType="text" valueType="binary">
+    				</w2:column>
+    				<w2:column id="column110" style="height:24px;color:#2fe9ee;" hidden="" width="70" inputType="text" valueType="binary">
+    				</w2:column>
+    				<w2:column id="column109" style="height:24px;color:#2fe9ee;" hidden="" width="70" inputType="text" valueType="binary">
+    				</w2:column>
+    				<w2:column id="column108" style="height:24px;color:#2fe9ee;" hidden="" width="70" inputType="text" valueType="binary">
+    				</w2:column>
+    				<w2:column id="column107" style="height:24px;color:#2fe9ee;" hidden="" width="70" inputType="text" valueType="binary">
+    				</w2:column>
+    				<w2:column id="column106" style="height:24px;color:#2fe9ee;" hidden="" width="70" inputType="text" valueType="binary">
+    				</w2:column>
+    				<w2:column id="column105" style="height:24px;color:#2fe9ee;" hidden="" width="70" inputType="text" valueType="binary">
+    				</w2:column>
+    				<w2:column id="column104" style="height:24px;color:#2fe9ee;" hidden="" width="70" inputType="text" valueType="binary">
+    				</w2:column>
+    				<w2:column id="column103" style="height:24px;color:#2fe9ee;" hidden="" width="70" inputType="text" valueType="binary">
+    				</w2:column>
+    				<w2:column id="column102" style="height:24px;color:#2fe9ee;" hidden="" width="70" inputType="text" valueType="binary">
+    				</w2:column>
+    				<w2:column id="column101" style="height:24px;color:#2fe9ee;" hidden="" width="70" inputType="text" valueType="binary">
+    				</w2:column>
+    				<w2:column id="column100" style="height:24px;color:#2fe9ee;" hidden="" width="70" inputType="text" valueType="binary">
+    				</w2:column>
+    				<w2:column id="column99" style="height:24px;color:#2fe9ee;" hidden="" width="70" inputType="text" valueType="binary">
+    				</w2:column>
+    				<!-- w2:column id="column98" style="height:24px;color:#2fe9ee;" hidden="" width="70" inputType="text" valueType="binary">
+    				</w2:column -->
+    				<w2:column id="column97" style="height:24px;color:#2fe9ee;" hidden="" width="70" inputType="text" valueType="binary">
+    				</w2:column>
+    			</w2:row>
+    			<w2:row id="row8" style="">
+    				<w2:column id="column128" style="height:24px;color:#2fe9ee;" hidden="" width="174" inputType="text" valueType="binary" value="vs Target" textAlign="right">
+    				</w2:column>
+    				<w2:column id="column127" style="height:24px;color:#2fe9ee;" hidden="" width="70" inputType="text" valueType="binary">
+    				</w2:column>
+    				<w2:column id="column126" style="height:24px;color:#2fe9ee;" hidden="" width="70" inputType="text" valueType="binary">
+    				</w2:column>
+    				<w2:column id="column125" style="height:24px;color:#2fe9ee;" hidden="" width="70" inputType="text" valueType="binary">
+    				</w2:column>
+    				<w2:column id="column124" style="height:24px;color:#2fe9ee;" hidden="" width="70" inputType="text" valueType="binary">
+    				</w2:column>
+    				<w2:column id="column123" style="height:24px;color:#2fe9ee;" hidden="" width="70" inputType="text" valueType="binary">
+    				</w2:column>
+    				<w2:column id="column122" style="height:24px;color:#2fe9ee;" hidden="" width="70" inputType="text" valueType="binary">
+    				</w2:column>
+    				<w2:column id="column121" style="height:24px;color:#2fe9ee;" hidden="" width="70" inputType="text" valueType="binary">
+    				</w2:column>
+    				<w2:column id="column120" style="height:24px;color:#2fe9ee;" hidden="" width="70" inputType="text" valueType="binary">
+    				</w2:column>
+    				<w2:column id="column119" style="height:24px;color:#2fe9ee;" hidden="" width="70" inputType="text" valueType="binary">
+    				</w2:column>
+    				<w2:column id="column118" style="height:24px;color:#2fe9ee;" hidden="" width="70" inputType="text" valueType="binary">
+    				</w2:column>
+    				<w2:column id="column117" style="height:24px;color:#2fe9ee;" hidden="" width="70" inputType="text" valueType="binary">
+    				</w2:column>
+    				<w2:column id="column116" style="height:24px;color:#2fe9ee;" hidden="" width="70" inputType="text" valueType="binary">
+    				</w2:column>
+    				<w2:column id="column115" style="height:24px;color:#2fe9ee;" hidden="" width="70" inputType="text" valueType="binary">
+    				</w2:column>
+    				<!-- w2:column id="column114" style="height:24px;color:#2fe9ee;" hidden="" width="70" inputType="text" valueType="binary">
+    				</w2:column -->
+    				<w2:column id="column113" style="height:24px;color:#2fe9ee;" hidden="" width="70" inputType="text" valueType="binary">
+    				</w2:column>
+    			</w2:row>
+    		</w2:gBody>
+    	</w2:grid><w2:grid baseNode="vector" class="grid" id="grid2" overflowX="hidden" overflowY="hidden" repeatNode="data/INFO" rowMouseOver="false" readOnly="true" style="position: absolute ;left:0px;top:213px;width:976px;height:331px">
+    		<w2:header class="gridHeaderTable" columnClass="gridHeaderTD" id="salesheader2" style="">
+    			<w2:row id="row9" style="">
+    				<w2:column hidden="" id="column129" inputType="text" style="height:24px;" value="Sales" valueType="binary" width="174">
+    				</w2:column>
+    				<w2:column hidden="" id="l_header_sa_1" inputType="text" style="height:24px;color:#F0B500;" value="" valueType="binary" width="57">
+    				</w2:column>
+    				<w2:column hidden="" id="l_header_sa_2" inputType="text" style="height:24px;color:#F0B500;" value="" valueType="binary" width="57">
+    				</w2:column>
+    				<w2:column hidden="" id="l_header_sa_3" inputType="text" style="height:24px;color:#F0B500;" value="" valueType="binary" width="57">
+    				</w2:column>
+    				<w2:column hidden="" id="l_header_sa_4" inputType="text" style="height:24px;color:#F0B500;" value="" valueType="binary" width="57">
+    				</w2:column>
+    				<w2:column hidden="" id="l_header_sa_5" inputType="text" style="height:24px;color:#F0B500;" value="" valueType="binary" width="57">
+    				</w2:column>
+    				<w2:column hidden="" id="l_header_sa_6" inputType="text" style="height:24px;color:#F0B500;" value="" valueType="binary" width="57">
+    				</w2:column>
+    				<w2:column hidden="" id="l_header_sa_7" inputType="text" style="height:24px;color:#F0B500;" value="" valueType="binary" width="57">
+    				</w2:column>
+    				<w2:column hidden="" id="l_header_sa_8" inputType="text" style="height:24px;color:#F0B500;" value="" valueType="binary" width="57">
+    				</w2:column>
+    				<w2:column hidden="" id="l_header_sa_9" inputType="text" style="height:24px;color:#F0B500;" value="" valueType="binary" width="57">
+    				</w2:column>
+    				<w2:column hidden="" id="l_header_sa_10" inputType="text" style="height:24px;color:#F0B500;" value="" valueType="binary" width="57">
+    				</w2:column>
+    				<w2:column hidden="" id="l_header_sa_11" inputType="text" style="height:24px;color:#F0B500;" value="" valueType="binary" width="57">
+    				</w2:column>
+    				<w2:column hidden="" id="l_header_sa_12" inputType="text" style="height:24px;color:#F0B500;" value="" valueType="binary" width="57">
+    				</w2:column>
+    				<w2:column hidden="" id="l_header_sa_13" inputType="text" style="height:24px;color:#F0B500;" value="" valueType="binary" width="57">
+    				</w2:column>
+    				<!-- w2:column hidden="" id="l_header_sa_14" inputType="text" style="height:24px;color:#F0B500;" value="" valueType="binary" width="57">
+    				</w2:column -->
+    				<w2:column hidden="" id="l_header_sa_total" inputType="text" style="height:24px;color:#F0B500;" value="Total" valueType="binary" width="57">
+    				</w2:column>
+    			</w2:row>
+    		</w2:header>
+    		<w2:gBody class="gridBodyTable" columnClass="gridBodyTD" id="gBody2" style="">
+    			<w2:row id="row10" style="">
+    				<w2:column hidden="" id="column145" inputType="text" style="height:22px;" textAlign="left" value="① Contract FCST" valueType="binary" width="174">
+    				</w2:column>
+    				<w2:column hidden="" id="column146" inputType="text" style="height:22px;" valueType="binary" width="70">
+    				</w2:column>
+    				<w2:column hidden="" id="column147" inputType="text" style="height:22px;" valueType="binary" width="70">
+    				</w2:column>
+    				<w2:column hidden="" id="column148" inputType="text" style="height:22px;" valueType="binary" width="70">
+    				</w2:column>
+    				<w2:column hidden="" id="column149" inputType="text" style="height:22px;" valueType="binary" width="70">
+    				</w2:column>
+    				<w2:column hidden="" id="column150" inputType="text" style="height:22px;" valueType="binary" width="70">
+    				</w2:column>
+    				<w2:column hidden="" id="column151" inputType="text" style="height:22px;" valueType="binary" width="70">
+    				</w2:column>
+    				<w2:column hidden="" id="column152" inputType="text" style="height:22px;" valueType="binary" width="70">
+    				</w2:column>
+    				<w2:column hidden="" id="column153" inputType="text" style="height:22px;" valueType="binary" width="70">
+    				</w2:column>
+    				<w2:column hidden="" id="column154" inputType="text" style="height:22px;" valueType="binary" width="70">
+    				</w2:column>
+    				<w2:column hidden="" id="column155" inputType="text" style="height:22px;" valueType="binary" width="70">
+    				</w2:column>
+    				<w2:column hidden="" id="column156" inputType="text" style="height:22px;" valueType="binary" width="70">
+    				</w2:column>
+    				<w2:column hidden="" id="column157" inputType="text" style="height:22px;" valueType="binary" width="70">
+    				</w2:column>
+    				<w2:column hidden="" id="column158" inputType="text" style="height:22px;" valueType="binary" width="70">
+    				</w2:column>
+    				<!-- w2:column hidden="" id="column159" inputType="text" style="height:22px;" valueType="binary" width="70">
+    				</w2:column -->
+    				<w2:column hidden="" id="column160" inputType="text" style="height:22px;" valueType="binary" width="70">
+    				</w2:column>
+    			</w2:row>
+    			<w2:row id="row11" style="">
+    				<w2:column hidden="" id="column161" inputType="text" style="height:22px;" textAlign="left" value="② Contract(~)" valueType="binary" width="174">
+    				</w2:column>
+    				<w2:column hidden="" id="column162" inputType="text" style="height:22px;" valueType="binary" width="70">
+    				</w2:column>
+    				<w2:column hidden="" id="column163" inputType="text" style="height:22px;" valueType="binary" width="70">
+    				</w2:column>
+    				<w2:column hidden="" id="column164" inputType="text" style="height:22px;" valueType="binary" width="70">
+    				</w2:column>
+    				<w2:column hidden="" id="column165" inputType="text" style="height:22px;" valueType="binary" width="70">
+    				</w2:column>
+    				<w2:column hidden="" id="column166" inputType="text" style="height:22px;" valueType="binary" width="70">
+    				</w2:column>
+    				<w2:column hidden="" id="column167" inputType="text" style="height:22px;" valueType="binary" width="70">
+    				</w2:column>
+    				<w2:column hidden="" id="column168" inputType="text" style="height:22px;" valueType="binary" width="70">
+    				</w2:column>
+    				<w2:column hidden="" id="column169" inputType="text" style="height:22px;" valueType="binary" width="70">
+    				</w2:column>
+    				<w2:column hidden="" id="column170" inputType="text" style="height:22px;" valueType="binary" width="70">
+    				</w2:column>
+    				<w2:column hidden="" id="column171" inputType="text" style="height:22px;" valueType="binary" width="70">
+    				</w2:column>
+    				<w2:column hidden="" id="column172" inputType="text" style="height:22px;" valueType="binary" width="70">
+    				</w2:column>
+    				<w2:column hidden="" id="column173" inputType="text" style="height:22px;" valueType="binary" width="70">
+    				</w2:column>
+    				<w2:column hidden="" id="column174" inputType="text" style="height:22px;" valueType="binary" width="70">
+    				</w2:column>
+    				<!-- w2:column hidden="" id="column175" inputType="text" style="height:22px;" valueType="binary" width="70">
+    				</w2:column -->
+    				<w2:column hidden="" id="column176" inputType="text" style="height:22px;" valueType="binary" width="70">
+    				</w2:column>
+    			</w2:row>
+    			<w2:row id="row12" style="">
+    				<w2:column hidden="" id="column177" inputType="text" style="height:22px;" textAlign="left" value="③ (① - ②)" valueType="binary" width="174">
+    				</w2:column>
+    				<w2:column hidden="" id="column178" inputType="text" style="height:22px;" valueType="binary" width="70">
+    				</w2:column>
+    				<w2:column hidden="" id="column179" inputType="text" style="height:22px;" valueType="binary" width="70">
+    				</w2:column>
+    				<w2:column hidden="" id="column180" inputType="text" style="height:22px;" valueType="binary" width="70">
+    				</w2:column>
+    				<w2:column hidden="" id="column181" inputType="text" style="height:22px;" valueType="binary" width="70">
+    				</w2:column>
+    				<w2:column hidden="" id="column182" inputType="text" style="height:22px;" valueType="binary" width="70">
+    				</w2:column>
+    				<w2:column hidden="" id="column183" inputType="text" style="height:22px;" valueType="binary" width="70">
+    				</w2:column>
+    				<w2:column hidden="" id="column184" inputType="text" style="height:22px;" valueType="binary" width="70">
+    				</w2:column>
+    				<w2:column hidden="" id="column185" inputType="text" style="height:22px;" valueType="binary" width="70">
+    				</w2:column>
+    				<w2:column hidden="" id="column186" inputType="text" style="height:22px;" valueType="binary" width="70">
+    				</w2:column>
+    				<w2:column hidden="" id="column187" inputType="text" style="height:22px;" valueType="binary" width="70">
+    				</w2:column>
+    				<w2:column hidden="" id="column188" inputType="text" style="height:22px;" valueType="binary" width="70">
+    				</w2:column>
+    				<w2:column hidden="" id="column189" inputType="text" style="height:22px;" valueType="binary" width="70">
+    				</w2:column>
+    				<w2:column hidden="" id="column190" inputType="text" style="height:22px;" valueType="binary" width="70">
+    				</w2:column>
+    				<!-- w2:column hidden="" id="column191" inputType="text" style="height:22px;" valueType="binary" width="70">
+    				</w2:column -->
+    				<w2:column hidden="" id="column192" inputType="text" style="height:22px;" valueType="binary" width="70">
+    				</w2:column>
+    			</w2:row>
+    			<w2:row id="row13" style="">
+    				<w2:column hidden="" id="column193" inputType="text" style="height:22px;" textAlign="right" value="④ BOC(~)" valueType="binary" width="174">
+    				</w2:column>
+    				<w2:column hidden="" id="column194" inputType="text" style="height:22px;" valueType="binary" width="70">
+    				</w2:column>
+    				<w2:column hidden="" id="column195" inputType="text" style="height:22px;" valueType="binary" width="70">
+    				</w2:column>
+    				<w2:column hidden="" id="column196" inputType="text" style="height:22px;" valueType="binary" width="70">
+    				</w2:column>
+    				<w2:column hidden="" id="column197" inputType="text" style="height:22px;" valueType="binary" width="70">
+    				</w2:column>
+    				<w2:column hidden="" id="column198" inputType="text" style="height:22px;" valueType="binary" width="70">
+    				</w2:column>
+    				<w2:column hidden="" id="column199" inputType="text" style="height:22px;" valueType="binary" width="70">
+    				</w2:column>
+    				<w2:column hidden="" id="column200" inputType="text" style="height:22px;" valueType="binary" width="70">
+    				</w2:column>
+    				<w2:column hidden="" id="column201" inputType="text" style="height:22px;" valueType="binary" width="70">
+    				</w2:column>
+    				<w2:column hidden="" id="column202" inputType="text" style="height:22px;" valueType="binary" width="70">
+    				</w2:column>
+    				<w2:column hidden="" id="column203" inputType="text" style="height:22px;" valueType="binary" width="70">
+    				</w2:column>
+    				<w2:column hidden="" id="column204" inputType="text" style="height:22px;" valueType="binary" width="70">
+    				</w2:column>
+    				<w2:column hidden="" id="column205" inputType="text" style="height:22px;" valueType="binary" width="70">
+    				</w2:column>
+    				<w2:column hidden="" id="column206" inputType="text" style="height:22px;" valueType="binary" width="70">
+    				</w2:column>
+    				<!-- w2:column hidden="" id="column207" inputType="text" style="height:22px;" valueType="binary" width="70">
+    				</w2:column -->
+    				<w2:column hidden="" id="column208" inputType="text" style="height:22px;" valueType="binary" width="70">
+    				</w2:column>
+    			</w2:row>
+    			<w2:row id="row14" style="">
+    				<w2:column hidden="" id="column209" inputType="text" style="height:22px;" textAlign="left" value="⑤ (③ + ④)" valueType="binary" width="174">
+    				</w2:column>
+    				<w2:column hidden="" id="column210" inputType="text" style="height:22px;" valueType="binary" width="70">
+    				</w2:column>
+    				<w2:column hidden="" id="column211" inputType="text" style="height:22px;" valueType="binary" width="70">
+    				</w2:column>
+    				<w2:column hidden="" id="column212" inputType="text" style="height:22px;" valueType="binary" width="70">
+    				</w2:column>
+    				<w2:column hidden="" id="column213" inputType="text" style="height:22px;" valueType="binary" width="70">
+    				</w2:column>
+    				<w2:column hidden="" id="column214" inputType="text" style="height:22px;" valueType="binary" width="70">
+    				</w2:column>
+    				<w2:column hidden="" id="column215" inputType="text" style="height:22px;" valueType="binary" width="70">
+    				</w2:column>
+    				<w2:column hidden="" id="column216" inputType="text" style="height:22px;" valueType="binary" width="70">
+    				</w2:column>
+    				<w2:column hidden="" id="column217" inputType="text" style="height:22px;" valueType="binary" width="70">
+    				</w2:column>
+    				<w2:column hidden="" id="column218" inputType="text" style="height:22px;" valueType="binary" width="70">
+    				</w2:column>
+    				<w2:column hidden="" id="column219" inputType="text" style="height:22px;" valueType="binary" width="70">
+    				</w2:column>
+    				<w2:column hidden="" id="column220" inputType="text" style="height:22px;" valueType="binary" width="70">
+    				</w2:column>
+    				<w2:column hidden="" id="column221" inputType="text" style="height:22px;" valueType="binary" width="70">
+    				</w2:column>
+    				<w2:column hidden="" id="column222" inputType="text" style="height:22px;" valueType="binary" width="70">
+    				</w2:column>
+    				<!-- w2:column hidden="" id="column223" inputType="text" style="height:22px;" valueType="binary" width="70">
+    				</w2:column -->
+    				<w2:column hidden="" id="column224" inputType="text" style="height:22px;" valueType="binary" width="70">
+    				</w2:column>
+    			</w2:row>
+    			<w2:row id="row15" style="">
+    				<w2:column hidden="" id="column225" inputType="text" style="height:22px;" textAlign="left" value="Delivery(⑤ × %)" valueType="binary" width="174" readOnly="">
+    				</w2:column>
+    				<w2:column hidden="" id="column226" inputType="text" style="height:22px;" valueType="binary" width="70">
+    				</w2:column>
+    				<w2:column hidden="" id="column227" inputType="text" style="height:22px;" valueType="binary" width="70">
+    				</w2:column>
+    				<w2:column hidden="" id="column228" inputType="text" style="height:22px;" valueType="binary" width="70">
+    				</w2:column>
+    				<w2:column hidden="" id="column229" inputType="text" style="height:22px;" valueType="binary" width="70">
+    				</w2:column>
+    				<w2:column hidden="" id="column230" inputType="text" style="height:22px;" valueType="binary" width="70">
+    				</w2:column>
+    				<w2:column hidden="" id="column231" inputType="text" style="height:22px;" valueType="binary" width="70">
+    				</w2:column>
+    				<w2:column hidden="" id="column232" inputType="text" style="height:22px;" valueType="binary" width="70">
+    				</w2:column>
+    				<w2:column hidden="" id="column233" inputType="text" style="height:22px;" valueType="binary" width="70">
+    				</w2:column>
+    				<w2:column hidden="" id="column234" inputType="text" style="height:22px;" valueType="binary" width="70">
+    				</w2:column>
+    				<w2:column hidden="" id="column235" inputType="text" style="height:22px;" valueType="binary" width="70">
+    				</w2:column>
+    				<w2:column hidden="" id="column236" inputType="text" style="height:22px;" valueType="binary" width="70">
+    				</w2:column>
+    				<w2:column hidden="" id="column237" inputType="text" style="height:22px;" valueType="binary" width="70">
+    				</w2:column>
+    				<w2:column hidden="" id="column238" inputType="text" style="height:22px;" valueType="binary" width="70">
+    				</w2:column>
+    				<!-- w2:column hidden="" id="column239" inputType="text" style="height:22px;" valueType="binary" width="70">
+    				</w2:column -->
+    				<w2:column hidden="" id="column240" inputType="text" style="height:22px;" valueType="binary" width="70">
+    				</w2:column>
+    			</w2:row>
+    			<w2:row id="row16" style="">
+    				<w2:column hidden="" id="column241" inputType="text" style="height:22px;" textAlign="right" value="Sales(~)" valueType="binary" width="174">
+    				</w2:column>
+    				<w2:column hidden="" id="column242" inputType="text" style="height:22px;" valueType="binary" width="70">
+    				</w2:column>
+    				<w2:column hidden="" id="column243" inputType="text" style="height:22px;" valueType="binary" width="70">
+    				</w2:column>
+    				<w2:column hidden="" id="column244" inputType="text" style="height:22px;" valueType="binary" width="70">
+    				</w2:column>
+    				<w2:column hidden="" id="column245" inputType="text" style="height:22px;" valueType="binary" width="70">
+    				</w2:column>
+    				<w2:column hidden="" id="column246" inputType="text" style="height:22px;" valueType="binary" width="70">
+    				</w2:column>
+    				<w2:column hidden="" id="column247" inputType="text" style="height:22px;" valueType="binary" width="70">
+    				</w2:column>
+    				<w2:column hidden="" id="column248" inputType="text" style="height:22px;" valueType="binary" width="70">
+    				</w2:column>
+    				<w2:column hidden="" id="column249" inputType="text" style="height:22px;" valueType="binary" width="70">
+    				</w2:column>
+    				<w2:column hidden="" id="column250" inputType="text" style="height:22px;" valueType="binary" width="70">
+    				</w2:column>
+    				<w2:column hidden="" id="column251" inputType="text" style="height:22px;" valueType="binary" width="70">
+    				</w2:column>
+    				<w2:column hidden="" id="column252" inputType="text" style="height:22px;" valueType="binary" width="70">
+    				</w2:column>
+    				<w2:column hidden="" id="column253" inputType="text" style="height:22px;" valueType="binary" width="70">
+    				</w2:column>
+    				<w2:column hidden="" id="column254" inputType="text" style="height:22px;" valueType="binary" width="70">
+    				</w2:column>
+    				<!-- w2:column hidden="" id="column255" inputType="text" style="height:22px;" valueType="binary" width="70">
+    				</w2:column -->
+    				<w2:column hidden="" id="column256" inputType="text" style="height:22px;" valueType="binary" width="70">
+    				</w2:column>
+    			</w2:row>
+    			<w2:row id="row17" style="">
+    				<w2:column id="column272" style="height:22px;" hidden="" width="174" inputType="text" valueType="binary" value="Total Sales" textAlign="left">
+    				</w2:column>
+    				<w2:column id="column271" style="height:22px;" hidden="" width="53" inputType="text" valueType="binary">
+    				</w2:column>
+    				<w2:column id="column270" style="height:22px;" hidden="" width="53" inputType="text" valueType="binary">
+    				</w2:column>
+    				<w2:column id="column269" style="height:22px;" hidden="" width="53" inputType="text" valueType="binary">
+    				</w2:column>
+    				<w2:column id="column268" style="height:22px;" hidden="" width="53" inputType="text" valueType="binary">
+    				</w2:column>
+    				<w2:column id="column267" style="height:22px;" hidden="" width="53" inputType="text" valueType="binary">
+    				</w2:column>
+    				<w2:column id="column266" style="height:22px;" hidden="" width="53" inputType="text" valueType="binary">
+    				</w2:column>
+    				<w2:column id="column265" style="height:22px;" hidden="" width="53" inputType="text" valueType="binary">
+    				</w2:column>
+    				<w2:column id="column264" style="height:22px;" hidden="" width="53" inputType="text" valueType="binary">
+    				</w2:column>
+    				<w2:column id="column263" style="height:22px;" hidden="" width="53" inputType="text" valueType="binary">
+    				</w2:column>
+    				<w2:column id="column262" style="height:22px;" hidden="" width="53" inputType="text" valueType="binary">
+    				</w2:column>
+    				<w2:column id="column261" style="height:22px;" hidden="" width="53" inputType="text" valueType="binary">
+    				</w2:column>
+    				<w2:column id="column260" style="height:22px;" hidden="" width="53" inputType="text" valueType="binary">
+    				</w2:column>
+    				<w2:column id="column259" style="height:22px;" hidden="" width="53" inputType="text" valueType="binary">
+    				</w2:column>
+    				<!-- w2:column id="column258" style="height:22px;" hidden="" width="53" inputType="text" valueType="binary">
+    				</w2:column -->
+    				<w2:column id="column257" style="height:22px;" hidden="" width="60" inputType="text" valueType="binary">
+    				</w2:column>
+    			</w2:row>
+    			<w2:row id="row18" style="">
+    				<w2:column id="column288" style="height:22px;" hidden="" width="174" inputType="text" valueType="binary" value="Available Stock(Revised)" textAlign="left">
+    				</w2:column>
+    				<w2:column id="column287" style="height:22px;" hidden="" width="53" inputType="text" valueType="binary">
+    				</w2:column>
+    				<w2:column id="column286" style="height:22px;" hidden="" width="53" inputType="text" valueType="binary">
+    				</w2:column>
+    				<w2:column id="column285" style="height:22px;" hidden="" width="53" inputType="text" valueType="binary">
+    				</w2:column>
+    				<w2:column id="column284" style="height:22px;" hidden="" width="53" inputType="text" valueType="binary">
+    				</w2:column>
+    				<w2:column id="column283" style="height:22px;" hidden="" width="53" inputType="text" valueType="binary">
+    				</w2:column>
+    				<w2:column id="column282" style="height:22px;" hidden="" width="53" inputType="text" valueType="binary">
+    				</w2:column>
+    				<w2:column id="column281" style="height:22px;" hidden="" width="53" inputType="text" valueType="binary">
+    				</w2:column>
+    				<w2:column id="column280" style="height:22px;" hidden="" width="53" inputType="text" valueType="binary">
+    				</w2:column>
+    				<w2:column id="column279" style="height:22px;" hidden="" width="53" inputType="text" valueType="binary">
+    				</w2:column>
+    				<w2:column id="column278" style="height:22px;" hidden="" width="53" inputType="text" valueType="binary">
+    				</w2:column>
+    				<w2:column id="column277" style="height:22px;" hidden="" width="53" inputType="text" valueType="binary">
+    				</w2:column>
+    				<w2:column id="column276" style="height:22px;" hidden="" width="53" inputType="text" valueType="binary">
+    				</w2:column>
+    				<w2:column id="column275" style="height:22px;" hidden="" width="53" inputType="text" valueType="binary">
+    				</w2:column>
+    				<!-- w2:column id="column274" style="height:22px;" hidden="" width="53" inputType="text" valueType="binary">
+    				</w2:column -->
+    				<w2:column id="column273" style="height:22px;" hidden="" width="60" inputType="text" valueType="binary">
+    				</w2:column>
+    			</w2:row>
+    			<w2:row id="row19" style="">
+    				<w2:column id="column304" style="height:24px;color:#2fe9ee;" hidden="" width="174" inputType="text" valueType="binary" value="Sales FCST(Adj.)" textAlign="left">
+    				</w2:column>
+    				<w2:column id="column303" style="height:24px;color:#2fe9ee;" hidden="" width="53" inputType="text" valueType="binary">
+    				</w2:column>
+    				<w2:column id="column302" style="height:24px;color:#2fe9ee;" hidden="" width="53" inputType="text" valueType="binary">
+    				</w2:column>
+    				<w2:column id="column301" style="height:24px;color:#2fe9ee;" hidden="" width="53" inputType="text" valueType="binary">
+    				</w2:column>
+    				<w2:column id="column300" style="height:24px;color:#2fe9ee;" hidden="" width="53" inputType="text" valueType="binary">
+    				</w2:column>
+    				<w2:column id="column299" style="height:24px;color:#2fe9ee;" hidden="" width="53" inputType="text" valueType="binary">
+    				</w2:column>
+    				<w2:column id="column298" style="height:24px;color:#2fe9ee;" hidden="" width="53" inputType="text" valueType="binary">
+    				</w2:column>
+    				<w2:column id="column297" style="height:24px;color:#2fe9ee;" hidden="" width="53" inputType="text" valueType="binary">
+    				</w2:column>
+    				<w2:column id="column296" style="height:24px;color:#2fe9ee;" hidden="" width="53" inputType="text" valueType="binary">
+    				</w2:column>
+    				<w2:column id="column295" style="height:24px;color:#2fe9ee;" hidden="" width="53" inputType="text" valueType="binary">
+    				</w2:column>
+    				<w2:column id="column294" style="height:24px;color:#2fe9ee;" hidden="" width="53" inputType="text" valueType="binary">
+    				</w2:column>
+    				<w2:column id="column293" style="height:24px;color:#2fe9ee;" hidden="" width="53" inputType="text" valueType="binary">
+    				</w2:column>
+    				<w2:column id="column292" style="height:24px;color:#2fe9ee;" hidden="" width="53" inputType="text" valueType="binary">
+    				</w2:column>
+    				<w2:column id="column291" style="height:24px;color:#2fe9ee;" hidden="" width="53" inputType="text" valueType="binary">
+    				</w2:column>
+    				<!-- w2:column id="column290" style="height:24px;color:#2fe9ee;" hidden="" width="53" inputType="text" valueType="binary">
+    				</w2:column -->
+    				<w2:column id="column289" style="height:24px;color:#2fe9ee;" hidden="" width="60" inputType="text" valueType="binary">
+    				</w2:column>
+    			</w2:row>
+    			<w2:row id="row20" style="">
+    				<w2:column id="column320" style="height:24px;color:#2fe9ee;" hidden="" width="174" inputType="text" valueType="binary" value="vs Target" textAlign="right">
+    				</w2:column>
+    				<w2:column id="column319" style="height:24px;color:#2fe9ee;" hidden="" width="53" inputType="text" valueType="binary">
+    				</w2:column>
+    				<w2:column id="column318" style="height:24px;color:#2fe9ee;" hidden="" width="53" inputType="text" valueType="binary">
+    				</w2:column>
+    				<w2:column id="column317" style="height:24px;color:#2fe9ee;" hidden="" width="53" inputType="text" valueType="binary">
+    				</w2:column>
+    				<w2:column id="column316" style="height:24px;color:#2fe9ee;" hidden="" width="53" inputType="text" valueType="binary">
+    				</w2:column>
+    				<w2:column id="column315" style="height:24px;color:#2fe9ee;" hidden="" width="53" inputType="text" valueType="binary">
+    				</w2:column>
+    				<w2:column id="column314" style="height:24px;color:#2fe9ee;" hidden="" width="53" inputType="text" valueType="binary">
+    				</w2:column>
+    				<w2:column id="column313" style="height:24px;color:#2fe9ee;" hidden="" width="53" inputType="text" valueType="binary">
+    				</w2:column>
+    				<w2:column id="column312" style="height:24px;color:#2fe9ee;" hidden="" width="53" inputType="text" valueType="binary">
+    				</w2:column>
+    				<w2:column id="column311" style="height:24px;color:#2fe9ee;" hidden="" width="53" inputType="text" valueType="binary">
+    				</w2:column>
+    				<w2:column id="column310" style="height:24px;color:#2fe9ee;" hidden="" width="53" inputType="text" valueType="binary">
+    				</w2:column>
+    				<w2:column id="column309" style="height:24px;color:#2fe9ee;" hidden="" width="53" inputType="text" valueType="binary">
+    				</w2:column>
+    				<w2:column id="column308" style="height:24px;color:#2fe9ee;" hidden="" width="53" inputType="text" valueType="binary">
+    				</w2:column>
+    				<w2:column id="column307" style="height:24px;color:#2fe9ee;" hidden="" width="53" inputType="text" valueType="binary">
+    				</w2:column>
+    				<!-- w2:column id="column306" style="height:24px;color:#2fe9ee;" hidden="" width="53" inputType="text" valueType="binary">
+    				</w2:column -->
+    				<w2:column id="column305" style="height:24px;color:#2fe9ee;" hidden="" width="60" inputType="text" valueType="binary">
+    				</w2:column>
+    			</w2:row>
+    			<w2:row id="row21" style="">
+    				<w2:column id="column336" style="height:24px;color:#2fe9ee;" hidden="" width="174" inputType="text" valueType="binary" value="Sales Target" textAlign="left">
+    				</w2:column>
+    				<w2:column id="column335" style="height:24px;color:#2fe9ee;" hidden="" width="53" inputType="text" valueType="binary">
+    				</w2:column>
+    				<w2:column id="column334" style="height:24px;color:#2fe9ee;" hidden="" width="53" inputType="text" valueType="binary">
+    				</w2:column>
+    				<w2:column id="column333" style="height:24px;color:#2fe9ee;" hidden="" width="53" inputType="text" valueType="binary">
+    				</w2:column>
+    				<w2:column id="column332" style="height:24px;color:#2fe9ee;" hidden="" width="53" inputType="text" valueType="binary">
+    				</w2:column>
+    				<w2:column id="column331" style="height:24px;color:#2fe9ee;" hidden="" width="53" inputType="text" valueType="binary">
+    				</w2:column>
+    				<w2:column id="column330" style="height:24px;color:#2fe9ee;" hidden="" width="53" inputType="text" valueType="binary">
+    				</w2:column>
+    				<w2:column id="column329" style="height:24px;color:#2fe9ee;" hidden="" width="53" inputType="text" valueType="binary">
+    				</w2:column>
+    				<w2:column id="column328" style="height:24px;color:#2fe9ee;" hidden="" width="53" inputType="text" valueType="binary">
+    				</w2:column>
+    				<w2:column id="column327" style="height:24px;color:#2fe9ee;" hidden="" width="53" inputType="text" valueType="binary">
+    				</w2:column>
+    				<w2:column id="column326" style="height:24px;color:#2fe9ee;" hidden="" width="53" inputType="text" valueType="binary">
+    				</w2:column>
+    				<w2:column id="column325" style="height:24px;color:#2fe9ee;" hidden="" width="53" inputType="text" valueType="binary">
+    				</w2:column>
+    				<w2:column id="column324" style="height:24px;color:#2fe9ee;" hidden="" width="53" inputType="text" valueType="binary">
+    				</w2:column>
+    				<w2:column id="column323" style="height:24px;color:#2fe9ee;" hidden="" width="53" inputType="text" valueType="binary">
+    				</w2:column>
+    				<!-- w2:column id="column322" style="height:24px;color:#2fe9ee;" hidden="" width="53" inputType="text" valueType="binary">
+    				</w2:column -->
+    				<w2:column id="column321" style="height:24px;color:#2fe9ee;" hidden="" width="60" inputType="text" valueType="binary">
+    				</w2:column>
+    			</w2:row>
+    			<w2:row id="row22" style="">
+    				<w2:column id="column352" style="height:22px;" hidden="" width="174" inputType="text" valueType="binary" value="BOC(End Of Month)" textAlign="left">
+    				</w2:column>
+    				<w2:column id="column351" style="height:22px;" hidden="" width="53" inputType="text" valueType="binary">
+    				</w2:column>
+    				<w2:column id="column350" style="height:22px;" hidden="" width="53" inputType="text" valueType="binary">
+    				</w2:column>
+    				<w2:column id="column349" style="height:22px;" hidden="" width="53" inputType="text" valueType="binary">
+    				</w2:column>
+    				<w2:column id="column348" style="height:22px;" hidden="" width="53" inputType="text" valueType="binary">
+    				</w2:column>
+    				<w2:column id="column347" style="height:22px;" hidden="" width="53" inputType="text" valueType="binary">
+    				</w2:column>
+    				<w2:column id="column346" style="height:22px;" hidden="" width="53" inputType="text" valueType="binary">
+    				</w2:column>
+    				<w2:column id="column345" style="height:22px;" hidden="" width="53" inputType="text" valueType="binary">
+    				</w2:column>
+    				<w2:column id="column344" style="height:22px;" hidden="" width="53" inputType="text" valueType="binary">
+    				</w2:column>
+    				<w2:column id="column343" style="height:22px;" hidden="" width="53" inputType="text" valueType="binary">
+    				</w2:column>
+    				<w2:column id="column342" style="height:22px;" hidden="" width="53" inputType="text" valueType="binary">
+    				</w2:column>
+    				<w2:column id="column341" style="height:22px;" hidden="" width="53" inputType="text" valueType="binary">
+    				</w2:column>
+    				<w2:column id="column340" style="height:22px;" hidden="" width="53" inputType="text" valueType="binary">
+    				</w2:column>
+    				<w2:column id="column339" style="height:22px;" hidden="" width="53" inputType="text" valueType="binary">
+    				</w2:column>
+    				<!-- w2:column id="column338" style="height:22px;" hidden="" width="53" inputType="text" valueType="binary">
+    				</w2:column -->
+    				<w2:column id="column337" style="height:22px;" hidden="" width="60" inputType="text" valueType="binary">
+    				</w2:column>
+    			</w2:row>
+    		</w2:gBody>
+    	</w2:grid></xf:case>
+    	</xf:switch>
+    </body>
+</html>

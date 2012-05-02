@@ -1,0 +1,24 @@
+<html xmlns:v="urn:schemas-microsoft-com:vml">
+<!--<script type="text/javascript" src="../bootloader.js"></script>-->
+<script type="text/javascript" src="../javascript.wq?q=/bootloader"></script>
+<script>
+window.onload=doInit;
+function doInit() {
+	var id = WebSquare.net.getParameter( "id" );
+	var css = "";
+	for( var i = 0; i < opener.document.styleSheets.length ; i++ ) {
+		css += opener.document.styleSheets[i].cssText + "\n";
+	}
+//	showObject( css );
+	document.styleSheets[0].cssText = css;
+	out.innerHTML = opener.document.all[id].outerHTML;
+//	document.styleSheets[0].cssText = opener.getStylesheet();
+//	out.innerHTML = opener.getObject( id );
+	print();
+}
+</script>
+<body>
+<div id="out" >
+</div>
+</body>
+</html>

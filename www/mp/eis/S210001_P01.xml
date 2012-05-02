@@ -1,0 +1,236 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?xml-stylesheet href="/mp/css/frame.css" type="text/css"?>
+<html xmlns="http://www.w3.org/1999/xhtml"
+    xmlns:ev="http://www.w3.org/2001/xml-events"
+    xmlns:w2="http://www.inswave.com/websquare" xmlns:xf="http://www.w3.org/2002/xforms">
+    <head>
+        <w2:buildDate/>
+        <xf:model>
+            <xf:instance>
+                <data xmlns="">
+               
+		        </data>
+		    </xf:instance>
+		    <xf:submission id="submissionList" ref="request" target="resList"
+        		action=""
+        		method="post" mediatype="application/xml" encoding="UTF-8" instance="" replace="instance"
+        		errorHandler="" customHandler="" mode="asynchronous"
+        		processMsg="">
+        		<script type="javascript" ev:event="xforms-submit-done"><![CDATA[
+            		grd_List.setXML(WebSquare.ModelUtil.findInstanceNode("resList/root/dataset[@id='ds_PMonsc']"));
+            	]]></script>
+        	</xf:submission>
+        </xf:model>
+        <script type="javascript" src="/mp/js/common.js"></script>
+		<script type="javascript" src="/mp/js/WebSquare.js"></script>
+        <script type="javascript"><![CDATA[
+		var FV_sUpGroupId = GV_UP_GROUP_ID;
+    	var FV_sDealerId = parent.FV_sDealerId;	//GV_GROUP_ID;
+    	var FV_sYear = gfn_GetDate(0,0,0).substring(0,4);
+    	var FV_sBeYear = parseInt(FV_sYear)-1;
+       	var FV_sSvcNm = parent.FV_sSvcNm;
+    	
+    	cb_Year.setValue(gfn_GetDate(0,0,0).substring(0,4));
+    	
+    	function fn_Search(){
+			parent.parent.fn_SpinnerShow();
+			
+			setTimeout("parent.parent.fn_SpinnerHide()", 3000);
+	    	
+			ifrm_1.setSrc("/mp/FusionCharts/Code/S210001_CP01.jsp");	
+	    	
+			var actionNm = "";
+			if(parent.FV_sSvcNm == "T"){
+				actionNm = "TOYOTAAction";
+			}
+	    	setTitSendInfo("request", actionNm, "", "mdms/mp/eis:S210001_P01_S01");
+	       	setInputParamData("DEALER_ID", FV_sDealerId);
+	       	setInputParamData("YEAR", FV_sYear);
+	       	setInputParamData("BEFORE_YEAR", FV_sBeYear);
+       	
+	   		setSubmissison("submissionList"); 
+	   	}	   	  
+        ]]></script>
+    </head>
+    <body>
+    	<w2:textbox id="output32"
+    		style="position: absolute ;height:544px;width:816px;background-color:#b0b0b0;left:0px;top:0px;"
+    		label="">
+    	</w2:textbox>
+    	<xf:image id="image21"
+    		src="/mp/images/eis/p_im_top_bg.png"
+    		style="position: absolute ;height:36px;width:816px;left:0px;top:0px;">
+    	</xf:image>
+    	<xf:image id="logout"
+    		style="position: absolute ;cursor:pointer;height:36px;width:41px;left:776px;top:0px;"
+    		src="/mp/images/eis/p_bt_close.png">
+    		<script ev:event="onclick" type="javascript"><![CDATA[ 
+    			parent.fn_PopupClose();
+    		]]></script>
+    	</xf:image>
+
+    	<w2:textbox id="output31"
+    		style="position: absolute ;height:30px;width:335px;left:0px;top:0px;"
+    		label="Annual Sales Trend vs Last Year" class="title_p">
+    	</w2:textbox>
+    	<w2:grid id="grd_List" baseNode="dataset"
+    		style="position: absolute ;height:64px;width:800px;background-color:#484848;left:8px;top:475px;"
+    		repeatNode="record" overflowX="hidden" overflowY="hidden">
+    		<w2:header id="header1" style="" columnClass="gridHeaderTD1"
+    			class="gridHeaderTable">
+    			<w2:row id="row1" style="">
+    				<w2:column id="column10" style="height:20px"
+    					hidden="" width="80" inputType="text" valueType="binary">
+    				</w2:column>
+    				<w2:column id="column214" style="height:20px"
+    					hidden="" inputType="text" width="60" valueType="binary"
+    					value="Jan">
+    				</w2:column>
+    				<w2:column id="column216" style="height:20px"
+    					hidden="" inputType="text" width="60" valueType="binary"
+    					value="Feb">
+    				</w2:column>
+    				<w2:column id="column218" style="height:20px"
+    					hidden="" inputType="text" width="60" valueType="binary"
+    					value="Mar">
+    				</w2:column>
+    				<w2:column id="column220" style="height:20px"
+    					hidden="" inputType="text" width="60" valueType="binary"
+    					value="Apr">
+    				</w2:column>
+    				<w2:column id="column222" style="height:20px"
+    					hidden="" inputType="text" width="60" valueType="binary"
+    					value="May">
+    				</w2:column>
+    				<w2:column id="column224" style="height:20px"
+    					hidden="" inputType="text" width="60" valueType="binary"
+    					value="Jun">
+    				</w2:column>
+    				<w2:column id="column226" style="height:20px"
+    					hidden="" inputType="text" width="60" valueType="binary"
+    					value="Jul">
+    				</w2:column>
+    				<w2:column id="column228" style="height:20px"
+    					hidden="" inputType="text" width="60" valueType="binary"
+    					value="Aug">
+    				</w2:column>
+    				<w2:column id="column230" style="height:20px"
+    					hidden="" inputType="text" width="60" valueType="binary"
+    					value="Sep">
+    				</w2:column>
+    				<w2:column id="column232" style="height:20px"
+    					hidden="" inputType="text" width="60" valueType="binary"
+    					value="Oct">
+    				</w2:column>
+    				<w2:column id="column234" style="height:20px"
+    					hidden="" inputType="text" width="60" valueType="binary"
+    					value="Nov">
+    				</w2:column>
+    				<w2:column id="column236" style="height:20px"
+    					hidden="" inputType="text" width="60" valueType="binary"
+    					value="Dec">
+    				</w2:column>
+    			</w2:row>
+    		</w2:header>
+    		<w2:gBody id="gBody1" style="" columnClass="gridBodyTD"
+    			class="gridBodyTable">
+    			<w2:row id="row2" style="">
+    				<w2:column id="TITLE" style="height:20px" hidden=""
+    					width="80" inputType="text" valueType="binary"
+    					textAlign="left">
+    				</w2:column>
+    				<w2:column id="M1" style="height:20px" hidden=""
+    					inputType="text" width="60" valueType="binary"
+    					textAlign="right">
+    				</w2:column>
+    				<w2:column id="M2" style="height:20px" hidden=""
+    					inputType="text" width="60" valueType="binary"
+    					textAlign="right">
+    				</w2:column>
+    				<w2:column id="M3" style="height:20px" hidden=""
+    					inputType="text" width="60" valueType="binary"
+    					textAlign="right">
+    				</w2:column>
+    				<w2:column id="M4" style="height:20px" hidden=""
+    					inputType="text" width="60" valueType="binary"
+    					textAlign="right">
+    				</w2:column>
+    				<w2:column id="M5" style="height:20px" hidden=""
+    					inputType="text" width="60" valueType="binary"
+    					textAlign="right">
+    				</w2:column>
+    				<w2:column id="M6" style="height:20px" hidden=""
+    					inputType="text" width="60" valueType="binary"
+    					textAlign="right">
+    				</w2:column>
+    				<w2:column id="M7" style="height:20px" hidden=""
+    					inputType="text" width="60" valueType="binary"
+    					textAlign="right">
+    				</w2:column>
+    				<w2:column id="M8" style="height:20px" hidden=""
+    					inputType="text" width="60" valueType="binary"
+    					textAlign="right">
+    				</w2:column>
+    				<w2:column id="M9" style="height:20px" hidden=""
+    					inputType="text" width="60" valueType="binary"
+    					textAlign="right">
+    				</w2:column>
+    				<w2:column id="M10" style="height:20px" hidden=""
+    					inputType="text" width="60" valueType="binary"
+    					textAlign="right">
+    				</w2:column>
+    				<w2:column id="M11" style="height:20px" hidden=""
+    					inputType="text" width="60" valueType="binary"
+    					textAlign="right">
+    				</w2:column>
+    				<w2:column id="M12" style="height:20px" hidden=""
+    					inputType="text" width="60" valueType="binary"
+    					textAlign="right">
+    				</w2:column>
+    			</w2:row>
+    		</w2:gBody>
+    	</w2:grid>
+    	<w2:iframe id="ifrm_1" scrolling="no"
+    		src=""
+    		style="position: absolute ;left:8px;top:42px;width:800px;height:428px;">
+    	</w2:iframe>
+    	<xf:select1 allOption="" appearance="minimal" chooseOption=""
+    		direction="auto" disabled="false" displayMode="label"
+    		id="cb_Year"
+    		style="position: absolute ;height:22px;cursor:pointer;color:#ffffff;width:80px;font-size:11px;background-color:#222223;left:675px;border:1px solid #494949;top:6px;"
+    		submenuSize="auto" visibleRowNum="10">
+    		<xf:choices>
+    			<xf:item>
+    				<xf:label>2008</xf:label>
+    				<xf:value>2008</xf:value>
+    			</xf:item>
+    			<xf:item>
+    				<xf:label>2009</xf:label>
+    				<xf:value>2009</xf:value>
+    			</xf:item>
+    			<xf:item>
+    				<xf:label>2010</xf:label>
+    				<xf:value>2010</xf:value>
+    			</xf:item>
+    			<xf:item>
+    				<xf:label>2011</xf:label>
+    				<xf:value>2011</xf:value>
+    			</xf:item>
+    			<xf:item>
+    				<xf:label>2012</xf:label>
+    				<xf:value>2012</xf:value>
+    			</xf:item>
+    			<xf:item>
+    				<xf:label>2013</xf:label>
+    				<xf:value>2013</xf:value>
+    			</xf:item>
+    		</xf:choices>
+    		<script ev:event="onchange" type="javascript"><![CDATA[ 
+    			FV_sYear = this.getValue();
+    			FV_sBeYear = parseInt(FV_sYear)-1;
+    	
+    			fn_Search();
+    		]]></script>
+    	</xf:select1>
+    </body>
+</html>

@@ -1,0 +1,666 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?xml-stylesheet href="/mp/css/style.css" type="text/css"?>
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:ev="http://www.w3.org/2001/xml-events"
+    xmlns:w2="http://www.inswave.com/websquare" xmlns:xf="http://www.w3.org/2002/xforms">
+    <head>
+    	<w2:buildDate />
+    	<xf:model>
+    		<xf:instance>
+    			<data xmlns="" />
+    		</xf:instance>
+    		<xf:submission id="submissionMaster" ref="request" target="resMaster"
+        		action=""
+        		method="post" mediatype="application/xml" encoding="UTF-8" instance="" replace="instance"
+        		errorHandler="" customHandler="" mode="synchronous"
+        		processMsg="">
+        	</xf:submission>
+    		<xf:submission id="submissionCode" ref="request" target="resCode"
+        		action=""
+        		method="post" mediatype="application/xml" encoding="UTF-8" instance="" replace="instance"
+        		errorHandler="" customHandler="" mode="synchronous"
+        		processMsg="">
+        	</xf:submission>
+        	<xf:submission id="submissionSave" ref="request" target="resSave"
+	    		action=""
+        		method="post" mediatype="application/xml" encoding="UTF-8" instance="" replace="instance"
+        		errorHandler="" customHandler="" mode="synchronous"
+        		processMsg="">
+        		<script type="javascript" ev:event="xforms-submit-done"><![CDATA[        			
+					fn_AfterSave();
+        		]]></script>
+        	</xf:submission>
+        	<xf:submission id="submissionFrCnt" ref="request" target="resFrCnt"
+	    		action=""
+        		method="post" mediatype="application/xml" encoding="UTF-8" instance="" replace="instance"
+        		errorHandler="" customHandler="" mode="synchronous"
+        		processMsg="">
+        	</xf:submission>
+        	<xf:submission id="submissionToCnt" ref="request" target="resToCnt"
+	    		action=""
+        		method="post" mediatype="application/xml" encoding="UTF-8" instance="" replace="instance"
+        		errorHandler="" customHandler="" mode="synchronous"
+        		processMsg="">
+        	</xf:submission>
+    	</xf:model>
+    	<script type="javascript" src="/mp/js/common.js"></script>
+		<script type="javascript" src="/mp/js/WebSquare.js"></script>
+    	<script type="javascript"><![CDATA[
+    	var FV_sUpdateType = "";
+    	var FV_sOffSetTime = 25200000; //기준 OffSet시간 오전 7시
+		var FV_sTime = 0;
+		var FV_bSwitch = true;
+     	/****************************************************************
+		* 화면로드
+		* @param  : 없음
+		* @return : 없음
+		******************************************************************/
+        function fn_OnLoad(){
+        	setTitSendInfo("request", "", "", "mdms/mp/comm::CO_CODE_S01");			
+			setInputParamData("CD_KND", "'SF0102'");	// Time구분
+			setSubmissison("submissionCode");
+			
+			FV_sTime = 1800000;		
+			
+			var params = WebSquare.uiplugin.popup.getPopupParam();
+			if(!gfn_IsNullVal(params)){
+	        	var xmlDoc = WebSquare.xml.parse(params);
+	        	var sGubun = WebSquare.xml.getValue(xmlDoc, "params/param[@id='Gubun']");
+	        	var sTrialNo = WebSquare.xml.getValue(xmlDoc, "params/param[@id='TrialNo']");
+	        	var sTestcarNo = WebSquare.xml.getValue(xmlDoc, "params/param[@id='TestcarNo']");
+	        	
+				if(sGubun == "UPDATE"){
+					fn_SearchTride(sTrialNo,sTestcarNo);
+				} else if(sGubun == "INSERT"){
+					edt_TestcarNo.setValue(sTestcarNo);
+					edt_Vin.setValue(WebSquare.xml.getValue(xmlDoc, "params/param[@id='Vin']"));
+					edt_VehicNo.setValue(WebSquare.xml.getValue(xmlDoc, "params/param[@id='VehicNo']"));
+					edt_VariantCd.setValue(WebSquare.xml.getValue(xmlDoc, "params/param[@id='VariantCd']"));
+					edt_VariantNm.setValue(WebSquare.xml.getValue(xmlDoc, "params/param[@id='VariantNm']"));
+					edt_ResGroupId.setValue(GV_UP_GROUP_ID);
+        			edt_ResUserId.setValue(GV_USER_ID);
+					edt_ResUserNm.setValue(GV_USER_NM);
+        			edt_ShopCd.setValue(WebSquare.xml.getValue(xmlDoc, "params/param[@id='ShopCd']"));
+					cb_FrTime.setValue(WebSquare.xml.getValue(xmlDoc, "params/param[@id='FrTime']"));
+					cb_ToTime.setValue(eval(WebSquare.xml.getValue(xmlDoc, "params/param[@id='ToTime']"))+FV_sTime);
+					edt_ReservedDt.setValue(WebSquare.xml.getValue(xmlDoc, "params/param[@id='ReservedDt']"));
+					
+					cb_InterestDegree.setDisabled(true);
+					cb_PurchaseDegree.setDisabled(true);
+					edt_EndKm.setDisabled(true);
+					ta_ResultMemo.setDisabled(true);
+					document.getElementById("edt_EndKm").className = "input_readonly";
+					document.getElementById("ta_ResultMemo").className = "input_readonly";
+					
+					FV_sUpdateType = "INSERT";
+				}
+	        }
+        }  
+        /****************************************************************
+		* 조회
+		* @param  : 없음
+		* @return : 없음
+		******************************************************************/ 
+        function fn_SearchTride(trialNo, testcarNo){     	
+        	var sSqlid = "mdms/mp/tride:S310402_W01_S01";
+        	
+        	setTitSendInfo("request", "", "", sSqlid);
+        	setInputParamData("TRIAL_NO",trialNo);
+        	setInputParamData("TESTCAR_NO",testcarNo);
+        	
+    		setSubmissison("submissionMaster");
+    		
+    		fn_AfterSearch();
+        }
+        /****************************************************************
+		* 저장
+		* @param  : 없음
+		* @return : 없음
+		******************************************************************/ 
+        function fn_Save(){ 
+        	if(gfn_IsNullVal(edt_CustNm.getValue())){
+				alert("고객명 항목에 값이 누락되었습니다.\n확인하여 주십시오.");
+				edt_CustNm.focus();
+				return;
+			}
+			
+			setTitSendInfo("request", "S310402_W01Action", "save", "");
+			
+			setInputParamData("UPDATE_TYPE",FV_sUpdateType);
+			setInputParamData("RESERVED_DT",edt_ReservedDt.getValue().replaceAll("-",""));
+			setInputParamData("RESERVED_DT2",edt_ReservedDt.getValue().replaceAll("-",""));
+			setInputParamData("FROM_TIME",cb_FrTime.getValue());
+			setInputParamData("TESTCAR_NO",edt_TestcarNo.getValue());
+			setInputParamData("TRIAL_NO",edt_TrialNo.getValue());
+			setInputParamData("TO_TIME",cb_ToTime.getValue());
+			setInputParamData("VIN",edt_Vin.getValue());
+			setInputParamData("VARIANT_CD",edt_VariantCd.getValue());
+			setInputParamData("CUST_SEQ",edt_CustSeq.getValue());
+			setInputParamData("CUST_NM",edt_CustNm.getValue());
+			setInputParamData("RES_GROUP_ID",edt_ResGroupId.getValue());
+			setInputParamData("RES_USER_ID",edt_ResUserId.getValue());
+			setInputParamData("RES_MEMO",ta_Memo.getValue());
+			setInputParamData("TEST_TYPE",cb_TestType.getValue());
+			setInputParamData("USE_TYPE",cb_UseType.getValue());
+			setInputParamData("VIEW_WORD",edt_ViewWord.getValue());
+			setInputParamData("SHOP_CD",edt_ShopCd.getValue());
+			setInputParamData("INTEREST_DEGREE",cb_InterestDegree.getValue());
+			setInputParamData("PURCHASE_DEGREE",cb_PurchaseDegree.getValue());
+			setInputParamData("END_KM",edt_EndKm.getValue());
+			setInputParamData("RESULT_MEMO",ta_ResultMemo.getValue());
+			setInputParamData("MENU_ID","S310402_W01");		//메뉴아이디
+  			setSubmissison("submissionSave");
+        }
+        /****************************************************************
+		* 삭제
+		* @param  : 없음
+		* @return : 없음
+		******************************************************************/ 
+		function fn_Delete() {
+			if(gfn_GetDate(0,0,0).replaceAll("-","") > edt_ReservedDt.getValue().replaceAll("-","")){
+				alert("예정된 시승예약만 삭제할 수 있습니다.");
+				return;
+			}
+			
+			FV_sUpdateType = "DELETE";
+			
+			fn_Save();
+		}
+        /****************************************************************
+		* callback (조회)
+		* @param  : 없음
+		* @return : 없음
+		******************************************************************/
+        function fn_AfterSearch(){
+        
+        	FV_sUpdateType = "UPDATE";
+        }
+        /****************************************************************
+		* callback (저장)
+		* @param  : 없음
+		* @return : 없음
+		******************************************************************/
+        function fn_AfterSave() {
+        	var errCode = WebSquare.ModelUtil.getInstanceValue("resSave/root/params/param[@id='ErrorCode']");
+        	
+        	if(errCode < 0){
+        		alert("처리에 실패했습니다.\n확인 후 다시 처리해 주십시오.");
+        	} else{
+        	//	alert("저장을 완료했습니다.");
+        		parent.fn_Search();
+        		parent.gfn_PopupClose();
+        	}
+		}
+        /****************************************************************
+		* 예약시간 체크
+		* @param  : 없음
+		* @return : 없음
+		******************************************************************/
+        function fn_TimeChange(obj){
+        	if(cb_FrTime.getValue() >= cb_ToTime.getValue()){
+        		alert("예약시작시간이 예약종료시간보다 큽니다. 다시 선택하세요.");
+        		obj.focus();
+        		return;
+        	}
+        	
+        	if(PV_sGubun == "UPDATE"){
+        		var testcarNo = WebSquare.ModelUtil.getInstanceValue("resMaster/root/dataset[@id='ds_Master']/record/TESTCAR_NO");
+        		var reservedDt = edt_ReservedDt.getValue();
+        		var fromTime = cb_FrTime.getValue();
+        		var toTime = cb_ToTime.getValue();
+        		var oldFrTime = WebSquare.ModelUtil.getInstanceValue("resMaster/root/dataset[@id='ds_Master']/record/O_FROM_TIME");
+        		var oldToTime = WebSquare.ModelUtil.getInstanceValue("resMaster/root/dataset[@id='ds_Master']/record/O_TO_TIME");
+        		
+        		//예약시간 중복 체크
+        		setTitSendInfo("request", "", "", "mdms/mp/tride:S310402_W01_S02");
+        		setInputParamData("TESTCAR_NO",testcarNo);
+        		setInputParamData("RESERVED_DT",reservedDt);
+        		setInputParamData("FROM_TIME",fromTime); 
+        		setInputParamData("TO_TIME",toTime); 
+        		setInputParamData("O_FROM_TIME",oldFrTime);     	
+    			setSubmissison("submissionFrCnt");
+    			
+    			setTitSendInfo("request", "", "", "mdms/mp/tride:S310402_W01_S03");
+        		setInputParamData("TESTCAR_NO",testcarNo);
+        		setInputParamData("RESERVED_DT",reservedDt); 
+        		setInputParamData("FROM_TIME",fromTime); 
+        		setInputParamData("TO_TIME",toTime);    
+        		setInputParamData("O_FROM_TIME",oldFrTime);      	
+    			setSubmissison("submissionToCnt");
+    			
+    			var frTimeCnt = WebSquare.ModelUtil.getInstanceValue("resFrCnt/root/dataset[@id='ds_FrCnt']/record/CNT");
+				var toTimeCnt = WebSquare.ModelUtil.getInstanceValue("resToCnt/root/dataset[@id='ds_ToCnt']/record/CNT");
+		
+				if(frTimeCnt > 0 || toTimeCnt >0){
+					gfn_showAlert('예약시작시간과 종료시간이 중복됩니다..!!');
+					cb_FrTime.setValue(oldFrTime);
+					cb_ToTime.setValue(oldToTime);
+					obj.focus();
+					return;
+				}
+        	}
+        }
+        /****************************************************************
+		* 용도 변경시 처리
+		* @param  : 없음
+		* @return : 없음
+		******************************************************************/
+		function fn_UseTypeChange(){
+			// 용도가 고객시승일 경우만 고객선택 가능
+        	if(cb_UseType.getValue() == "01"){
+        		edt_CustNm.setValue("");
+        		btn_CustSearch.setDisabled(false);
+        	} else{
+        		edt_CustSeq.setValue("");
+        		edt_CustNm.setValue(GV_USER_NM);
+        		btn_CustSearch.setDisabled(true);
+        	}
+        }
+        /****************************************************************
+		* 시승결과 변경시 처리
+		* @param  : 없음
+		* @return : 없음
+		******************************************************************/
+		function fn_InterestChange(){
+			// 시승결과-시승취소 시 구매의향 선택불가
+        	if(cb_InterestDegree.getValue() == "04"){
+        		cb_PurchaseDegree.setDisabled(true);
+        	} else{
+        		cb_PurchaseDegree.setDisabled(false);
+        	}
+        }
+        /****************************************************************
+		* 고객정보 검색
+		* @param  : 없음
+		* @return : 없음
+		******************************************************************/
+        function fn_CustSearch(){
+        	parent.FV_sCustNm = edt_CustNm.getValue();
+			parent.FV_sDealerId = GV_UP_GROUP_ID;
+			parent.FV_sCustType = "A";
+			
+			switch_Popup.setSelectedIndex(1);
+			fn_OnLoadCust();
+        }
+        /****************************************************************
+		* 고객정보 검색
+		* @param  : 없음
+		* @return : 없음
+		******************************************************************/
+        function fn_CustParams(arrRst){ 
+        	if(arrRst != null){
+        		edt_CustSeq.setValue(arrRst[0]);
+        		edt_CustNm.setValue(arrRst[1]);
+        	}
+        }
+        
+        fn_OnLoad();
+        ]]></script>
+    </head>
+    <body>
+    	<xf:switch id="switch_Popup" class="" caseClass=""
+    		style="position: absolute ;left: 0px;top: 0px;width: 800px;height: 420px;">
+    		<xf:case id="case1" class=""
+    			style="position:absolute;top:0px;left:0px;width:800px;height:420px;">
+    			<w2:textbox class="se_box" id="output130" label=""
+		    		style="position: absolute ;height:420px;width:800px;left:0px;border:none;top:0px;">
+		    	</w2:textbox>
+		    	<w2:textbox id="output76"
+		    		style="position: absolute ;height:30px;width:777px;left:12px;top:75px;"
+		    		class="se_box" label="">
+		    	</w2:textbox>
+		    	<w2:textbox class="se_box" id="output75" label=""
+		    		style="position: absolute ;height:30px;width:777px;left:12px;top:106px;">
+		    	</w2:textbox>
+		    	<w2:textbox class="se_box" id="output78" label=""
+		    		style="position: absolute ;height:30px;width:777px;left:12px;top:137px;">
+		    	</w2:textbox>
+		    	<w2:textbox id="output147"
+		    		style="position: absolute ;height:72px;width:777px;left:12px;top:168px;"
+		    		class="se_box" label="">
+		    	</w2:textbox>
+		    	<w2:textbox id="output73"
+		    		style="position: absolute ;height:22px;width:82px;left:12px;top:75px;"
+		    		class="se_lable" label="시승관리번호">
+		    	</w2:textbox>
+		    	<w2:textbox class="se_lable" id="output77" label="차량번호"
+		    		style="position: absolute ;height:22px;width:82px;left:12px;top:106px;">
+		    	</w2:textbox>
+		    	<w2:textbox class="se_lable" id="output83" label="시승유형"
+		    		style="position: absolute ;height:22px;width:82px;left:12px;top:137px;">
+		    	</w2:textbox>
+		    	<xf:input class="input_edit" id="edt_TrialNo"
+		    		style="position: absolute ;height:22px;width:98px;left:105px;top:79px;"
+		    		ref="resMaster/root/dataset[@id='ds_Master']/record/TRIAL_NO"
+		    		readOnlyClass="input_readonly" readOnly="true">
+		    	</xf:input>
+		    	<xf:image id="image45"
+		    		style="position: absolute ;height:45px;width:800px;left:0px;top:0px;"
+		    		src="/mp/images/pop_title_bg.png">
+		    	</xf:image>
+		    	<w2:textbox class="title_back" id="output137" label="시승예약/결과 등록"
+		    		style="position: absolute ;height:20px;text-align:left;width:149px;left:15px;top:14px;">
+		    	</w2:textbox>
+		    	<w2:textbox class="title" id="output136" label="시승예약/결과 등록"
+		    		style="position: absolute ;height:20px;text-align:left;width:149px;left:15px;top:13px;">
+		    	</w2:textbox>		
+		    	<xf:trigger class="btn_po" id="btn_Delete"
+		    		style="position: absolute ;height:30px;color:#FFFFFF;width:70px;left:640px;top:10px;"
+		    		type="image">
+		    		<xf:label>삭 제</xf:label>
+		    		<script ev:event="onclick" type="javascript"><![CDATA[ 
+		    			fn_Delete();
+		    		]]></script>
+		    	</xf:trigger>
+		    	<xf:trigger class="btn_po" id="btn_Close"
+		    		style="position: absolute ;height:30px;color:#FFFFFF;width:70px;left:713px;top:10px;"
+		    		type="image">
+		    		<xf:label>닫 기</xf:label>
+		    		<script ev:event="onclick" type="javascript"><![CDATA[ 
+		    			parent.fn_PopupClose();
+		    		]]></script>
+		    	</xf:trigger>
+		    	<w2:textbox class="se_lable" id="output139" label="용도"
+		    		style="position: absolute ;height:22px;width:82px;left:212px;top:137px;">
+		    	</w2:textbox>
+		    	<w2:textbox class="se_lable" id="output140" label="차종"
+		    		style="position: absolute ;height:22px;width:82px;left:212px;top:106px;">
+		    	</w2:textbox>
+		    	<xf:input class="input_edit" id="edt_CustNm"
+		    		style="position: absolute ;height:22px;width:87px;left:506px;top:110px;"
+		    		ref="resMaster/root/dataset[@id='ds_Master']/record/CUST_NM"
+		    		readOnlyClass="input_readonly" readOnly="true">
+		    	</xf:input>
+		    	<xf:trigger id="btn_Save"
+		    		style="position: absolute ;height:30px;color:#FFFFFF;width:70px;left:567px;top:10px;"
+		    		class="btn_po" type="image">
+		    		<xf:label>저 장</xf:label>
+		    		<script ev:event="onclick" type="javascript"><![CDATA[ 
+		    			fn_Save();
+		    		]]></script>
+		    	</xf:trigger>		
+		    	<w2:textbox id="output149"
+		    		style="position: absolute ;height:64px;width:82px;left:12px;top:168px;"
+		    		class="se_lable" label="메모">
+		    	</w2:textbox>
+		    	<xf:textarea id="ta_Memo"
+		    		style="position: absolute ;height:61px;width:678px;left:105px;top:172px;"
+		    		class="input_edit"
+		    		ref="resMaster/root/dataset[@id='ds_Master']/record/RES_MEMO">
+		    	</xf:textarea>
+		    	<xf:image id="btn_CustSearch"
+		    		src="/mp/images/btn_search.png"
+		    		style="position: absolute ;height:26px;width:31px;left:601px;top:110px;">
+		    		<script ev:event="onclick" type="javascript"><![CDATA[ 
+		    			fn_CustSearch();
+		    		]]></script>
+		    	</xf:image>
+		    	<xf:select1 id="cb_FrTime" appearance="minimal"
+		    		style="position: absolute ;height:22px;width:91px;left:506px;top:79px;"
+		    		direction="auto" chooseOption="" allOption="" class="input_edit"
+		    		displayMode="label" disabled="false" submenuSize="auto"
+		    		ref="resMaster/root/dataset[@id='ds_Master']/record/FROM_TIME"
+					visibleRowNum="13">
+		    		<xf:choices>
+		    			<xf:itemset
+		    				nodeset="resCode/root/dataset[@id='ds_Code']/record[CD_KND='SF0102']">
+		    				<xf:label ref="NAME"></xf:label>
+		    				<xf:value ref="CODE"></xf:value>
+		    			</xf:itemset>
+		    		</xf:choices>
+		    	</xf:select1>
+		    	<w2:textbox class="sub_title" id="output164" label="시승 예약정보"
+		    		style="position: absolute ;height:20px;color:#000000;width:204px;left:12px;top:56px;">
+		    	</w2:textbox>
+		    	<xf:input id="edt_VehicNo"
+		    		style="position: absolute ;height:22px;width:98px;left:105px;top:110px;"
+		    		class="input_edit"
+		    		ref="resMaster/root/dataset[@id='ds_Master']/record/VEHIC_NO"
+		    		readOnlyClass="input_readonly" readOnly="true">
+		    	</xf:input>
+		    	<xf:select1 id="cb_TestType" appearance="minimal"
+		    		style="position: absolute ;height:22px;width:102px;left:105px;top:141px;"
+		    		direction="auto" chooseOption="" displayMode="label"
+		    		class="input_edit" allOption="" submenuSize="auto"
+		    		disabled="false"
+		    		ref="resMaster/root/dataset[@id='ds_Master']/record/TEST_TYPE">
+		    		<xf:choices>
+		    			<xf:item>
+		    				<xf:label>내방</xf:label>
+		    				<xf:value>01</xf:value>
+		    			</xf:item>
+		    			<xf:item>
+		    				<xf:label>방문</xf:label>
+		    				<xf:value>02</xf:value>
+		    			</xf:item>
+		    		</xf:choices>
+		    	</xf:select1>
+		    	<w2:textbox id="output166"
+		    		style="position: absolute ;height:22px;width:82px;left:212px;top:75px;"
+		    		class="se_lable" label="예약일자">
+		    	</w2:textbox>
+		    	<xf:select1 id="cb_UseType" appearance="minimal"
+		    		style="position: absolute ;height:22px;width:103px;left:305px;top:141px;"
+		    		direction="auto" chooseOption="" allOption="" class="input_edit"
+		    		displayMode="label" disabled="false" submenuSize="auto"
+		    		ref="resMaster/root/dataset[@id='ds_Master']/record/USE_TYPE">
+		    		<xf:choices>
+		    			<xf:item>
+		    				<xf:label>고객시승</xf:label>
+		    				<xf:value>01</xf:value>
+		    			</xf:item>
+		    			<xf:item>
+		    				<xf:label>이벤트</xf:label>
+		    				<xf:value>02</xf:value>
+		    			</xf:item>
+		    			<xf:item>
+		    				<xf:label>내부업무</xf:label>
+		    				<xf:value>03</xf:value>
+		    			</xf:item>
+		    			<xf:item>
+		    				<xf:label>기타</xf:label>
+		    				<xf:value>04</xf:value>
+		    			</xf:item>
+		    		</xf:choices>
+		    		<script ev:event="onchange" type="javascript"><![CDATA[ 
+		    			fn_UseTypeChange();
+		    		]]></script>
+		    	</xf:select1>
+		    	<xf:input id="edt_VariantNm"
+		    		style="position: absolute ;height:22px;width:99px;left:305px;top:110px;"
+		    		class="input_edit"
+		    		ref="resMaster/root/dataset[@id='ds_Master']/record/VARIANT_NM"
+		    		readOnly="true" readOnlyClass="input_readonly">
+		    	</xf:input>
+		    	<xf:input id="edt_ReservedDt"
+		    		style="position: absolute ;height:22px;width:99px;left:305px;top:79px;"
+		    		class="input_edit" editType=""
+		    		ref="resMaster/root/dataset[@id='ds_Master']/record/RESERVED_DT"
+		    		readOnly="true" readOnlyClass="input_readonly">
+		    	</xf:input>
+		    	<w2:textbox id="output174"
+		    		style="position: absolute ;height:22px;width:82px;left:413px;top:137px;"
+		    		class="se_lable" label="시승담당자">
+		    	</w2:textbox>
+		    	<w2:textbox id="output175"
+		    		style="position: absolute ;height:22px;width:82px;left:413px;top:106px;"
+		    		class="se_lable" label="고객명">
+		    	</w2:textbox>
+		    	<w2:textbox id="output176"
+		    		style="position: absolute ;height:22px;width:82px;left:413px;top:75px;"
+		    		class="se_lable" label="예약시작시간">
+		    	</w2:textbox>
+		    	<xf:input id="edt_ResUserNm"
+		    		style="position: absolute ;height:22px;width:87px;left:506px;top:141px;"
+		    		class="input_edit"
+		    		ref="resMaster/root/dataset[@id='ds_Master']/record/RES_USER_NM"
+		    		readOnly="true" readOnlyClass="input_readonly">
+		    	</xf:input>
+		    	<w2:textbox id="output177"
+		    		style="position: absolute ;height:22px;width:82px;left:602px;top:75px;"
+		    		class="se_lable" label="예약종료시간">
+		    	</w2:textbox>
+		    	<xf:select1 id="cb_ToTime" appearance="minimal"
+		    		style="position: absolute ;height:22px;width:90px;left:695px;top:79px;"
+		    		direction="auto" chooseOption="" displayMode="label"
+		    		class="input_edit" allOption="" submenuSize="auto"
+		    		disabled="false"
+		    		ref="resMaster/root/dataset[@id='ds_Master']/record/TO_TIME"
+					visibleRowNum="13">
+		    		<xf:choices>
+		    			<xf:itemset
+		    				nodeset="resCode/root/dataset[@id='ds_Code']/record[CD_KND='SF0102']">
+		    				<xf:label ref="NAME"></xf:label>
+		    				<xf:value ref="CODE"></xf:value>
+		    			</xf:itemset>
+		    		</xf:choices>
+		    	</xf:select1>
+		    	<w2:textbox id="output181"
+		    		style="position: absolute ;height:30px;width:777px;left:12px;top:272px;"
+		    		class="se_box" label="">
+		    	</w2:textbox>
+		    	<w2:textbox id="output182"
+		    		style="position: absolute ;height:22px;width:84px;left:12px;top:272px;"
+		    		class="se_lable" label="시승후주행거리">
+		    	</w2:textbox>
+		    	<xf:input id="edt_EndKm"
+		    		style="position: absolute ;height:22px;text-align:right;width:105px;left:107px;top:276px;"
+		    		class="input_edit"
+		    		ref="resMaster/root/dataset[@id='ds_Master']/record/END_KM">
+		    	</xf:input>
+		    	<xf:select1 id="cb_PurchaseDegree" appearance="minimal"
+		    		style="position: absolute ;height:22px;width:104px;left:525px;top:276px;"
+		    		direction="auto" chooseOption="true" displayMode="label"
+		    		class="input_edit" allOption="" submenuSize="auto"
+		    		disabled="false" chooseOptionLabel="구매의향"
+		    		ref="resMaster/root/dataset[@id='ds_Master']/record/PURCHASE_DEGREE">
+		    		<xf:choices>
+		    			<xf:item>
+		    				<xf:label>즉시구매</xf:label>
+		    				<xf:value>01</xf:value>
+		    			</xf:item>
+		    			<xf:item>
+		    				<xf:label>구매예정</xf:label>
+		    				<xf:value>02</xf:value>
+		    			</xf:item>
+		    			<xf:item>
+		    				<xf:label>미정</xf:label>
+		    				<xf:value>03</xf:value>
+		    			</xf:item>
+		    		</xf:choices>
+		    	</xf:select1>
+		    	<w2:textbox id="output183"
+		    		style="position: absolute ;height:20px;color:#000000;width:204px;left:12px;top:253px;"
+		    		class="sub_title" label="시승 결과정보">
+		    	</w2:textbox>
+		    	<w2:textbox id="output184"
+		    		style="position: absolute ;height:22px;width:84px;left:221px;top:272px;"
+		    		class="se_lable" label="시승결과">
+		    	</w2:textbox>
+		    	<w2:textbox id="output185"
+		    		style="position: absolute ;height:22px;width:84px;left:430px;top:272px;"
+		    		class="se_lable" label="구매의향">
+		    	</w2:textbox>
+		    	<xf:select1 id="cb_InterestDegree" appearance="minimal"
+		    		style="position: absolute ;height:22px;width:109px;left:316px;top:276px;"
+		    		direction="auto" chooseOption="true" allOption=""
+		    		class="input_edit" displayMode="label" disabled="false"
+		    		submenuSize="auto" chooseOptionLabel="시승결과"
+		    		ref="resMaster/root/dataset[@id='ds_Master']/record/INTEREST_DEGREE"
+					visibleRowNum="6">
+		    		<xf:choices>
+		    			<xf:item>
+		    				<xf:label>만족</xf:label>
+		    				<xf:value>01</xf:value>
+		    			</xf:item>
+		    			<xf:item>
+		    				<xf:label>불만족</xf:label>
+		    				<xf:value>02</xf:value>
+		    			</xf:item>
+		    			<xf:item>
+		    				<xf:label>불명확</xf:label>
+		    				<xf:value>03</xf:value>
+		    			</xf:item>
+		    			<xf:item>
+		    				<xf:label>시승취소</xf:label>
+		    				<xf:value>04</xf:value>
+		    			</xf:item>
+		    			<xf:item>
+		    				<xf:label>기타(내부업무)</xf:label>
+		    				<xf:value>05</xf:value>
+		    			</xf:item>
+		    		</xf:choices>
+		    		<script ev:event="onchange" type="javascript"><![CDATA[ 
+		    			fn_InterestChange();
+		    		]]></script>
+		    	</xf:select1>
+		    	<w2:textbox id="output187"
+		    		style="position: absolute ;height:70px;width:777px;left:12px;top:303px;"
+		    		class="se_box" label="">
+		    	</w2:textbox>
+		    	<w2:textbox id="output188"
+		    		style="position: absolute ;height:62px;width:84px;left:12px;top:303px;"
+		    		class="se_lable" label="결과메모">
+		    	</w2:textbox>
+		    	<xf:textarea id="ta_ResultMemo"
+		    		style="position: absolute ;height:59px;width:676px;left:107px;top:307px;"
+		    		class="input_edit"
+		    		ref="resMaster/root/dataset[@id='ds_Master']/record/RESULT_MEMO">
+		    	</xf:textarea>
+		    	<w2:textbox id="output189"
+		    		style="position: absolute ;height:30px;width:777px;left:12px;top:374px;"
+		    		class="se_box" label="">
+		    	</w2:textbox>
+		    	<w2:textbox id="output190"
+		    		style="position: absolute ;height:22px;width:84px;left:12px;top:374px;"
+		    		class="se_lable" label="용도">
+		    	</w2:textbox>
+		    	<xf:input id="edt_UseNm"
+		    		style="position: absolute ;height:22px;width:105px;left:107px;top:378px;"
+		    		class="input_edit"
+		    		ref="resMaster/root/dataset[@id='ds_Master']/record/USE_NM"
+		    		readOnlyClass="input_readonly" readOnly="true">
+		    	</xf:input>
+		    	<xf:input class="input_edit" id="edt_CustSeq"
+		    		style="position: absolute ;height:22px;visibility:hidden;width:80px;left:701px;top:110px;"
+		    		ref="resMaster/root/dataset[@id='ds_Master']/record/CUST_SEQ">
+		    	</xf:input>
+		    	<xf:input class="input_edit" id="edt_TestcarNo"
+		    		ref="resMaster/root/dataset[@id='ds_Master']/record/TESTCAR_NO"
+		    		style="position: absolute ;height:22px;visibility:hidden;width:60px;left:240px;top:378px;">
+		    	</xf:input>
+		    	<xf:input class="input_edit" id="edt_Vin"
+		    		ref="resMaster/root/dataset[@id='ds_Master']/record/VIN"
+		    		style="position: absolute ;height:22px;visibility:hidden;width:60px;left:308px;top:378px;">
+		    	</xf:input>
+		    	<xf:input class="input_edit" id="edt_VariantCd"
+		    		ref="resMaster/root/dataset[@id='ds_Master']/record/VARIANT_CD"
+		    		style="position: absolute ;height:22px;visibility:hidden;width:60px;left:376px;top:378px;">
+		    	</xf:input>
+		    	<xf:input class="input_edit" id="edt_ViewWord"
+		    		ref="resMaster/root/dataset[@id='ds_Master']/record/VIEW_WORD"
+		    		style="position: absolute ;height:22px;visibility:hidden;width:60px;left:444px;top:378px;">
+		    	</xf:input>
+		    	<xf:input class="input_edit" id="edt_ResGroupId"
+		    		ref="resMaster/root/dataset[@id='ds_Master']/record/RES_GROUP_ID"
+		    		style="position: absolute ;height:22px;visibility:hidden;width:60px;left:512px;top:378px;">
+		    	</xf:input>
+		    	<xf:input class="input_edit" id="edt_ResUserId"
+		    		ref="resMaster/root/dataset[@id='ds_Master']/record/RES_USER_ID"
+		    		style="position: absolute ;height:22px;visibility:hidden;width:60px;left:580px;top:378px;">
+		    	</xf:input>
+		    	<xf:input class="input_edit" id="edt_ShopCd"
+		    		ref="resMaster/root/dataset[@id='ds_Master']/record/SHOP_CD"
+		    		style="position: absolute ;height:22px;visibility:hidden;width:60px;left:648px;top:378px;">
+		    	</xf:input>
+    		</xf:case>
+    		<xf:case id="case2"
+    			style="position:absolute;top:0px;left:0px;width:800px;height:420px;"
+    			class="">
+    			<w2:wframe id="wframe1"
+    				style="position: absolute ;left: 0px;top: 0px;width: 800px;height: 420px;"
+    				mode="async" src="/mp/comm/CustSearch.xml">
+    			</w2:wframe>
+    		</xf:case>
+    	</xf:switch>
+    </body>
+</html>

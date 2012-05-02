@@ -1,0 +1,284 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?xml-stylesheet href="/mp/css/style.css" type="text/css"?>
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:ev="http://www.w3.org/2001/xml-events"
+    xmlns:w2="http://www.inswave.com/websquare" xmlns:xf="http://www.w3.org/2002/xforms">
+    <head>
+    	<w2:buildDate />
+    	<xf:model>
+    		<xf:instance>
+    			<data xmlns="" />
+    		</xf:instance>
+    		<xf:submission id="submissionList" ref="request" target="resList"
+        		action=""
+        		method="post" mediatype="application/xml" encoding="UTF-8" instance="" replace="instance"
+        		errorHandler="" customHandler="" mode="asynchronous"
+        		processMsg="처리중입니다.">
+        		<script type="javascript" ev:event="xforms-submit-done"><![CDATA[
+            		grd_List.setXML(WebSquare.ModelUtil.findInstanceNode("resList/root/dataset[@id='ds_List']"));
+    		
+    				fn_AfterSearch();
+            	]]></script>
+        	</xf:submission>
+        	<xf:submission id="submissionCode" ref="request" target="resCode"
+        		action=""
+        		method="post" mediatype="application/xml" encoding="UTF-8" instance="" replace="instance"
+        		errorHandler="" customHandler="" mode="asynchronous"
+        		processMsg="">
+        	</xf:submission>
+    	</xf:model>
+    	<script type="javascript" src="/mp/js/common.js"></script>
+		<script type="javascript" src="/mp/js/WebSquare.js"></script>
+    	<script type="javascript"><![CDATA[
+     	var FV_SEARCH_CNT = 18;		// 조회 건수
+		var FV_nMAXCNT = -1;		// 전체 데이터 수			
+		/****************************************************************
+		* 화면로드
+		* @param  : 없음
+		* @return : 없음
+		******************************************************************/
+        function fn_OnLoad(){
+        	wfrm_Page.visible(false);
+        	// 공통코드
+       		setTitSendInfo("request", "", "", "mdms/mp/comm::CO_CODE_S01");
+			setInputParamData("CD_KND", "'SA0101'");	// 판매유형
+			setSubmissison("submissionCode");
+			
+			fn_VehicleOnLoad("111110");	
+			parent.fn_SpinnerHide();	
+        }        
+        /****************************************************************
+		* 조회
+		* @param  : 페이지번호
+		* @return : 없음
+		******************************************************************/ 
+        function fn_Search(pageNo){
+        	if(gfn_IsNullVal(cb_Sales.getValue()) && 
+        		gfn_IsNullVal(cb_Model.getValue()) && gfn_IsNullVal(cb_Variant.getValue())){
+        		alert("판매유형 또는 차량사양 항목에 값이 누락되었습니다.\n확인하여 주십시오.");
+        		return;
+        	}
+        	
+        	if(pageNo == null){
+				FV_nMAXCNT = -1;
+				pageNo = 1;
+				fn_InitPage();
+			} 	
+        	
+        	var sSqlid = "mdms/mp/retn:S310204_W01_S01@" + pageNo + "/" + FV_SEARCH_CNT;
+        	
+        	setTitSendInfo("request", "", "", sSqlid);
+        	setInputParamData("SALES_TYPE", cb_Sales.getValue());
+        	setInputParamData("BRAND_CD", cb_Brand.getValue());
+        	setInputParamData("MODEL_CD", cb_Model.getValue());
+        	setInputParamData("VARIANT_CD", cb_Variant.getValue());
+        	setInputParamData("MY_CD", cb_Model_Year.getValue());
+        	setInputParamData("SFX_CD", cb_Sfx.getValue());  	
+        	
+    		setSubmissison("submissionList");
+        }
+        /****************************************************************
+		* callback (조회)
+		* @param  : 없음
+		* @return : 없음
+		******************************************************************/
+        function fn_AfterSearch(){
+        	if(FV_nCurrPage == -1 && grd_List.getRowCount() > 0){
+				FV_nMAXCNT = grd_List.getCellData(0,0);
+				fn_SetPageInfo(1,FV_nMAXCNT,FV_SEARCH_CNT);
+			}
+        }
+        
+        fn_OnLoad();
+        ]]></script>
+    </head>
+    <body>
+    	<w2:grid baseNode="dataset" autoFit=""
+    		class="grid" resize=""
+    		id="grd_List" focusMode="row"
+    		style="position:absolute;height:459px;width:991px;left:2px;top:99px;"
+    		evenRowBackgroundColor="#e1ebf5" overflowX="hidden"
+    		overflowY="hidden" oddEvenColorDisplay="true"
+    		oddRowBackgroundColor="#ffffff" repeatNode="record"
+    		sortEvent="onclick" readOnly="true">
+    		<w2:header id="header7" style="" width="472"
+    			columnClass="gridHeaderTD1" class="gridHeaderTable">
+    			<w2:row id="row16" style="">
+    				<w2:column id="column345" style="height:25px"
+    					hidden="" inputType="text" width="30" valueType="binary">
+    				</w2:column>
+    				<w2:column id="column222" style="height:20px;"
+    					hidden="" width="120" inputType="text" value="모델" rowSpan=""
+    					valueType="binary" colSpan="">
+    				</w2:column>
+    				<w2:column id="column223" style="height:20px;"
+    					hidden="" width="120" inputType="text" value="차종"
+    					valueType="binary" colSpan="" rowSpan="">
+    				</w2:column>
+    				<w2:column id="column224" style="height:20px;"
+    					hidden="" width="60" inputType="text" value="연식"
+    					valueType="binary" colSpan="" rowSpan="">
+    				</w2:column>
+    				<w2:column id="column225" style="height:20px;"
+    					hidden="" width="70" inputType="text" value="SFX"
+    					valueType="binary" colSpan="" rowSpan="">
+    				</w2:column>
+    				<w2:column id="SALES_GB" style="height:25px"
+    					hidden="true" inputType="text" width="30" valueType="binary">
+    				</w2:column>
+    				<w2:column id="column226" style="height:20px;"
+    					hidden="" width="200" inputType="text" value="판매유형"
+    					valueType="binary" colSpan="" rowSpan="">
+    				</w2:column>
+    				<w2:column id="column284" style="height:20px"
+    					hidden="" inputType="text" width="90" valueType="binary"
+    					value="적용시작일자" colSpan="" rowSpan="">
+    				</w2:column>
+    				<w2:column id="column342" style="height:20px"
+    					hidden="" width="110" inputType="text" valueType="binary"
+    					value="매출가격">
+    				</w2:column>
+    				<w2:column id="column343" style="height:20px"
+    					hidden="" width="110" inputType="text" valueType="binary"
+    					value="매출원가">
+    				</w2:column>
+    				<w2:column id="column344" style="height:20px"
+    					hidden="" width="110" inputType="text" valueType="binary"
+    					value="매출부가세">
+    				</w2:column>
+    			</w2:row>
+    		</w2:header>
+    		<w2:gBody id="gBody7" style="" columnClass="gridBodyTD"
+    			class="gridBodyTable">
+    			<w2:row id="row17" style="">
+    				<w2:column id="_T_CNT" style="height:23px" hidden="true"
+    					inputType="text" width="70" valueType="binary">
+    				</w2:column>
+    				<w2:column id="MODEL_NM" style="height:21px;"
+    					hidden="" width="100" inputType="text" value=""
+    					valueType="binary" colMerge="true" textAlign="left">
+    				</w2:column>
+    				<w2:column id="VARIANT_NM" style="height:21px;"
+    					hidden="" width="100" inputType="text" value=""
+    					valueType="binary" colMerge="true" textAlign="left">
+    				</w2:column>
+    				<w2:column id="MY_CD" style="height:21px;" hidden=""
+    					width="90" inputType="text" value="" valueType="binary"
+    					colMerge="true">
+    				</w2:column>
+    				<w2:column id="SFX_NM" style="height:21px;"
+    					hidden="" width="90" inputType="text" value=""
+    					valueType="binary" colMerge="true" upperColumn="MY_CD">
+    				</w2:column>
+    				<w2:column id="SALES_GB" style="height:23px"
+    					hidden="" inputType="text" width="70" valueType="binary">
+    				</w2:column>
+    				<w2:column id="SALES_TYPE" style="height:21px;"
+    					hidden="" width="98" inputType="select" value=""
+    					valueType="binary" colMerge="true" allOption="" chooseOption=""
+    					textAlign="left" upperColumn="SALES_GB">
+    					<w2:choices>
+    						<w2:itemset
+    							nodeset="resCode/root/dataset[@id='ds_Code']/record[CD_KND='SA0101']">
+    							<w2:label ref="NAME"></w2:label>
+    							<w2:value ref="CODE"></w2:value>
+    						</w2:itemset>
+    					</w2:choices>
+    				</w2:column>
+    				<w2:column id="APP_START_DT" style="height:21px"
+    					hidden="" inputType="text" width="122" valueType="binary"
+    					dataType="date">
+    				</w2:column>
+    				<w2:column id="RETAIL_PRICE" style="height:21px"
+    					hidden="" inputType="text" width="110" valueType="binary"
+    					textAlign="right" dataType="number" displayFormat="#,###">
+    				</w2:column>
+    				<w2:column id="RETAIL_COST" style="height:21px"
+    					hidden="" inputType="text" width="110" valueType="binary"
+    					textAlign="right" dataType="number" displayFormat="#,###">
+    				</w2:column>
+    				<w2:column id="RETAIL_VAT" style="height:21px"
+    					hidden="" inputType="text" width="110" valueType="binary"
+    					textAlign="right" dataType="number" displayFormat="#,###">
+    				</w2:column>
+    			</w2:row>
+    		</w2:gBody>
+    	</w2:grid>
+    	<xf:image id="image42"
+    		src="/mp/images/smenu_bg.png"
+    		style="position: absolute ;height:36px;width:991px;left:0px;top:0px;">
+    	</xf:image>
+
+    	<xf:image id="image43"
+    		src="/mp/images/stitle_bg.png"
+    		style="position: absolute ;height:36px;width:172px;left:1px;top:0px;">
+    	</xf:image>
+    	<w2:textbox class="title" id="title" label="가격조회"
+    		style="position: absolute ;height:20px;width:149px;left:3px;top:11px;;text-align:center">
+    	</w2:textbox>
+    	<xf:group 
+    		id="roundRectangle2"
+    		style="position: absolute ;height:42px;width:991px;left:1px;top:45px;" class="if_group">
+    	</xf:group>
+    	<xf:select1 id="cb_Sales" appearance="minimal"
+    		style="position: absolute ;height:22px;width:107px;left:63px;top:55px;"
+    		direction="auto" chooseOption="true" displayMode="label"
+    		allOption="" class="input_edit" disabled="false"
+    		submenuSize="auto" chooseOptionLabel="ALL" visibleRowNum="22">
+    		<xf:choices>
+    			<xf:itemset
+    				nodeset="resCode/root/dataset[@id='ds_Code']/record[CD_KND='SA0101']">
+    				<xf:label ref="NAME"></xf:label>
+    				<xf:value ref="CODE"></xf:value>
+    			</xf:itemset>
+    		</xf:choices>
+    	</xf:select1>
+    	<w2:textbox class="if_lable" id="output50" label="차량사양"
+    		style="position: absolute ;height:22px;width:51px;left:182px;top:55px;">
+    	</w2:textbox>
+    	<xf:image id="image48"
+    		src="/mp/images/if_btn_seach.png"
+    		style="position: absolute ;cursor:pointer;height:25px;width:77px;left:892px;top:54px;">
+    		<script ev:event="onclick" type="javascript"><![CDATA[ 
+    			fn_Search();
+    		]]></script>
+    	</xf:image>
+    	<xf:trigger class="btn_s1" id="trigger1"
+    		style="position: absolute ;height:25px;width:88px;left:717px;top:6px;"
+    		type="image">
+    		<xf:label>계약조회</xf:label>
+    		<script ev:event="onclick" type="javascript"><![CDATA[ 
+    			parent.fn_SpinnerShow();
+    			parent.ifrm_Main.setSrc("/mp/retn/S310201_W01.xml");
+    		]]></script>
+    	</xf:trigger>
+    	<xf:trigger class="btn_on2" id="trigger2"
+    		style="position: absolute ;height:25px;width:88px;left:805px;top:6px;"
+    		type="image">
+    		<xf:label>가격조회</xf:label>
+    		<script ev:event="onclick" type="javascript"><![CDATA[ 
+    			parent.fn_SpinnerShow();
+    			parent.ifrm_Main.setSrc("/mp/retn/S310204_W01.xml");
+    		]]></script>
+    	</xf:trigger>
+    	<xf:trigger class="btn_s3" id="trigger3"
+    		style="position: absolute ;height:25px;width:88px;left:894px;top:6px;"
+    		type="image">
+    		<xf:label>계약등록</xf:label>
+    		<script ev:event="onclick" type="javascript"><![CDATA[ 
+    			parent.fn_SpinnerShow();
+    			parent.ifrm_Main.setSrc("/mp/retn/S310202_W01.xml");
+    		]]></script>
+    	</xf:trigger>
+    	<w2:textbox class="if_lable" id="output72" label="판매유형"
+    		style="position: absolute ;height:22px;width:50px;left:11px;top:55px;">
+    	</w2:textbox>
+    	<w2:wframe id="wframe1" mode="sync"
+    		src="/mp/comm/VehicleSpec.xml"
+    		style="position: absolute ;left:235px;top:55px;width:656px;height:22px;">
+    	</w2:wframe>
+    	<w2:wframe id="wfrm_Page" mode="sync"
+    		src="/mp/comm/Paging.xml"
+    		style="position: absolute ;left:296px;top:567px;width:443px;height:28px;">
+    	</w2:wframe>
+    </body>
+</html>

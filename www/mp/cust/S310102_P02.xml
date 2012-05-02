@@ -1,0 +1,344 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?xml-stylesheet href="/mp/css/style.css" type="text/css"?>
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:ev="http://www.w3.org/2001/xml-events"
+    xmlns:w2="http://www.inswave.com/websquare" xmlns:xf="http://www.w3.org/2002/xforms">
+    <head>
+    	<w2:buildDate />
+    	<xf:model>
+    		<xf:instance>
+    			<data xmlns="" />
+    		</xf:instance>
+    		<xf:submission id="submissionFamily" ref="request" target="resFamily"
+        		action=""
+        		method="post" mediatype="application/xml" encoding="UTF-8" instance="" replace="instance"
+        		errorHandler="" customHandler="" mode="asynchronous"
+        		processMsg="">
+        		<script type="javascript" ev:event="xforms-submit-done"><![CDATA[
+            		grd_Family.setXML(WebSquare.ModelUtil.findInstanceNode("resFamily/root/dataset[@id='ds_Family']"));
+    		
+    				fn_AfterSearch();
+            	]]></script>
+        	</xf:submission>
+        	<xf:submission id="submissionCode" ref="request" target="resCode"
+        		action=""
+        		method="post" mediatype="application/xml" encoding="UTF-8" instance="" replace="instance"
+        		errorHandler="" customHandler="" mode="asynchronous"
+        		processMsg="">
+        	</xf:submission>
+        	<xf:submission id="submissionSave" ref="request" target="resSave"
+	    		action=""
+        		method="post" mediatype="application/xml" encoding="UTF-8" instance="" replace="instance"
+        		errorHandler="" customHandler="" mode="synchronous"
+        		processMsg="">
+        	</xf:submission>
+    	</xf:model>
+    	<script type="javascript" src="/mp/js/common.js"></script>
+		<script type="javascript" src="/mp/js/WebSquare.js"></script>
+    	<script type="javascript"><![CDATA[
+     	/****************************************************************
+		* 화면로드
+		* @param  : 없음
+		* @return : 없음
+		******************************************************************/
+       	function fn_OnLoad(){       		
+			// 공통코드
+       		setTitSendInfo("request", "", "", "mdms/mp/comm::CO_CODE_S01");
+       		setInputParamData("CD_KND", "'CO0007'");
+			setSubmissison("submissionCode");
+			
+			fn_Search();
+       	}
+       	/****************************************************************
+		* 조회
+		* @param  : 없음
+		* @return : 없음
+		******************************************************************/ 
+        function fn_Search(){        	
+        	var sSqlid = "mdms/mp/cust:S310102_P02_S01";
+        	
+        	setTitSendInfo("request", "", "", sSqlid);
+        	setInputParamData("CUST_SEQ",parent.FV_sCustSeq);
+        	
+    		setSubmissison("submissionFamily");
+        }
+        /****************************************************************
+		* 저장
+		* @param  : 없음
+		* @return : 없음
+		******************************************************************/ 
+        function fn_Save(){
+        	var arrBirthDt = grd_Family.getColData(6);
+        	
+        	for(var i=0; i<arrBirthDt.length; i++){
+        		if(!gfn_IsNullVal(arrBirthDt[i]) && arrBirthDt[i].length != 8){
+        			alert(i+1 + "행의 생일을 올바르게 입력하세요.");
+        			break;
+        		}        		
+        	}
+        	
+        	setTitSendInfo("request", "S310102_P02Action", "save", "");
+			
+			//request에 수정된 xml을 추가
+			setInstanceNodeDataSetforTIT("ds_Family", grd_Family.getModifiedXML(), "request/root" );
+			setInputParamData("CUST_SEQ",parent.FV_sCustSeq);
+			setInputParamData("DEALER_ID",parent.FV_sDealerId);
+			setInputParamData("MNG_SC_ID",parent.FV_sMngScId);
+			setInputParamData("UPDATE_TYPE","INSERT");
+			setInputParamData("MENU_ID","S310102_P02");		//메뉴아이디
+			
+  			setSubmissison("submissionSave");
+  			
+  			fn_Search();
+        }
+        /****************************************************************
+		* 삭제
+		* @param  : 없음
+		* @return : 없음
+		******************************************************************/ 
+        function fn_Delete(){       
+        	setTitSendInfo("request", "S310102_P02Action", "delete", "");
+			
+			//request에 수정된 xml을 추가
+			setInstanceNodeDataSetforTIT("ds_Family", grd_Family.getCheckedXML(1), "request/root" );
+			setInputParamData("CUST_SEQ",parent.FV_sCustSeq);
+			setInputParamData("UPDATE_TYPE","DELETE");
+			
+  			setSubmissison("submissionSave");
+  			
+  			fn_Search();
+        }
+        /****************************************************************
+		* callback (조회)
+		* @param  : 없음
+		* @return : 없음
+		******************************************************************/
+        function fn_AfterSearch(){
+        	for(var i=0; i<grd_Family.getRowCount(); i++){
+        		grd_Family.setCellData(i, 0, i+1);
+        	}
+        	
+        	grd_Family.reform();
+        }
+        
+        fn_OnLoad();
+        ]]></script>
+    </head>
+    <body>
+    	<w2:textbox class="se_box" id="output130" label=""
+    		style="position: absolute ;height:470px;width:730px;left:0px;top:0px;;border:none">
+    	</w2:textbox>
+    	<xf:image id="image46"
+    		src="/mp/images/pop_title_bg.png"
+    		style="position: absolute ;height:45px;width:730px;left:0px;top:0px;">
+    	</xf:image>
+
+    	<w2:textbox class="title_back" id="output139" label="관계인 등록"
+    		style="position: absolute ;height:20px;text-align:left;width:149px;left:15px;top:15px;">
+    	</w2:textbox>
+    	<w2:textbox class="title" id="output138" label="관계인 등록"
+    		style="position: absolute ;height:20px;text-align:left;width:149px;left:15px;top:14px;">
+    	</w2:textbox>
+    	<xf:trigger class="btn_po" id="btn_Delete"
+    		style="position: absolute ;height:30px;color:#FFFFFF;width:70px;left:574px;top:10px;"
+    		type="image">
+    		<xf:label>삭 제</xf:label>
+    		<script ev:event="onclick" type="javascript"><![CDATA[ 
+    			fn_Delete();
+    		]]></script>
+    	</xf:trigger>
+    	<xf:trigger class="btn_po" id="btn_Save"
+    		style="position: absolute ;height:30px;color:#FFFFFF;width:70px;left:501px;top:10px;"
+    		type="image">
+    		<xf:label>저 장</xf:label>
+    		<script ev:event="onclick" type="javascript"><![CDATA[ 
+    			fn_Save();
+    		]]></script>
+    	</xf:trigger>
+
+
+    	<w2:grid autoFit="" baseNode="dataset" class="grid"
+    		evenRowBackgroundColor="#e1ebf5" focusMode="row" id="grd_Family"
+    		oddEvenColorDisplay="true" oddRowBackgroundColor="#ffffff"
+    		overflowX="hidden" overflowY="hidden"
+    		readOnlyBackgroundColor="#eeeeee" repeatNode="record" resize=""
+    		style="position:absolute;height:369px;width:701px;left:14px;top:84px;"
+    		editModeEvent="onclick" rowStatusVisible="true">
+    		<w2:header class="gridHeaderTable"
+    			columnClass="gridHeaderTD1" id="header1" style="" width="840">
+    			<w2:row id="row1" style="">
+    				<w2:column colSpan="" hidden="" id="column2"
+    					inputType="text" rowSpan="" style="height:26px;" value="No"
+    					valueType="binary" width="30">
+    				</w2:column>
+    				<w2:column id="column13" style="height:26px"
+    					hidden="" inputType="checkbox" width="30" valueType="binary"
+    					value="">
+    				</w2:column>
+    				<w2:column id="column22" style="height:28px"
+    					hidden="" inputType="text" width="70" valueType="binary">
+    				</w2:column>
+    				<w2:column colSpan="" hidden="" id="column3"
+    					inputType="text" rowSpan="" style="height:26px;" value="관계"
+    					valueType="binary" width="80">
+    				</w2:column>
+    				<w2:column hidden="" id="column4" inputType="text"
+    					style="height:26px;" value="성명" valueType="binary"
+    					width="70">
+    				</w2:column>
+    				<w2:column hidden="" id="column5" inputType="text"
+    					style="height:26px;" value="성별" valueType="binary"
+    					width="50">
+    				</w2:column>
+    				<w2:column id="column15" style="height:28px"
+    					hidden="" inputType="text" width="70" valueType="binary"
+    					value="생일">
+    				</w2:column>
+    				<w2:column id="column20" style="height:28px"
+    					hidden="" inputType="text" width="158" valueType="binary"
+    					colSpan="2" rowSpan="" value="핸드폰">
+    				</w2:column>
+    				<w2:column hidden="" id="column6" inputType="text"
+    					style="height:26px" value="메모" valueType="binary"
+    					width="220">
+    				</w2:column>
+    				<w2:column id="column29" style="height:28px"
+    					hidden="" inputType="text" width="70" valueType="binary">
+    				</w2:column>
+    				<w2:column id="column28" style="height:28px"
+    					hidden="" inputType="text" width="70" valueType="binary">
+    				</w2:column>
+    				<w2:column id="column26" style="height:28px"
+    					hidden="" inputType="text" width="70" valueType="binary">
+    				</w2:column>
+    			</w2:row>
+    		</w2:header>
+    		<w2:gBody class="gridBodyTable" columnClass="gridBodyTD"
+    			id="gBody1" style="" width="840">
+    			<w2:row id="row2" style="">
+    				<w2:column hidden="" id="column8" inputType="text"
+    					style="height:21px;" value="" valueType="binary" width="30"
+    					importExp="" expression="" editModeEvent="ondblclick"
+    					textAlign="left">
+    				</w2:column>
+    				<w2:column id="CHK" style="height:21px" hidden=""
+    					inputType="checkbox" width="30" valueType="binary" value="">
+    				</w2:column>
+    				<w2:column id="FAMILY_SEQ" style="height:24px"
+    					hidden="true" inputType="text" width="70" valueType="binary">
+    				</w2:column>
+    				<w2:column hidden="" id="FAMILY_CD"
+    					inputType="select" style="height:21px;" textAlign="left"
+    					value="" valueType="binary" width="80" allOption=""
+    					chooseOption="" visibleRowNum="20">
+    					<w2:choices>
+    						<w2:itemset
+    							nodeset="resCode/root/dataset[@id='ds_Code']/record[CD_KND='CO0007']">
+    							<w2:label ref="NAME"></w2:label>
+    							<w2:value ref="CODE"></w2:value>
+    						</w2:itemset>
+    					</w2:choices>
+    				</w2:column>
+    				<w2:column hidden="" id="FAMILY_NAME"
+    					inputType="text" style="height:21px;" textAlign="left" value=""
+    					valueType="binary" width="60">
+    				</w2:column>
+    				<w2:column hidden="" id="SEX_CD" inputType="select"
+    					style="height:21px;" textAlign="center" value=""
+    					valueType="binary" width="40" allOption="" chooseOption="">
+    					<w2:choices>
+    						<w2:item>
+    							<w2:label>남</w2:label>
+    							<w2:value>M</w2:value>
+    						</w2:item>
+    						<w2:item>
+    							<w2:label>여</w2:label>
+    							<w2:value>F</w2:value>
+    						</w2:item>
+    					</w2:choices>
+    				</w2:column>
+    				<w2:column id="BIRTH_DT" style="height:22px"
+    					hidden="" inputType="text" width="60" valueType="binary"
+    					dataType="date" displayFormat="" maxLength="8"
+    					dateValidCheck="">
+    				</w2:column>
+    				<w2:column id="HP_AREA" style="height:22px"
+    					hidden="" inputType="select" width="40" valueType="binary"
+    					allOption="" chooseOption="" visibleRowNum="10">
+    					<w2:choices>
+    						<w2:item>
+    							<w2:label>010</w2:label>
+    							<w2:value>010</w2:value>
+    						</w2:item>
+    						<w2:item>
+    							<w2:label>011</w2:label>
+    							<w2:value>011</w2:value>
+    						</w2:item>
+    						<w2:item>
+    							<w2:label>016</w2:label>
+    							<w2:value>016</w2:value>
+    						</w2:item>
+    						<w2:item>
+    							<w2:label>017</w2:label>
+    							<w2:value>017</w2:value>
+    						</w2:item>
+    						<w2:item>
+    							<w2:label>018</w2:label>
+    							<w2:value>018</w2:value>
+    						</w2:item>
+    						<w2:item>
+    							<w2:label>019</w2:label>
+    							<w2:value>019</w2:value>
+    						</w2:item>
+    					</w2:choices>
+    				</w2:column>
+    				<w2:column id="HP_NO" style="height:22px" hidden=""
+    					inputType="text" width="70" valueType="binary">
+    				</w2:column>
+    				<w2:column hidden="" id="MEMO" inputType="text"
+    					style="height:21px" valueType="binary" width="178"
+    					textAlign="left">
+    				</w2:column>
+    				<w2:column id="FAM_CUST_SEQ" style="height:24px"
+    					hidden="true" inputType="text" width="70" valueType="binary">
+    				</w2:column>
+    				<w2:column id="EMAIL" style="height:24px"
+    					hidden="true" inputType="text" width="70" valueType="binary">
+    				</w2:column>
+    				<w2:column id="EMAIL_DOMAIN" style="height:24px"
+    					hidden="true" inputType="text" width="70" valueType="binary">
+    				</w2:column>
+    			</w2:row>
+    		</w2:gBody>
+    	</w2:grid>
+    	<xf:trigger class="btn_po" id="btn_Close"
+    		style="position: absolute ;height:30px;color:#FFFFFF;width:70px;left:647px;top:10px;"
+    		type="image">
+    		<xf:label>닫 기</xf:label>
+    		<script ev:event="onclick" type="javascript"><![CDATA[ 
+    			parent.fn_PopupClose(3);
+    		]]></script>
+    	</xf:trigger>
+    	<xf:trigger class="btn_n" id="btn_DelRow"
+    		style="position: absolute ;height:30px;width:81px;left:639px;top:54px;"
+    		type="image">
+    		<xf:label>행삭제</xf:label>
+    		<script ev:event="onclick" type="javascript"><![CDATA[    			
+    			if(grd_Family.getFocusedRowStatus() == "C"){
+    				var rowIdx = grd_Family.getFocusedRowIndex();
+    				
+    				grd_Family.removeRow(rowIdx);
+    			}
+    		]]></script>
+    	</xf:trigger>
+    	<xf:trigger class="btn_n" id="btn_AddRow"
+    		style="position: absolute ;height:30px;width:81px;left:561px;top:54px;"
+    		type="image">
+    		<xf:label>행추가</xf:label>
+    		<script ev:event="onclick" type="javascript"><![CDATA[ 
+    			var nRow = grd_Family.insertRow();
+    			
+    			grd_Family.setCellData(nRow, 0, nRow+1);
+    		]]></script>
+    	</xf:trigger>
+    </body>
+</html>

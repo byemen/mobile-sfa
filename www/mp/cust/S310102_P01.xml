@@ -1,0 +1,494 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?xml-stylesheet href="/mp/css/style.css" type="text/css"?>
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:ev="http://www.w3.org/2001/xml-events"
+    xmlns:w2="http://www.inswave.com/websquare" xmlns:xf="http://www.w3.org/2002/xforms">
+    <head>
+    	<w2:buildDate />
+    	<xf:model>
+    		<xf:instance>
+    			<data xmlns=""/> 
+    		</xf:instance>
+    		<xf:submission id="submissionPossVehic" ref="request" target="resPossVehic"
+        		action=""
+        		method="post" mediatype="application/xml" encoding="UTF-8" instance="" replace="instance"
+        		errorHandler="" customHandler="" mode="asynchronous"
+        		processMsg="">
+        	</xf:submission>
+        	<xf:submission id="submissionOtherModel" ref="request" target="resOtherModel"
+        		action=""
+        		method="post" mediatype="application/xml" encoding="UTF-8" instance="" replace="instance"
+        		errorHandler="" customHandler="" mode="synchronous"
+        		processMsg="">
+        	</xf:submission>        	
+        	<xf:submission id="submissionCode" ref="request"
+        		target="resCode" action="" method="post"
+        		mediatype="application/xml" encoding="UTF-8" instance=""
+        		replace="instance" errorHandler="" customHandler=""
+        		mode="asynchronous" processMsg="">
+        		<script type="javascript" ev:event="xforms-submit-done"><![CDATA[ 
+        			if(parent.FV_sFlag == "I"){
+						st_PossTitle1.setLabel("타사보유차량 등록");
+						st_PossTitle2.setLabel("타사보유차량 등록");
+						
+						FV_YearIdx = gfn_GetDate(0,0,0).substring(0,4);
+						FV_MonthIdx = gfn_GetDate(0,0,0).substring(5,7);
+						
+						cb_Year.setValue(FV_YearIdx);
+						cb_Month.setValue(FV_MonthIdx);				
+					} else if(parent.FV_sFlag == "U"){
+						st_PossTitle1.setLabel("타사보유차량 수정");
+						st_PossTitle2.setLabel("타사보유차량 수정");
+						fn_Search();
+					}
+        		]]></script>
+        	</xf:submission>
+        	<xf:submission id="submissionSave" ref="request"
+        		target="resSave" action="" method="post"
+        		mediatype="application/xml" encoding="UTF-8" instance=""
+        		replace="instance" errorHandler="" customHandler=""
+        		mode="asynchronous" processMsg="">
+        		<script type="javascript" ev:event="xforms-submit-done"><![CDATA[	
+  					fn_AfterSave();
+        		]]></script>
+        	</xf:submission>
+    	</xf:model>
+    	<script type="javascript" src="/mp/js/common.js"></script>
+		<script type="javascript" src="/mp/js/WebSquare.js"></script>
+    	<script type="javascript"><![CDATA[    	
+		var FV_YearIdx = 0;
+		var FV_MonthIdx = 0;
+    	/****************************************************************
+		* 화면로드
+		* @param  : 없음
+		* @return : 없음
+		******************************************************************/
+    	function fn_OnLoad(){
+			// 차종
+        	setTitSendInfo("request", "", "", "mdms/mp/comm::CO_OTHER_BRAND_S03");
+        	setSubmissison("submissionOtherModel");
+			// 브랜드, 주운전자
+			setTitSendInfo("request", "", "", "mdms/mp/comm::CO_OTHER_BRAND_S02,mdms/mp/cust::S310102_P01_S02");
+        	setInputParamData("CUST_SEQ", parent.FV_sCustSeq);
+        	setSubmissison("submissionCode");  
+		}
+		/****************************************************************
+		* 조회
+		* @param  : 없음
+		* @return : 없음
+		******************************************************************/ 
+        function fn_Search(){        	
+        	var sSqlid = "mdms/mp/cust:S310102_P01_S01";
+        	
+        	setTitSendInfo("request", "", "", sSqlid);
+        	setInputParamData("CUST_SEQ",parent.FV_sCustSeq);
+        	setInputParamData("SEQ",parent.FV_sSeq);    
+        	
+    		setSubmissison("submissionPossVehic");    		
+        }
+        /****************************************************************
+		* 저장
+		* @param  : 없음
+		* @return : 없음
+		******************************************************************/ 
+        function fn_Save(){ 
+        	if(gfn_IsNullVal(parent.FV_sCustSeq)){
+				alert("고객 일련번호가 정의되어있지 않습니다.");
+				return;
+			}
+			if(gfn_IsNullVal(parent.FV_sDealerId)){
+				alert("딜러Id가 정의되어있지 않습니다.");
+				return;
+			}
+			if(gfn_IsNullVal(parent.FV_sMngScId)){
+				alert("SC ID가 정의되어있지 않습니다.");
+				return;
+			}
+        	if(gfn_IsNullVal(cb_Brand.getValue())){
+				alert("브랜드 항목에 값이 누락되었습니다.\n확인하여 주십시오.");
+				cb_Brand.focus();
+				return;
+			}
+			if(gfn_IsNullVal(cb_Model.getValue())){
+				alert("차종 항목에 값이 누락되었습니다.\n확인하여 주십시오.");
+				cb_Model.focus();
+				return;
+			}
+			if(gfn_IsNullVal(rd_PossYN.getValue())){
+				alert("소요여부 항목에 값이 누락되었습니다.\n확인하여 주십시오.");
+				return;
+			}
+			if(gfn_IsNullVal(rd_OwnerType.getValue())){
+				alert("명의 항목에 값이 누락되었습니다.\n확인하여 주십시오.");
+				return;
+			}
+			
+        	var sGb = "";
+        	
+        	if(parent.FV_sFlag == "I")	sGb = "insert";
+        	else if(parent.FV_sFlag == "U")	sGb = "update";
+        	
+			setTitSendInfo("request", "S310102_P01Action", sGb, "");
+			setInputParamData("UPDATE_TYPE",sGb);
+			setInputParamData("CUST_SEQ",parent.FV_sCustSeq);
+			setInputParamData("VEHIC_SEQ",parent.FV_sSeq);
+			setInputParamData("VEHIC_NO1",edt_VehicNo1.getValue());
+			setInputParamData("VEHIC_NO2",edt_VehicNo2.getValue());
+			setInputParamData("MAKER_CD",cb_Brand.getValue());
+			setInputParamData("MODEL_CD",cb_Model.getValue());
+			setInputParamData("YEAR_CD",edt_ModelYear.getValue());
+			setInputParamData("DEALER_ID",parent.FV_sDealerId);
+			setInputParamData("MNG_SC_ID",parent.FV_sMngScId);
+			setInputParamData("OWNER_TYPE",rd_OwnerType.getValue());
+			setInputParamData("MAIN_DRIVER",cb_MainDriver.getValue());
+			setInputParamData("CHANGE_YM",cb_Year.getValue() + cb_Month.getValue());
+			setInputParamData("POSS_YN",rd_PossYN.getValue());
+			setInputParamData("MENU_ID","S310102_P01");		//메뉴아이디
+  			setSubmissison("submissionSave");
+        }
+        /****************************************************************
+		* callback(저장)
+		* @param  : 없음
+		* @return : 없음
+		******************************************************************/ 
+        function fn_AfterSave(){
+        	var errCode = WebSquare.ModelUtil.getInstanceValue("resSave/root/params/param[@id='ErrorCode']");
+        	
+        	if(errCode < 0){
+        		alert("처리에 실패했습니다.\n확인 후 다시 처리해 주십시오.");
+        	} else{
+        		alert("저장을 완료했습니다.");
+        		
+        		fn_Close();
+        	} 
+        }
+        /****************************************************************
+		* 닫기
+		* @param  : 없음
+		* @return : 없음
+		******************************************************************/
+		function fn_Close(){
+			parent.fn_PopupClose(2);
+		}
+		/****************************************************************
+		* 브랜드 변경시 해당 모델 filter
+		* @param  : 없음
+		* @return : 없음
+		******************************************************************/ 
+    	function fn_BrandChange(){
+    		var sBrand = cb_Brand.getValue();    		
+	     	var sFilter = WebSquare.ModelUtil.findInstanceNodes("resOtherModel/root/dataset[@id='ds_OtherModel']/record[UP_CODE='"+sBrand+"']");
+			
+			cb_Model.removeAll();	
+			
+			for(var i=0; i<sFilter.length; i++){
+				cb_Model.addItem(WebSquare.xml.getValue(sFilter[i],"CODE"),WebSquare.xml.getValue(sFilter[i],"NAME"), i );
+			}
+			cb_Model.setSelectedIndex(0);
+		}
+		/****************************************************************
+		* 년월 변경 처리
+		* @param  : 없음
+		* @return : 없음
+		******************************************************************/ 
+		function fn_ProcessYM(id){
+			switch(id){
+				case "btn_Prev" :
+					if(FV_MonthIdx > 1){
+						FV_MonthIdx--;
+						cb_Month.setValue(FV_MonthIdx);	
+					} else{
+						FV_YearIdx--;
+						FV_MonthIdx = 12;
+						cb_Year.setValue(FV_YearIdx);
+						cb_Month.setValue(FV_MonthIdx);	
+					}								
+					break;
+				case "btn_Next" :
+					if(FV_MonthIdx < 12){
+						FV_MonthIdx++;
+						cb_Month.setValue(FV_MonthIdx);	
+					} else{
+						FV_YearIdx++;
+						FV_MonthIdx = 1;
+						cb_Year.setValue(FV_YearIdx);
+						cb_Month.setValue(FV_MonthIdx);	
+					}								
+					break;
+			}
+		}
+		/****************************************************************
+		* 년월 변경 처리
+		* @param  : 없음
+		* @return : 없음
+		******************************************************************/ 
+		function fn_ChangeYM(id){
+			switch(id){
+				case "cb_Year" :
+					FV_YearIdx = cb_Year.getValue();	
+					break;
+				case "cb_Month" :
+					FV_MonthIdx = cb_Month.getValue();
+					break;
+			}
+		}
+		
+		fn_OnLoad();
+        ]]></script>
+    </head>
+    <body>
+    	<w2:textbox class="se_box" id="output130" label=""
+    		style="position: absolute ;height:198px;width:599px;left:0px;border:none;top:0px;">
+    	</w2:textbox>
+    	<w2:textbox id="output72"
+    		style="position: absolute ;height:30px;width:569px;left:13px;top:56px;"
+    		class="se_box" label="">
+    	</w2:textbox>
+    	<w2:textbox id="output73"
+    		style="position: absolute ;height:22px;width:100px;left:13px;top:56px;"
+    		class="se_lable" label="브랜드/차종">
+    	</w2:textbox>
+    	<w2:textbox class="se_box" id="output75" label=""
+    		style="position: absolute ;height:30px;width:569px;left:13px;top:87px;">
+    	</w2:textbox>
+    	<w2:textbox class="se_lable" id="output77" label="년식"
+    		style="position: absolute ;height:22px;width:100px;left:13px;top:87px;">
+    	</w2:textbox>
+    	<w2:textbox class="se_box" id="output78" label=""
+    		style="position: absolute ;height:30px;width:569px;left:13px;top:118px;">
+    	</w2:textbox>
+    	<w2:textbox class="se_box" id="output79" label=""
+    		style="position: absolute ;height:30px;width:569px;left:13px;top:149px;">
+    	</w2:textbox>
+    	<w2:textbox class="se_lable" id="output83" label="주운전자"
+    		style="position: absolute ;height:22px;width:100px;left:13px;top:118px;">
+    	</w2:textbox>
+    	<w2:textbox class="se_lable" id="output84" label="소유여부"
+    		style="position: absolute ;height:22px;width:100px;left:13px;top:149px;">
+    	</w2:textbox>
+    	<xf:select1 allOption="" appearance="minimal"
+    		chooseOption="true" class="input_edit" direction="auto"
+    		disabled="false" displayMode="label" id="cb_Brand"
+    		style="position: absolute ;height:22px;width:150px;left:123px;top:60px;"
+    		submenuSize="auto" chooseOptionLabel="ALL" ref="resPossVehic/root/dataset[@id='ds_PossVehic']/record/MAKER_CD" visibleRowNum="4">
+    		<xf:choices>
+    			<xf:itemset
+    				nodeset="resCode/root/dataset[@id='ds_OtherBrand']">
+    				<xf:label ref="record/NAME"></xf:label>
+    				<xf:value ref="record/CODE"></xf:value>
+    			</xf:itemset>
+    		</xf:choices>
+    		<script ev:event="onchange" type="javascript"><![CDATA[ 
+    			fn_BrandChange();
+    		]]></script>
+    	</xf:select1>
+    	<xf:input class="input_edit" id="edt_ModelYear"
+    		style="position: absolute ;height:22px;width:68px;left:123px;top:91px;" ref="resPossVehic/root/dataset[@id='ds_PossVehic']/record/YEAR_CD">
+    	</xf:input>
+    	<xf:select1 allOption="" appearance="minimal"
+    		chooseOption="true" class="input_edit" direction="auto"
+    		disabled="false" displayMode="label" id="cb_Model"
+    		style="position: absolute ;height:22px;width:261px;left:278px;top:60px;"
+    		submenuSize="auto" chooseOptionLabel="타사차량" ref="resPossVehic/root/dataset[@id='ds_PossVehic']/record/MODEL_CD" visibleRowNum="4">
+    		<xf:choices>
+    			<xf:itemset
+    				nodeset="resOtherModel/root/dataset[@id='ds_OtherModel']">
+    				<xf:label ref="record/NAME"></xf:label>
+    				<xf:value ref="record/CODE"></xf:value>
+    			</xf:itemset>
+    		</xf:choices>
+    	</xf:select1>
+    	<xf:image id="image45"
+    		style="position: absolute ;height:45px;width:599px;left:0px;top:0px;"
+    		src="/mp/images/pop_title_bg.png">
+    	</xf:image>
+    	<w2:textbox class="title_back" id="st_PossTitle2" label="타사보유차량 등록"
+    		style="position: absolute ;height:20px;text-align:left;width:149px;left:15px;top:14px;">
+    	</w2:textbox>
+    	<w2:textbox class="title" id="st_PossTitle1" label="타사보유차량 등록"
+    		style="position: absolute ;height:20px;text-align:left;width:149px;left:15px;top:13px;">
+    	</w2:textbox>
+    	<xf:trigger class="btn_po" id="btn_Save"
+    		style="position: absolute ;height:30px;color:#FFFFFF;width:70px;left:448px;top:10px;"
+    		type="image">
+    		<xf:label>저 장</xf:label>
+    		<script ev:event="onclick" type="javascript"><![CDATA[ 
+    			fn_Save();
+    		]]></script>
+    	</xf:trigger>
+    	<xf:trigger class="btn_po" id="btn_Close"
+    		style="position: absolute ;height:30px;color:#FFFFFF;width:70px;left:521px;top:10px;"
+    		type="image">
+    		<xf:label>닫 기</xf:label>
+    		<script ev:event="onclick" type="javascript"><![CDATA[ 
+    			fn_Close();
+    		]]></script>
+    	</xf:trigger>
+
+    	<w2:textbox class="se_lable" id="output138" label="명의"
+    		style="position: absolute ;height:22px;width:100px;left:278px;top:149px;">
+    	</w2:textbox>
+    	<w2:textbox class="se_lable" id="output139" label="대체예정년월"
+    		style="position: absolute ;height:22px;width:100px;left:278px;top:118px;">
+    	</w2:textbox>
+    	<w2:textbox class="se_lable" id="output140" label="차량번호"
+    		style="position: absolute ;height:22px;width:100px;left:278px;top:87px;">
+    	</w2:textbox>
+    	<xf:select1 allOption="" appearance="minimal" chooseOption=""
+    		class="input_edit" direction="auto" disabled="false"
+    		displayMode="label" id="cb_MainDriver"
+    		style="position: absolute ;height:22px;width:150px;left:123px;top:122px;"
+    		submenuSize="auto" ref="resPossVehic/root/dataset[@id='ds_PossVehic']/record/MAIN_DRIVER">
+    		<xf:choices>
+    			<xf:itemset
+    				nodeset="resCode/root/dataset[@id='ds_MainDriver']">
+    				<xf:label ref="record/NAME"></xf:label>
+    				<xf:value ref="record/CODE"></xf:value>
+    			</xf:itemset>
+    		</xf:choices>
+    	</xf:select1>
+    	<xf:select1 selectedIndex="-1" appearance="full" id="rd_PossYN"
+    		style="position: absolute ;height:22px;width: 150px;left:123px;top:154px;"
+    		cols="2" rows="" ref="resPossVehic/root/dataset[@id='ds_PossVehic']/record/POSS_YN">
+    		<xf:choices>
+    			<xf:item>
+    				<xf:label>소유</xf:label>
+    				<xf:value>Y</xf:value>
+    			</xf:item>
+    			<xf:item>
+    				<xf:label>미소유</xf:label>
+    				<xf:value>N</xf:value>
+    			</xf:item>
+    		</xf:choices>
+    	</xf:select1>
+    	<xf:select1 appearance="full" cols="2" id="rd_OwnerType" rows=""
+    		selectedIndex="-1"
+    		style="position: absolute ;height:22px;width:138px;left:389px;top:154px;" ref="resPossVehic/root/dataset[@id='ds_PossVehic']/record/OWNER_TYPE">
+    		<xf:choices>
+    			<xf:item>
+    				<xf:label>개인</xf:label>
+    				<xf:value>P</xf:value>
+    			</xf:item>
+    			<xf:item>
+    				<xf:label>법인</xf:label>
+    				<xf:value>B</xf:value>
+    			</xf:item>
+    		</xf:choices>
+    	</xf:select1>
+    	<xf:select1 allOption="" appearance="minimal" chooseOption=""
+    		class="input_edit" direction="auto" disabled="false"
+    		displayMode="label" id="cb_Year"
+    		style="position: absolute ;height:22px;width:73px;left:388px;top:122px;"
+    		submenuSize="auto"
+    		ref="resPossVehic/root/dataset[@id='ds_PossVehic']/record/CHANGE_YEAR">
+    		<xf:choices>
+    			<xf:item>
+    				<xf:label>2009</xf:label>
+    				<xf:value>2009</xf:value>
+    			</xf:item>
+    			<xf:item>
+    				<xf:label>2010</xf:label>
+    				<xf:value>2010</xf:value>
+    			</xf:item>
+    			<xf:item>
+    				<xf:label>2011</xf:label>
+    				<xf:value>2011</xf:value>
+    			</xf:item>
+    			<xf:item>
+    				<xf:label>2012</xf:label>
+    				<xf:value>2012</xf:value>
+    			</xf:item>
+    			<xf:item>
+    				<xf:label>2013</xf:label>
+    				<xf:value>2013</xf:value>
+    			</xf:item>
+    			<xf:item>
+    				<xf:label>2014</xf:label>
+    				<xf:value>2014</xf:value>
+    			</xf:item>
+    		</xf:choices>
+    		<script ev:event="onchange" type="javascript"><![CDATA[ 
+    			fn_ChangeYM(this.id);
+    		]]></script>
+    	</xf:select1>
+    	<xf:input class="input_edit" id="edt_VehicNo1"
+    		style="position: absolute ;height:22px;width:68px;left:388px;top:91px;" ref="resPossVehic/root/dataset[@id='ds_PossVehic']/record/VEHIC_NO1">
+    	</xf:input>
+    	<xf:input class="input_edit" id="edt_VehicNo2"
+    		style="position: absolute ;height:22px;width:70px;left:465px;top:91px;" ref="resPossVehic/root/dataset[@id='ds_PossVehic']/record/VEHIC_NO2" maxlength="4">
+    	</xf:input>
+    	<xf:select1 allOption="" appearance="minimal" chooseOption=""
+    		class="input_edit" direction="auto" disabled="false"
+    		displayMode="label" id="cb_Month"
+    		style="position: absolute ;height:22px;width:44px;left:466px;top:122px;"
+    		submenuSize="auto"
+    		ref="resPossVehic/root/dataset[@id='ds_PossVehic']/record/CHANGE_MONTH">
+    		<xf:choices>
+    			<xf:item>
+    				<xf:label>01</xf:label>
+    				<xf:value>01</xf:value>
+    			</xf:item>
+    			<xf:item>
+    				<xf:label>02</xf:label>
+    				<xf:value>02</xf:value>
+    			</xf:item>
+    			<xf:item>
+    				<xf:label>03</xf:label>
+    				<xf:value>03</xf:value>
+    			</xf:item>
+    			<xf:item>
+    				<xf:label>04</xf:label>
+    				<xf:value>04</xf:value>
+    			</xf:item>
+    			<xf:item>
+    				<xf:label>05</xf:label>
+    				<xf:value>05</xf:value>
+    			</xf:item>
+    			<xf:item>
+    				<xf:label>06</xf:label>
+    				<xf:value>06</xf:value>
+    			</xf:item>
+    			<xf:item>
+    				<xf:label>07</xf:label>
+    				<xf:value>07</xf:value>
+    			</xf:item>
+    			<xf:item>
+    				<xf:label>08</xf:label>
+    				<xf:value>08</xf:value>
+    			</xf:item>
+    			<xf:item>
+    				<xf:label>09</xf:label>
+    				<xf:value>09</xf:value>
+    			</xf:item>
+    			<xf:item>
+    				<xf:label>10</xf:label>
+    				<xf:value>10</xf:value>
+    			</xf:item>
+    			<xf:item>
+    				<xf:label>11</xf:label>
+    				<xf:value>11</xf:value>
+    			</xf:item>
+    			<xf:item>
+    				<xf:label>12</xf:label>
+    				<xf:value>12</xf:value>
+    			</xf:item>
+    		</xf:choices>
+    		<script ev:event="onchange" type="javascript"><![CDATA[ 
+    			fn_ChangeYM(this.id);
+    		]]></script>
+    	</xf:select1>
+    	<xf:image id="btn_Prev"
+    		src="/mp/images/btn_left.png"
+    		style="position: absolute ;height:26px;width:31px;left:514px;top:121px;">
+    		<script ev:event="onclick" type="javascript"><![CDATA[ 
+    			fn_ProcessYM(this.id);
+    		]]></script>
+    	</xf:image>
+    	<xf:image id="btn_Next"
+    		src="/mp/images/btn_right.png"
+    		style="position: absolute ;height:26px;width:31px;left:547px;top:121px;">
+    		<script ev:event="onclick" type="javascript"><![CDATA[ 
+    			fn_ProcessYM(this.id);
+    		]]></script>
+    	</xf:image>
+    </body>
+</html>

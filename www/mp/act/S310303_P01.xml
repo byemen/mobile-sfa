@@ -1,0 +1,382 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?xml-stylesheet href="/mp/css/style.css" type="text/css"?>
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:ev="http://www.w3.org/2001/xml-events"
+    xmlns:w2="http://www.inswave.com/websquare" xmlns:xf="http://www.w3.org/2002/xforms">
+    <head>
+    	<w2:buildDate />
+    	<xf:model>
+    		<xf:instance>
+    			<data xmlns="" />
+    		</xf:instance>
+    		<xf:submission id="submissionList" ref="request" target="resList"
+        		action=""
+        		method="post" mediatype="application/xml" encoding="UTF-8" instance="" replace="instance"
+        		errorHandler="" customHandler="" mode="asynchronous"
+        		processMsg="처리중입니다.">
+        		<script type="javascript" ev:event="xforms-submit-done"><![CDATA[
+            		grd_List.setXML(WebSquare.ModelUtil.findInstanceNode("resList/root/dataset[@id='ds_List']"));
+            	]]></script>
+        	</xf:submission>
+        	<xf:submission id="submissionHourList" ref="request" target="resHourList"
+        		action=""
+        		method="post" mediatype="application/xml" encoding="UTF-8" instance="" replace="instance"
+        		errorHandler="" customHandler="" mode="asynchronous"
+        		processMsg="">
+        		<script type="javascript" ev:event="xforms-submit-done"><![CDATA[
+            		grd_HourList.setXML(WebSquare.ModelUtil.findInstanceNode("resHourList/root/dataset[@id='ds_HourList']"));
+            	]]></script>
+        	</xf:submission>
+        	<xf:submission id="submissionSc" ref="request"
+        		target="resSc" action="" method="post"
+        		mediatype="application/xml" encoding="UTF-8" instance=""
+        		replace="instance" errorHandler="" customHandler=""
+        		mode="asynchronous" processMsg="">
+        		<script type="javascript" ev:event="xforms-submit-done"><![CDATA[         			
+					parent.fn_SpinnerHide();
+
+					if(GV_USER_TYPE == "23"){	
+		        		cb_Sc.setValue(GV_USER_ID);		        		
+		        	} else{
+		        		cb_Sc.setSelectedIndex(0);
+		        	}		        	
+
+        			cal_ResvDt.setValue(gfn_GetDate(0,0,0));
+        		]]></script>
+        	</xf:submission>
+    	</xf:model>
+    	<script type="javascript" src="/mp/js/common.js"></script>
+		<script type="javascript" src="/mp/js/WebSquare.js"></script>
+    	<script type="javascript"><![CDATA[
+    	var FV_sCustSeq = "";
+		/****************************************************************
+		* 화면로드
+		* @param  : 없음
+		* @return : 없음
+		******************************************************************/
+        function fn_OnLoad(){
+        	// SC
+        	setTitSendInfo("request", "", "", "mdms/mp/comm::CO_USERS_S01");
+        	setInputParamData("COND1", GV_UP_GROUP_ID);
+        	if(GV_USER_GROUP.indexOf("DS6") >= 0)
+        		setInputParamData("COND2", GV_DEPT_CD);
+        	setSubmissison("submissionSc");        	
+        }
+        /****************************************************************
+		* 조회
+		* @param  : 페이지번호
+		* @return : 없음
+		******************************************************************/ 
+        function fn_Search(){
+        	var sSqlid = "mdms/mp/act:S310303_W01_S01";        	
+        	setTitSendInfo("request", "", "", sSqlid);
+        	setInputParamData("GROUP_ID", GV_UP_GROUP_ID);
+        	setInputParamData("MNG_SC_ID", cb_Sc.getValue());
+        	setInputParamData("RESV_DT", cal_ResvDt.getValue().replaceAll("-",""));
+        	if(GV_USER_GROUP.indexOf("DS6") == 0)
+        		setInputParamData("DEPT_CD", GV_DEPT_CD);
+    		setSubmissison("submissionList");
+
+        	setTitSendInfo("request", "", "", "mdms/mp/act:S310303_W01_S02");
+        	setInputParamData("GROUP_ID", GV_UP_GROUP_ID);
+        	setInputParamData("MNG_SC_ID", cb_Sc.getValue());
+        	setInputParamData("RESV_DT", cal_ResvDt.getValue().replaceAll("-",""));
+        	if(GV_USER_GROUP.indexOf("DS6") == 0)
+        		setInputParamData("DEPT_CD", GV_DEPT_CD);
+    		setSubmissison("submissionHourList");
+        }
+        /****************************************************************
+		* 고객명 클릭 시 고객등록 화면 팝업
+		* @param  : 없음
+		* @return : 없음
+		******************************************************************/
+		function fn_CustPopup(row,col){
+			if(col == 4){
+				FV_sCustSeq = grd_List.getCellData(row, 3);
+				gfn_OpenPopup("/mp/cust/S310102_W01.xml","고객등록",994,620,0,0);
+			}else if(col ==5){
+				var arr = new Array();
+				arr[0] = grd_List.getCellData(row,3);
+				arr[1] = grd_List.getCellData(row,4);
+				arr[2] = grd_List.getCellData(row,5);
+				parent.fn_SmsPopup(arr);
+			}else if (col == 9){
+		    	FV_sCustSeq = grd_List.getCellData(row, 3);
+		    	FV_sCustNm = grd_List.getCellData(row, 4);
+		    	FV_sActSeq = grd_List.getCellData(row, 0);
+		    	
+				gfn_OpenPopup("/mp/act/S310302_W01.xml","업무일지등록",814,456,90,46);
+			}
+		}
+		/****************************************************************
+		* 팝업 닫기
+		* @param  : 없음
+		* @return : 없음
+		******************************************************************/
+        function fn_PopupClose(){ 
+        	gfn_PopupClose();
+        }
+        fn_OnLoad();
+        ]]></script>
+    </head>
+    <body>
+
+    	<w2:textbox class="se_box" id="textbox4" label=""
+    		style="position: absolute ;height:1000px;width:1000px;left:0px;border:none;top:-1px;">
+    	</w2:textbox>
+    	<xf:image id="image45" src="/mp/images/pop_title_bg.png"
+    		style="position: absolute ;height:45px;width:1000px;left:0px;top:0px;">
+    	</xf:image>
+    	<w2:textbox class="title" id="textbox5" label="금일 영업기회"
+    		style="position: absolute ;height:20px;text-align:left;width:149px;left:14px;top:15px;">
+    	</w2:textbox>
+    	<xf:trigger class="btn_po" id="trigger5"
+    		style="position: absolute ;height:30px;color:#FFFFFF;width:70px;left:918px;top:9px;"
+    		type="image">
+    		<xf:label>닫 기</xf:label>
+    		<script ev:event="onclick" type="javascript"><![CDATA[ 
+
+    			parent.fn_MainPopupClose("Today");
+    		]]></script>
+    	</xf:trigger>
+    	<w2:grid baseNode="dataset" autoFit="" class="grid" resize=""
+    		id="grd_List" focusMode="row"
+    		style="position:absolute;height:158px;width:981px;left:9px;top:107px;"
+    		evenRowBackgroundColor="#e1ebf5" overflowX="hidden"
+    		overflowY="hidden" oddEvenColorDisplay="true"
+    		oddRowBackgroundColor="#ffffff" repeatNode="record"
+    		sortEvent="onclick" readOnly="true">
+    		<w2:header id="header7" style="" width="472"
+    			columnClass="gridHeaderTD1" class="gridHeaderTable">
+    			<w2:row id="row16" style="">
+    				<w2:column id="column222" style="height:20px;"
+    					hidden="" width="34" inputType="image" value="" rowSpan=""
+    					valueType="binary" colSpan=""
+    					imageSrc="/TOYOTA_WEB/icon_grid_sel.png" imageHeight="19"
+    					imageWidth="20">
+    				</w2:column>
+    				<w2:column id="column223" style="height:20px;"
+    					hidden="" width="94" inputType="text" value="구분"
+    					valueType="binary" colSpan="" rowSpan="">
+    				</w2:column>
+    				<w2:column id="column224" style="height:20px;"
+    					hidden="" width="90" inputType="text" value="일시"
+    					valueType="binary" colSpan="" rowSpan="">
+    				</w2:column>
+    				<w2:column id="column365" style="height:25px"
+    					hidden="" inputType="text" width="70" valueType="binary">
+    				</w2:column>
+    				<w2:column id="column225" style="height:20px;"
+    					hidden="" width="90" inputType="text" value="고객명"
+    					valueType="binary" colSpan="" rowSpan="">
+    				</w2:column>
+    				<w2:column id="column226" style="height:20px;"
+    					hidden="" width="90" inputType="text" value="연락처"
+    					valueType="binary" colSpan="" rowSpan="">
+    				</w2:column>
+    				<w2:column id="column278" style="height:20px"
+    					hidden="" inputType="text" width="110" valueType="binary"
+    					value="차종" colSpan="" rowSpan="">
+    				</w2:column>
+    				<w2:column id="column284" style="height:25px"
+    					hidden="" inputType="text" width="90" valueType="binary"
+    					value="차량번호" colSpan="" rowSpan="">
+    				</w2:column>
+    				<w2:column id="column343" style="height:25px"
+    					hidden="" width="338" inputType="text" valueType="binary"
+    					value="내용">
+    				</w2:column>
+    				<w2:column id="column366" style="height:25px"
+    					hidden="" inputType="text" width="82" valueType="binary">
+    				</w2:column>
+    			</w2:row>
+    		</w2:header>
+    		<w2:gBody id="gBody7" style="" columnClass="gridBodyTD"
+    			class="gridBodyTable">
+    			<w2:row id="row17" style="">
+    				<w2:column id="ACTIVE_SEQ" style="height:21px;"
+    					hidden="true" width="34" inputType="text" value=""
+    					valueType="binary">
+    				</w2:column>
+    				<w2:column id="GUBUN" style="height:21px;"
+    					hidden="false" width="103" inputType="text" value=""
+    					valueType="binary" textAlign="left">
+    				</w2:column>
+    				<w2:column id="RESV_DT" style="height:21px;"
+    					hidden="false" width="144" inputType="text" value=""
+    					valueType="binary">
+    				</w2:column>
+    				<w2:column id="CUST_SEQ" style="height:21px"
+    					hidden="true" inputType="text" width="70" valueType="binary">
+    				</w2:column>
+    				<w2:column id="CUST_NM" style="color:#519eec;"
+    					hidden="false" width="66" inputType="text" value=""
+    					valueType="binary" textAlign="left">
+    				</w2:column>
+    				<w2:column id="CONN_NO"
+    					style="color:#519eec;height:21px;" hidden="false" width="97"
+    					inputType="text" value="" valueType="binary"
+    					textAlign="left">
+    				</w2:column>
+    				<w2:column id="CAR" style="height:21px"
+    					hidden="false" inputType="text" width="122" valueType="binary"
+    					textAlign="left">
+    				</w2:column>
+    				<w2:column id="VEHIC_NO" style="height:21px"
+    					hidden="false" inputType="text" width="82" valueType="binary"
+    					textAlign="left">
+    				</w2:column>
+    				<w2:column id="CONTENTS" style="height:21px"
+    					hidden="false" inputType="text" width="302" valueType="binary"
+    					textAlign="left">
+    				</w2:column>
+    				<w2:column id="column367" style="height:21px"
+    					hidden="false" inputType="button" width="82"
+    					valueType="binary" value="처리">
+    				</w2:column>
+    			</w2:row>
+    		</w2:gBody>
+    		<script ev:event="onCellClick( row , col )"
+    			type="javascript"><![CDATA[ 
+    			fn_CustPopup(row,col);
+    		]]></script>
+    	</w2:grid>
+    	<xf:group id="roundRectangle2"
+    		style="position: absolute ;height:42px;width:981px;left:9px;top:53px;"
+    		class="if_group">
+    	</xf:group>
+    	<xf:image id="btn_Next" src="/mp/images/btn2_right.png"
+    		style="position: absolute ;height:24px;cursor:hand;width:31px;left:563px;top:62px;">
+    		<script ev:event="onclick" type="javascript"><![CDATA[ 
+    			gfn_GetDateCount("next",cal_ResvDt);
+    		]]></script>
+    	</xf:image>
+    	<w2:inputCalendar calendarValueType="yearMonthDate"
+    		class="input_edit" id="cal_ResvDt"
+    		style="position: absolute ;height:24px;width:114px;left:438px;top:62px;">
+    		<script ev:event="onchange" type="javascript"><![CDATA[ 
+    			fn_Search();
+    		]]></script>
+    	</w2:inputCalendar>
+    	<xf:image id="btn_Prev" src="/mp/images/btn2_left.png"
+    		style="position: absolute ;height:24px;cursor:hand;width:31px;left:394px;top:62px;">
+    		<script ev:event="onclick" type="javascript"><![CDATA[ 
+    			gfn_GetDateCount("prev",cal_ResvDt);
+    		]]></script>
+    	</xf:image>
+    	<w2:grid autoFit="" baseNode="dataset" class="grid"
+    		evenRowBackgroundColor="#e1ebf5" focusMode="row" id="grd_HourList"
+    		oddEvenColorDisplay="true" oddRowBackgroundColor="#ffffff"
+    		overflowX="hidden" overflowY="hidden" readOnly="true"
+    		repeatNode="record" resize="" sortEvent="onclick"
+    		style="position:absolute;height:716px;width:981px;left:9px;top:273px;">
+    		<w2:header class="gridHeaderTable"
+    			columnClass="gridHeaderTD1" id="header8" style="" width="472">
+    			<w2:row id="row18" style="">
+    				<w2:column colSpan="2" hidden="" id="column350"
+    					inputType="text" rowSpan="" style="height:25px;" value=""
+    					valueType="binary" width="94">
+    				</w2:column>
+    				<w2:column colSpan="" hidden="" id="column352"
+    					inputType="text" rowSpan="" style="height:20px;" value="시간"
+    					valueType="binary" width="100">
+    				</w2:column>
+    				<w2:column colSpan="" hidden="" id="column353"
+    					inputType="text" rowSpan="" style="height:20px;" value="구분"
+    					valueType="binary" width="87">
+    				</w2:column>
+    				<w2:column colSpan="" hidden="true" id="_CUST_SEQ"
+    					inputType="text" rowSpan="" style="height:20px;" value="구분"
+    					valueType="binary" width="87">
+    				</w2:column>
+    				<w2:column colSpan="" hidden="" id="column354"
+    					inputType="text" rowSpan="" style="height:20px;" value="고객명"
+    					valueType="binary" width="80">
+    				</w2:column>
+    				<w2:column colSpan="" hidden="" id="column355"
+    					inputType="text" rowSpan="" style="height:20px" value="연락처"
+    					valueType="binary" width="90">
+    				</w2:column>
+    				<w2:column colSpan="" hidden="" id="column356"
+    					inputType="text" rowSpan="" style="height:25px" value="내용"
+    					valueType="binary" width="450">
+    				</w2:column>
+    				<w2:column hidden="" id="column357" inputType="text"
+    					style="height:25px" value="상태" valueType="binary" width="80">
+    				</w2:column>
+    			</w2:row>
+    		</w2:header>
+    		<w2:gBody class="gridBodyTable" columnClass="gridBodyTD"
+    			id="gBody8" style="">
+    			<w2:row id="row19" style="">
+    				<w2:column hidden="" id="HOUR" inputType="text"
+    					style="height:21px;background-color:#dedcdc;" value=""
+    					valueType="binary" width="63">
+    				</w2:column>
+    				<w2:column hidden="" id="column364"
+    					inputType="image" style="height:21px;background-color:#dedcdc;"
+    					value="" valueType="binary" width="30"
+    					imageSrc="/mp/images/icon_grid_report.png"
+    					imageWidth="20" imageHeight="19">
+    				</w2:column>
+    				<w2:column hidden="" id="RESV_TIME" inputType="text"
+    					style="height:21px;" value="" valueType="binary" width="138">
+    				</w2:column>
+    				<w2:column hidden="" id="GUBUN" inputType="text"
+    					style="height:21px;" value="" valueType="binary" width="70"
+    					textAlign="left">
+    				</w2:column>
+    				<w2:column id="CUST_SEQ" style="height:21px"
+    					hidden="true" inputType="text" width="70" valueType="binary">
+    				</w2:column>
+    				<w2:column hidden="" id="CUST_NM" inputType="text"
+    					style="height:21px;" value="" valueType="binary" width="79"
+    					textAlign="left">
+    				</w2:column>
+    				<w2:column hidden="" id="CONN_NO" inputType="text"
+    					style="color:#519eec;height:21px" valueType="binary" width="100"
+    					textAlign="left">
+    				</w2:column>
+    				<w2:column hidden="" id="CONTENTS" inputType="text"
+    					style="height:21px" valueType="binary" width="448"
+    					textAlign="left">
+    				</w2:column>
+    				<w2:column hidden="" id="RESULT" inputType="text"
+    					style="height:21px" valueType="binary" width="70"
+    					textAlign="left">
+    				</w2:column>
+    			</w2:row>
+    		</w2:gBody>
+    		<script ev:event="onCellClick( row , col )"
+    			type="javascript"><![CDATA[ 
+    			if(col == 6){
+					var arr = new Array();
+					arr[0] = grd_HourList.getCellData(row,4);
+					arr[1] = grd_HourList.getCellData(row,5);
+					arr[2] = grd_HourList.getCellData(row,6);
+					parent.fn_SmsPopup(arr);
+				}
+    		]]></script>
+    	</w2:grid>
+    	<w2:textbox class="if_lable" id="st_Sc" label="담당SC"
+    		style="position: absolute ;height:22px;width:50px;left:174px;top:63px;">
+    	</w2:textbox>
+    	<xf:select1 allOption="" appearance="minimal" chooseOption=""
+    		class="input_edit" direction="auto" disabled="false"
+    		displayMode="label" id="cb_Sc"
+    		style="position: absolute ;height:22px;width:100px;left:227px;top:63px;"
+    		submenuSize="auto" visibleRowNum="20">
+    		<xf:choices>
+    			<xf:itemset nodeset="resSc/root/dataset[@id='ds_Sc']">
+    				<xf:label ref="record/NAME"></xf:label>
+    				<xf:value ref="record/CODE"></xf:value>
+    			</xf:itemset>
+    		</xf:choices>
+    	</xf:select1>
+    	<xf:image id="image46" src="/mp/images/if_btn_seach.png"
+    		style="position: absolute ;cursor:pointer;height:25px;width:77px;left:910px;top:62px;">
+    		<script ev:event="onclick" type="javascript"><![CDATA[ 
+    			fn_Search();
+    		]]></script>
+    	</xf:image>
+    </body>
+</html>

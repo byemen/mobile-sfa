@@ -1,0 +1,68 @@
+<chart showLegend='1' showvalues='0' showlabels='1' showyaxisvalues='1' showBorder='0' bgColor='2a2a2a,5d5d5d' bgalpha='100,100' canvasBgColor='FFFFFF' canvasbgalpha='0' canvasBorderalpha='0' alternateHGridAlpha='0' baseFontSize = '9' baseFontColor = 'FFFFFF' numVDivLines = '29' vDivLineColor = 'FFFFFF' legendBgColor = '000000' toolTipBgColor = '696969' captionPadding='0' xAxisNamePadding='0' yAxisNamePadding='0' yAxisValuesPadding='0' chartLeftMargin = '0' chartRightMargin = '10' chartBottomMargin='0' labelPadding='0'>
+<categories>
+<category label='01' />
+<category label='02' />
+<category label='03' />
+<category label='04' />
+<category label='05' />
+<category label='06' />
+<category label='07' />
+<category label='08' />
+<category label='09' />
+<category label='10' />
+<category label='11' />
+<category label='12' />
+<category label='13' />
+<category label='14' />
+<category label='15' />
+<category label='16' />
+<category label='17' />
+<category label='18' />
+<category label='19' />
+<category label='20' />
+<category label='21' />
+<category label='22' />
+<category label='23' />
+<category label='24' />
+<category label='25' />
+<category label='26' />
+<category label='27' />
+<category label='28' />
+<category label='29' />
+<category label='30' />
+<category label='31' />
+</categories>
+<dataset seriesName='Test Drive' color="3fa2d0" anchorBorderThickness="0" anchorBgColor="3fa2d0">
+<set value='0' />
+<set value='2' />
+<set value='6' />
+<set value='12' />
+<set value='20' />
+<set value='20' />
+<set value='20' />
+<set value='25' />
+<set value='31' />
+<set value='40' />
+<set value='42' />
+<set value='50' />
+<set value='50' />
+<set value='50' />
+<set value='60' />
+<set value='65' />
+<set value='70' />
+<set value='74' />
+<set value='83' />
+<set value='83' />
+<set value='83' />
+<set value='90' />
+<set value='97' />
+<set value='106' />
+<set value='113' />
+<set value='119' />
+<set value='119' />
+<set value='119' />
+<set value='131' />
+<set value='151' />
+<set value='151' />
+</dataset>
+</chart>

@@ -1,0 +1,296 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<html xmlns="http://www.w3.org/1999/xhtml"
+    xmlns:ev="http://www.w3.org/2001/xml-events"
+    xmlns:w2="http://www.inswave.com/websquare" xmlns:xf="http://www.w3.org/2002/xforms">
+    <head>
+        <w2:buildDate/>
+        <xf:model>
+            <xf:instance>
+                <data xmlns=""/>
+        	</xf:instance>
+        	<xf:submission id="submissionBrand" ref="request" target="resBrand"
+        		action=""
+        		method="post" mediatype="application/xml" encoding="UTF-8" instance="" replace="instance"
+        		errorHandler="" customHandler="" mode="synchronous"
+        		processMsg="">>
+        	</xf:submission>
+        	<xf:submission id="submissionModel" ref="request" target="resModel"
+        		action=""
+        		method="post" mediatype="application/xml" encoding="UTF-8" instance="" replace="instance"
+        		errorHandler="" customHandler="" mode="synchronous"
+        		processMsg="">
+        	</xf:submission>
+        	<xf:submission id="submissionVariant" ref="request" target="resVariant"
+        		action=""
+        		method="post" mediatype="application/xml" encoding="UTF-8" instance="" replace="instance"
+        		errorHandler="" customHandler="" mode="synchronous"
+        		processMsg="">
+        	</xf:submission>
+        	<xf:submission id="submissionModel_Year" ref="request" target="resModelYear"
+        		action=""
+        		method="post" mediatype="application/xml" encoding="UTF-8" instance="" replace="instance"
+        		errorHandler="" customHandler="" mode="synchronous"
+        		processMsg="">
+        	</xf:submission>
+        	<xf:submission id="submissionSfx" ref="request" target="resSfx"
+        		action=""
+        		method="post" mediatype="application/xml" encoding="UTF-8" instance="" replace="instance"
+        		errorHandler="" customHandler="" mode="synchronous"
+        		processMsg="">
+        	</xf:submission>
+        	<xf:submission id="submissionColor" ref="request" target="resColor"
+        		action=""
+        		method="post" mediatype="application/xml" encoding="UTF-8" instance="" replace="instance"
+        		errorHandler="" customHandler="" mode="synchronous"
+        		processMsg="">
+        	</xf:submission>
+        </xf:model>
+        <script type="javascript"><![CDATA[ 
+        var FV_objCb = null;				// 이벤트 발생 될 combo
+        var FV_sDisplayMode = "111111"; 	// 화면에 보여질 Obj 정의
+        var FV_sDisplayStyle = "Search";  	// 검색조건에 표시(Search), 데이타입력 부분에 표시(Input)
+        
+        // 화면 OnLoad
+        function fn_VehicleOnLoad(sDisplayMode){
+			FV_sDisplayMode = sDisplayMode;
+			
+			fn_Display();
+			
+			FV_objCb = fn_SearchObjCombo(fn_SearchNextCombo(0));
+			
+			fn_SearchData();
+			
+			cb_Brand.setValue(GV_BRAND_CD);
+        }
+        
+        // 화면별로 Visual Combo 다르게 표시
+        function fn_Display() {
+			var nXPosition = 0;
+			// Brand
+			if (FV_sDisplayMode.substr(0,1) == "1")	cb_Brand.visible(true); 
+			else cb_Brand.visible(false); 
+			
+			// Model
+			if (FV_sDisplayMode.substr(1,1) == "1")	cb_Model.visible(true); 
+			else cb_Model.visible(false); 
+			
+			// Variant
+			if (FV_sDisplayMode.substr(2,1) == "1") cb_Variant.visible(true);
+			else cb_Variant.visible(false); 
+			
+			// Model Year
+			if (FV_sDisplayMode.substr(3,1) == "1")	cb_Model_Year.visible(true); 
+			else cb_Model_Year.visible(false); 
+			
+			// Suffix
+			if (FV_sDisplayMode.substr(4,1) == "1") cb_Sfx.visible(true); 
+			else cb_Sfx.visible(false); 
+			
+			// Color
+			if (FV_sDisplayMode.substr(5,1) == "1") cb_Color.visible(true); 
+			else cb_Color.visible(false); 
+			
+			// 입력화면과 검색조건 화면의 Style 구분처리
+			/*if(FV_sDisplayStyle == "Input") {
+				cb_Brand.Style = "se_input";
+				cb_Model.Style = "se_input";
+				cb_Variant.Style = "se_input";
+				cb_Model_Year.Style = "se_input";
+				cb_Sfx.Style = "se_input";
+				cb_Color.Style = "se_input";
+			}*/
+		}	
+		
+		// Combo 선택시 Visual 한 다음 콤보 찾기
+		function fn_SearchNextCombo(nIdx) {
+			for(var i=nIdx; i<FV_sDisplayMode.length; i++) {
+				if(FV_sDisplayMode.charAt(i) == "1") {
+					return i;
+				}
+			}
+			return -1;
+		}
+
+		// Combo 선택시 Visual 한 다음 콤보 찾기
+		function fn_SearchObjCombo(nIdx) {
+			switch(nIdx) {
+				case 0 : return "cb_Brand";
+				case 1 : return "cb_Model";
+				case 2 : return "cb_Variant";
+				case 3 : return "cb_Model_Year";
+				case 4 : return "cb_Sfx";
+				case 5 : return "cb_Color";
+			}
+		}
+		
+		// 콤보 값 가져오기
+		function fn_SearchData(){
+			var sSqlId = "mdms/mp/comm:VS_" + FV_objCb.substring(3).toUpperCase() + "_S01";
+			var sSubmission = "submission" + FV_objCb.substring(3);
+		
+			setTitSendInfo("request", "", "", sSqlId);
+        	setInputParamData("BRAND_CD", cb_Brand.getValue());
+        	setInputParamData("MODEL_CD", cb_Model.getValue());
+        	setInputParamData("VARIANT_CD", cb_Variant.getValue());
+        	setInputParamData("MY_CD", cb_Model_Year.getValue());
+        	setInputParamData("SFX_CD", cb_Sfx.getValue());
+         	
+			if(FV_sDisplayStyle == "Input")
+				setInputParamData("CURR_SALES_YN", "Y");
+					
+        	setSubmissison(sSubmission);
+		}
+		
+		// 콤보변경시 적용
+		function fn_CbOnChange(id){
+			var nIdx = 0;
+			switch(id){
+				case "cb_Brand" :
+					nIdx = fn_SearchNextCombo(1);
+					
+					fn_InitCombo(cb_Model);
+					fn_InitCombo(cb_Variant);
+					fn_InitCombo(cb_Model_Year);
+					fn_InitCombo(cb_Sfx);
+					fn_InitCombo(cb_Color);
+					break;
+				case "cb_Model" :
+					nIdx = fn_SearchNextCombo(2);
+					
+					fn_InitCombo(cb_Variant);
+					fn_InitCombo(cb_Model_Year);
+					fn_InitCombo(cb_Sfx);
+					fn_InitCombo(cb_Color);
+					break;
+				case "cb_Variant" :
+					nIdx = fn_SearchNextCombo(3);
+					
+					fn_InitCombo(cb_Model_Year);
+					fn_InitCombo(cb_Sfx);
+					fn_InitCombo(cb_Color);
+					break;
+				case "cb_Model_Year" :
+					nIdx = fn_SearchNextCombo(4);
+					
+					fn_InitCombo(cb_Color);
+					break;
+				case "cb_Sfx" :
+					nIdx = fn_SearchNextCombo(5);
+					break;
+			}
+			
+			if(nIdx != -1) {
+				FV_objCb = fn_SearchObjCombo(nIdx);
+				if(!gfn_IsNullVal(cb_Brand.getValue()))
+					fn_SearchData();
+			}
+			fn_InitPrice(); // 차량 가격 setting
+		}
+		
+		// 각 콤보 초기화
+		function fn_InitCombo(id){
+			for(var i=id.getItemCount()-1; i>0; i--){
+				id.deleteItem(i);
+			}					
+			id.setSelectedIndex(0);
+		}
+		
+//		fn_VehicleOnLoad();
+        ]]></script>
+    </head>
+    <body>
+    	<xf:select1 appearance="minimal" direction="auto"
+    		chooseOption="true" id="cb_Brand"
+    		style="position: absolute ;left:0px;top:0px;width: 80px;height: 22px;"
+    		displayMode="label" allOption="" disabled="false"
+    		submenuSize="auto" chooseOptionLabel="-- Brand --" class="input_edit">
+    		<xf:choices>
+    			<xf:itemset
+    				nodeset="resBrand/root/dataset[@id='ds_Brand']">
+    				<xf:label ref="record/BRAND_NM"></xf:label>
+    				<xf:value ref="record/BRAND_CD"></xf:value>
+    			</xf:itemset>
+    		</xf:choices>
+    		<script ev:event="onchange" type="javascript"><![CDATA[ 
+    			fn_CbOnChange(this.id);
+    		]]></script>
+    	</xf:select1>
+    	<xf:select1 allOption="" appearance="minimal"
+    		chooseOption="true" direction="auto" disabled="false"
+    		displayMode="label" id="cb_Model"
+    		style="position: absolute ;left:85px;top:0px;width: 90px;height: 22px;"
+    		submenuSize="auto" chooseOptionLabel="-- Model --" class="input_edit" visibleRowNum="10">
+    		<xf:choices>
+    			<xf:itemset
+    				nodeset="resModel/root/dataset[@id='ds_Model']">
+    				<xf:label ref="record/MODEL_NM"></xf:label>
+    				<xf:value ref="record/MODEL_CD"></xf:value>
+    			</xf:itemset>
+    		</xf:choices>
+    		<script ev:event="onchange" type="javascript"><![CDATA[
+    			fn_CbOnChange(this.id);
+    		]]></script>
+    	</xf:select1>
+    	<xf:select1 allOption="" appearance="minimal"
+    		chooseOption="true" direction="auto" disabled="false"
+    		displayMode="label" id="cb_Variant"
+    		style="position: absolute ;left:180px;top:0px;width: 90px;height: 22px;"
+    		submenuSize="auto" chooseOptionLabel="-- Variant --" class="input_edit" visibleRowNum="10">
+    		<xf:choices>
+    			<xf:itemset
+    				nodeset="resVariant/root/dataset[@id='ds_Variant']">
+    				<xf:label ref="record/VARIANT_NM"></xf:label>
+    				<xf:value ref="record/VARIANT_CD"></xf:value>
+    			</xf:itemset>
+    		</xf:choices>
+    		<script ev:event="onchange" type="javascript"><![CDATA[ 
+    			fn_CbOnChange(this.id);
+    		]]></script>
+    	</xf:select1>
+    	<xf:select1 allOption="" appearance="minimal"
+    		chooseOption="true" direction="auto" disabled="false"
+    		displayMode="label" id="cb_Model_Year"
+    		style="position: absolute ;left:275px;top:0px;width: 90px;height: 22px;"
+    		submenuSize="auto" chooseOptionLabel="-- My --" class="input_edit" visibleRowNum="10">
+    		<xf:choices>
+    			<xf:itemset
+    				nodeset="resModelYear/root/dataset[@id='ds_Model_Year']">
+    				<xf:label ref="record/MODEL_YEAR"></xf:label>
+    				<xf:value ref="record/MY_CD"></xf:value>
+    			</xf:itemset>
+    		</xf:choices>
+    		<script ev:event="onchange" type="javascript"><![CDATA[ 
+    			fn_CbOnChange(this.id);
+    		]]></script>
+    	</xf:select1>
+    	<xf:select1 allOption="" appearance="minimal"
+    		chooseOption="true" direction="auto" disabled="false"
+    		displayMode="label" id="cb_Sfx"
+    		style="position: absolute ;left:370px;top:0px;width: 90px;height: 22px;"
+    		submenuSize="auto" chooseOptionLabel="-- Suffix --" class="input_edit" visibleRowNum="10">
+    		<xf:choices>
+    			<xf:itemset
+    				nodeset="resSfx/root/dataset[@id='ds_Sfx']">
+    				<xf:label ref="record/SFX_NM"></xf:label>
+    				<xf:value ref="record/SFX_CD"></xf:value>
+    			</xf:itemset>
+    		</xf:choices>
+    		<script ev:event="onchange" type="javascript"><![CDATA[ 
+    			fn_CbOnChange(this.id);
+    		]]></script>
+    	</xf:select1>
+    	<xf:select1 allOption="" appearance="minimal"
+    		chooseOption="true" direction="auto" disabled="false"
+    		displayMode="label" id="cb_Color"
+    		style="position: absolute ;left:465px;top:0px;width:250px;height:22px;"
+    		submenuSize="auto" chooseOptionLabel="-- Color --" class="input_edit" visibleRowNum="50">
+    		<xf:choices>
+    			<xf:itemset
+    				nodeset="resColor/root/dataset[@id='ds_Color']">
+    				<xf:label ref="record/COL_COMBI_NM"></xf:label>
+    				<xf:value ref="record/COL_COMBI_CD"></xf:value>
+    			</xf:itemset>
+    		</xf:choices>
+    	</xf:select1>
+    </body>
+</html>

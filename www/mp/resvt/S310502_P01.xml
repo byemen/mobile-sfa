@@ -1,0 +1,1290 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?xml-stylesheet href="/mp/css/style.css" type="text/css"?>
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:ev="http://www.w3.org/2001/xml-events"
+    xmlns:w2="http://www.inswave.com/websquare" xmlns:xf="http://www.w3.org/2002/xforms">
+    <head>
+    	<w2:buildDate />
+    	<xf:model>
+    		<xf:instance>
+    			<data xmlns="" />
+    		</xf:instance>
+    		<xf:submission id="submissionStallList" ref="request" target="resStallList"
+        		action=""
+        		method="post" mediatype="application/xml" encoding="UTF-8" instance="" replace="instance"
+        		errorHandler="" customHandler="" mode="synchronous"
+        		processMsg="">
+        	</xf:submission>
+        	<xf:submission id="submissionResvList" ref="request" target="resResvList"
+        		action=""
+        		method="post" mediatype="application/xml" encoding="UTF-8" instance="" replace="instance"
+        		errorHandler="" customHandler="" mode="synchronous"
+        		processMsg="">
+        	</xf:submission>
+        	<xf:submission id="submissionWorkList" ref="request" target="resWorkList"
+        		action=""
+        		method="post" mediatype="application/xml" encoding="UTF-8" instance="" replace="instance"
+        		errorHandler="" customHandler="" mode="synchronous"
+        		processMsg="">
+        	</xf:submission>
+        	<xf:submission id="submissionBlockList" ref="request" target="resBlockList"
+        		action=""
+        		method="post" mediatype="application/xml" encoding="UTF-8" instance="" replace="instance"
+        		errorHandler="" customHandler="" mode="synchronous"
+        		processMsg="">
+        	</xf:submission>
+        	<xf:submission id="submissionSvcFsTime" ref="request" target="resSvcFsTime"
+        		action=""
+        		method="post" mediatype="application/xml" encoding="UTF-8" instance="" replace="instance"
+        		errorHandler="" customHandler="" mode="asynchronous"
+        		processMsg="">
+        	</xf:submission>
+    	</xf:model>    	
+    	<script type="javascript" src="/mp/js/common.js"></script>
+		<script type="javascript" src="/mp/js/WebSquare.js"></script>
+    	<script type="javascript"><![CDATA[
+     	var FV_Row = -1 ;
+		var FV_StCol = -1 ;
+		var FV_EndCol = -1 ;
+		var FV_TIME = ["0800", "0805", "0810", "0815", "0820", "0825", "0830", "0835", "0840", "0845", "0850", "0855",
+					   "0900", "0905", "0910", "0915", "0920", "0925", "0930", "0935", "0940", "0945", "0950", "0955",
+					   "1000", "1005", "1010", "1015", "1020", "1025", "1030", "1035", "1040", "1045", "1050", "1055",
+					   "1100", "1105", "1110", "1115", "1120", "1125", "1130", "1135", "1140", "1145", "1150", "1155",
+					   "1200", "1205", "1210", "1215", "1220", "1225", "1230", "1235", "1240", "1245", "1250", "1255",
+			 		   "1300", "1305", "1310", "1315", "1320", "1325", "1330", "1335", "1340", "1345", "1350", "1355",
+			 		   "1400", "1405", "1410", "1415", "1420", "1425", "1430", "1435", "1440", "1445", "1450", "1455", 
+			 		   "1500", "1505", "1510", "1515", "1520", "1525", "1530", "1535", "1540", "1545", "1550", "1555",
+			 		   "1600", "1605", "1610", "1615", "1620", "1625", "1630", "1635", "1640", "1645", "1650", "1655",
+			 		   "1700", "1705", "1710", "1715", "1720", "1725", "1730", "1735", "1740", "1745", "1750", "1755",
+			 		   "1800", "1805", "1810", "1815", "1820", "1825", "1830", "1835", "1840", "1845", "1850", "1855",
+			 		   "1900"];
+		var FV_nStallCnt = 0;
+     	/****************************************************************
+		* 화면로드
+		* @param  : 없음
+		* @return : 없음
+		******************************************************************/
+        function fn_OnLoad(){   
+        	edt_ShopCd.setValue(parent.FV_sShopCd);
+        	edt_ShopNm.setValue(parent.FV_sShopNm);
+        	cal_RealResvDt.setValue(gfn_GetDate(0,0,0));
+        	        	
+        	fn_SvcFsTime();
+        	//fn_Search();
+        }
+        /****************************************************************
+		* 조회
+		* @param  : 페이지번호
+		* @return : 없음
+		******************************************************************/ 
+        function fn_Search(){
+        	FV_Row = -1 ;
+			FV_StCol = -1 ;
+			FV_EndCol = -1 ;
+
+			var sRealResvDt = cal_RealResvDt.getValue().replaceAll("-","");
+			
+        	setTitSendInfo("request", "", "", "mdms/mp/resvt:S310502_P01_S01");
+        	setInputParamData("SHOP_CD", edt_ShopCd.getValue());
+        	setInputParamData("REAL_RESV_DT", sRealResvDt);
+    		setSubmissison("submissionStallList");
+
+    		setTitSendInfo("request", "", "", "mdms/mp/resvt:S310502_P01_S02");
+        	setInputParamData("SHOP_CD", edt_ShopCd.getValue());
+        	setInputParamData("REAL_RESV_DT", sRealResvDt);
+    		setSubmissison("submissionResvList");
+    		
+    		setTitSendInfo("request", "", "", "mdms/mp/resvt:S310502_P01_S03");
+        	setInputParamData("SHOP_CD", edt_ShopCd.getValue());
+        	setInputParamData("REAL_RESV_DT", sRealResvDt);
+    		setSubmissison("submissionWorkList");
+    		
+    		setTitSendInfo("request", "", "", "mdms/mp/resvt:S310502_P01_S04");
+        	setInputParamData("SHOP_CD", edt_ShopCd.getValue());
+        	setInputParamData("REAL_RESV_DT", sRealResvDt);
+    		setSubmissison("submissionBlockList");
+    		
+    		fn_SetStallList();
+    		fn_SetResvList();
+    		fn_SetWorkList();
+    		fn_SetSelfList();
+    		fn_SetBlockList();
+
+        }
+        /****************************************************************
+		* 화면에 작업가능하지 않는 시간 표시
+		* @param  : 페이지번호
+		* @return : 없음
+		******************************************************************/ 
+        function fn_SetStallList(){
+        	grd_List.initGrid();
+        	grd_List.setColumnBackgroundColor("ST_TEXT", "#dedcdc");
+        	var bStarted = true;
+			var bEnded = true;
+			
+			var lstStall = WebSquare.ModelUtil.findInstanceNodes("resStallList/root/dataset[@id='ds_StallList']/record");
+			FV_nStallCnt = lstStall.length;
+			
+			for(var i=0; i<lstStall.length; i++){
+        		var nRow = grd_List.insertRow();
+    			
+    			grd_List.setCellData(nRow, 0, WebSquare.xml.getValue(lstStall[i],"STALL_NO"));
+    			grd_List.setCellData(nRow, 1, WebSquare.xml.getValue(lstStall[i],"STALL_NM"));
+    			grd_List.setCellData(nRow, 2, WebSquare.xml.getValue(lstStall[i],"ST_TEXT"));
+    			grd_List.setCellData(nRow, 3, WebSquare.xml.getValue(lstStall[i],"SA_ID"));
+    			
+    			var stHm = WebSquare.xml.getValue(lstStall[i],"ST_HM");
+    			var endHm = WebSquare.xml.getValue(lstStall[i],"END_HM");
+    			
+    			if(stHm.length > 0 && endHm.length > 0){
+    				bStarted = false;
+					bEnded = false;
+    				
+    				for(var j=1; j<FV_TIME.length; j++){
+    					if(stHm == FV_TIME[j-1])
+    						bStarted = true;
+    					
+    					if(bStarted){
+    						if(endHm == FV_TIME[j-1])
+    							bEnded = true;
+    					}
+    					
+    					if(bStarted){
+    						if(bEnded){
+    							grd_List.setCellBackgroundColor(i, j+2, "gray");
+    						} else{
+    							grd_List.setCellBackgroundColor(i, j+2, "white");
+    						}
+    					} else{
+    						grd_List.setCellBackgroundColor(i, j+2, "gray");
+    					}    				
+    				}
+    			}
+    		}
+        }
+        /****************************************************************
+		* 화면에 예약 정보를 표시
+		* @param  : 페이지번호
+		* @return : 없음
+		******************************************************************/
+        function fn_SetResvList(){
+        	var bStarted = false;
+			var bEnded = false;
+        	var bRed = false ;
+        	
+        	var lstResv = WebSquare.ModelUtil.findInstanceNodes("resResvList/root/dataset[@id='ds_ResvList']/record");
+			
+			for(var i=0; i<lstResv.length; i++){
+				var sStallNo = WebSquare.xml.getValue(lstResv[i],"RESV_STALL_NO")
+        		var nRow = grd_List.getMatchedIndex(0, sStallNo, true, 0, FV_nStallCnt-1);
+        		
+        		var stHm = WebSquare.xml.getValue(lstResv[i],"REAL_RESV_ST_HM");
+    			var endHm = WebSquare.xml.getValue(lstResv[i],"REAL_RESV_END_HM");
+    			
+    			if(stHm.length > 0 && endHm.length > 0){
+    				bStarted = false;
+					bEnded = false;
+    				 				
+    				for(var j=1; j<FV_TIME.length; j++){
+    					if(stHm == FV_TIME[j-1]){
+    						bStarted = true;
+    						bRed = !bRed;
+    					}
+    					if(bStarted){
+    						if(endHm == FV_TIME[j-1])
+    							bEnded = true;
+    					}
+    					
+    					if(bStarted){
+    						if(!bEnded){
+    							if(bRed){
+    								grd_List.setCellBackgroundColor(nRow, j+2, "#FF0000");
+	    						} else{
+	    							grd_List.setCellBackgroundColor(nRow, j+2, "#FF8000");
+	    						}
+    						} 
+    					}    				
+    				}
+    			}
+        	}
+        }
+        /****************************************************************
+		* 화면에 진행중인 정보를 표시
+		* @param  : 없음
+		* @return : 없음
+		******************************************************************/
+        function fn_SetWorkList(){
+        	var bStarted = true;
+			var bEnded = true;
+			
+			var lstWork = WebSquare.ModelUtil.findInstanceNodes("resWorkList/root/dataset[@id='ds_WorkList']/record");
+						
+			for(var i=0; i<lstWork.length; i++){
+        		var sStallNo = WebSquare.xml.getValue(lstWork[i],"STALL_NO")
+        		var nRow = grd_List.getMatchedIndex(0, sStallNo, true, 0, FV_nStallCnt-1);
+        		
+        		var stHm = WebSquare.xml.getValue(lstWork[i],"ST_HM");
+    			var endHm = WebSquare.xml.getValue(lstWork[i],"END_HM");
+    			
+    			if(stHm.length > 0 && endHm.length > 0){
+    				bStarted = false;
+					bEnded = false;
+    				
+    				for(var j=1; j<FV_TIME.length; j++){
+    					if(stHm >= FV_TIME[j-1] && stHm < FV_TIME[j])
+    						bStarted = true;
+    					
+    					if(bStarted){
+    						if(endHm == FV_TIME[j-1]){
+    							bStarted = false;
+    							bEnded = true;
+    						}
+    					}
+    					
+    					if(bStarted){
+    						if(!bEnded){
+    							grd_List.setCellBackgroundColor(nRow, j+2, "yellow");
+    						}
+    						
+    						if(endHm > FV_TIME[j-1] && endHm < FV_TIME[j]){
+    							bStarted = false;
+    							bEnded = true;
+    						}
+    					}		
+    				}
+    			}
+    		}
+        }
+        /****************************************************************
+		* 화면에 자신의 예약정보 정보를 표시
+		* @param  : 없음
+		* @return : 없음
+		******************************************************************/
+        function fn_SetSelfList(){
+        	var sStallNo = edt_StallNo.getValue();
+        	if(gfn_IsNullVal(sStallNo))	return;  
+        	      	
+        	
+        	var bStarted = true;
+			var bEnded = true;
+			
+       		var nRow = grd_List.getMatchedIndex(0, sStallNo, true, 0, FV_nStallCnt-1);       		
+       		var stHm = edt_StHm.getValue();
+   			var endHm = edt_EndHm.getValue();
+   			
+   			if(stHm.length > 0 && endHm.length > 0){
+   				bStarted = false;
+				bEnded = false;
+   				var nStCol = -1;
+   				
+   				for(var j=1; j<FV_TIME.length; j++){
+   					if(stHm == FV_TIME[j-1]){
+   						nStCol = j;
+   						bStarted = true;
+   					}
+   					
+   					if(bStarted){
+   						if(endHm == FV_TIME[j-1]){
+   							bEnded = true;
+   							FV_Row = nRow;
+							FV_StCol = nStCol;
+							FV_EndCol = j-1;
+   						}
+   					}
+   					
+   					if(bStarted){
+   						if(!bEnded){
+   							grd_List.setCellBackgroundColor(nRow, j+2, "blue");
+   						}
+   					}		
+   				}
+   			}
+        }
+        /****************************************************************
+		* 화면에 BLOCKING된 시간을 표시
+		* @param  : 없음
+		* @return : 없음
+		******************************************************************/
+        function fn_SetBlockList(){
+        	var bStarted = true;
+			var bEnded = true;
+			
+			var lstBlock = WebSquare.ModelUtil.findInstanceNodes("resBlockList/root/dataset[@id='ds_BlockList']/record");
+						
+			for(var i=0; i<lstBlock.length; i++){
+        		var sStallNo = WebSquare.xml.getValue(lstBlock[i],"STALL_NO")
+        		var nRow = grd_List.getMatchedIndex(0, sStallNo, true, 0, FV_nStallCnt-1);
+        		
+        		var stHm = WebSquare.xml.getValue(lstBlock[i],"ST_HM");
+    			var endHm = WebSquare.xml.getValue(lstBlock[i],"END_HM");
+    			
+    			if(stHm.length > 0 && endHm.length > 0){
+    				bStarted = false;
+					bEnded = false;
+    				
+    				for(var j=1; j<FV_TIME.length; j++){
+    					if(stHm >= FV_TIME[j-1] && stHm < FV_TIME[j])
+    						bStarted = true;
+    					
+    					if(bStarted){
+    						if(endHm == FV_TIME[j-1]){
+    							bStarted = false;
+    							bEnded = true;
+    						}
+    						if(stHm == bEnded){
+    							bStarted = true;
+    							bEnded = false;
+    						}
+    					}
+    					
+    					if(bStarted){
+    						if(!bEnded){
+    							grd_List.setCellBackgroundColor(nRow, j+2, "black");
+    						}
+    						
+    						if(endHm > FV_TIME[j-1] && endHm < FV_TIME[j]){
+    							bStarted = false;
+    							bEnded = true;
+    						} else if(stHm == bEnded){
+    							bStarted = false;
+    							bEnded = true;
+    						}
+    					}		
+    				}
+    			}
+    		}
+        }
+        /****************************************************************
+		* 선택한 스톨시간 초기화
+		* @param  : 없음
+		* @return : 없음
+		******************************************************************/
+        function fn_ClearPreviousSelection(row){
+        	if(FV_Row < 0)	return;
+        	
+        	if(FV_Row != row){
+        		grd_List.setCellBackgroundColor(FV_Row, FV_StCol, "white");
+        		if(FV_EndCol > 0){
+        			for(var i=FV_StCol; i<=FV_EndCol; i++){
+        				grd_List.setCellBackgroundColor(FV_Row, i, "white");
+        			}
+        		}
+        		FV_Row = -1;
+				FV_StCol = -1 ;
+				FV_EndCol = -1 ;
+				return;
+        	}
+        	
+        	if(FV_StCol > 0){
+        		if(FV_EndCol > 0){
+        			for(var i=FV_StCol; i<=FV_EndCol; i++){
+        				grd_List.setCellBackgroundColor(FV_Row, i, "white");
+        			}
+        			FV_Row = -1;
+					FV_StCol = -1 ;
+					FV_EndCol = -1 ;
+        		}        		
+        	}
+        }
+        /****************************************************************
+		* 그리드 셀 클릭 시
+		* @param  : 없음
+		* @return : 없음
+		******************************************************************/
+        function fn_SelectStall(row,col){
+        	edt_StHm.setValue("");
+        	edt_EndHm.setValue("");
+        	edt_StallNo.setValue("");
+        	edt_StallNm.setValue("");
+        	
+        	if(col < 3)	return;
+        	
+        	if(grd_List.getCellBackgroundColor(row,col) == "white"){
+        	
+        		fn_ClearPreviousSelection(row);
+				
+				var sFsTime = WebSquare.ModelUtil.getInstanceValue("resSvcFsTime/root/dataset[@id='ds_SvcFsTime']/record/FS_TIME");
+				
+				if(gfn_IsNullVal(sFsTime)){
+					if(FV_Row < 0){
+						grd_List.setCellBackgroundColor(row, col, "blue");
+						FV_Row = row;
+						FV_StCol = col;
+						FV_EndCol = -1;
+						return;
+					}
+	        		
+	        		if((col - FV_StCol) < 5){
+	        			grd_List.setCellBackgroundColor(FV_Row, FV_StCol, "white");
+	        			grd_List.setCellBackgroundColor(row, col, "blue");
+						FV_Row = row;
+						FV_StCol = col;
+						FV_EndCol = -1;
+						return;
+	        		}
+        		
+	        		for(var i=FV_StCol+1; i<=col; i++){
+	        			if(grd_List.getCellBackgroundColor(row,i) != "white"){
+	        				grd_List.setCellBackgroundColor(row, FV_StCol, "white");
+		        			grd_List.setCellBackgroundColor(row, col, "blue");
+							FV_Row = row;
+							FV_StCol = col;
+							FV_EndCol = -1;
+							return;        			
+	        			}        			
+	        		}
+        		
+	        		for(var i=FV_StCol; i<=col; i++){
+	        			grd_List.setCellBackgroundColor(row, i, "blue");
+	        		}
+	        		
+	        		FV_EndCol = col;
+	        		edt_StHm.setValue(FV_TIME[FV_StCol-3]);
+		        	edt_EndHm.setValue(FV_TIME[FV_EndCol-2]);
+		        	edt_StallNo.setValue(grd_List.getCellData(row,0));
+		        	edt_StallNm.setValue(grd_List.getCellData(row,1));
+		        } else{
+		        	grd_List.setCellBackgroundColor(row, col, "blue");
+		        	FV_Row = row;
+					FV_StCol = col;
+		        	FV_EndCol = eval(sFsTime/5) + FV_StCol;
+		        	
+		        	for(var i=FV_StCol+1; i<=FV_EndCol-1; i++){
+	        			if(grd_List.getCellBackgroundColor(row,i) != "white"){
+	        				grd_List.setCellBackgroundColor(row, FV_StCol, "white");
+							FV_Row = row;
+							FV_EndCol = -1;
+							return;        			
+	        			}        			
+	        		}
+		        	
+		        	for(var i=FV_StCol; i<=FV_EndCol-1; i++){
+	        			grd_List.setCellBackgroundColor(row, i, "blue");
+	        		}
+		        	
+		        	edt_StHm.setValue(FV_TIME[FV_StCol-3]);
+		        	edt_EndHm.setValue(FV_TIME[FV_EndCol-3]);
+		        	edt_StallNo.setValue(grd_List.getCellData(row,0));
+		        	edt_StallNm.setValue(grd_List.getCellData(row,1));
+		        }
+        	}
+        }
+        /****************************************************************
+		* 정기점검 소요시간
+		* @param  : 없음
+		* @return : 없음
+		******************************************************************/
+		function fn_SvcFsTime(){
+			setTitSendInfo("request", "", "", "mdms/mp/resvt:S310502_P01_S05");
+        	setInputParamData("SHOP_CD", edt_ShopCd.getValue());
+        	setInputParamData("FS_CD", parent.FV_sSvcTypeFmsCd);
+        	
+    		setSubmissison("submissionSvcFsTime");
+		}
+		/****************************************************************
+		* 확인
+		* @param  : 없음
+		* @return : 없음
+		******************************************************************/
+		function fn_Confirm(){
+			if(gfn_IsNullVal(edt_StHm.getValue()) || gfn_IsNullVal(edt_EndHm.getValue())){
+				alert("대상 데이터를 선택하여 주십시오.");
+				return;
+			}
+			
+			var curDate = new Date();
+		 	var dHour = curDate.getHours();
+		 	var dMin = curDate.getMinutes();			
+		 	if(dHour < 10) dHour = "0" + dHour;
+		 	if(dMin < 10) dMin = "0" + dMin;
+		 	var sCurDtHm = gfn_GetDate(0,0,0).replaceAll("-","") + dHour + dMin;
+		 	var sRecvDtHm = cal_RealResvDt.getValue().replaceAll("-","") + edt_StHm.getValue().replace(":","");
+		 	
+		 	if(sCurDtHm > sRecvDtHm){
+		 		alert("현재일자 이후 시간을 선택하세요.");
+				return;
+			}
+		 	
+		 	var arrResult = new Array();
+       		var nRow = grd_List.getFocusedRowIndex();
+        		
+       		arrResult[0] = edt_ShopCd.getValue();		//	서비스센터
+       		arrResult[1] = cal_RealResvDt.getValue();	//	실예약일자
+       		arrResult[2] = edt_StHm.getValue();		//	예약시작시분
+			arrResult[3] = edt_EndHm.getValue();			//	예약종료시분
+			arrResult[4] = edt_StallNo.getValue();		//	예약스톨코드
+			arrResult[5] = edt_StallNm.getValue();		//	예약 스톨명
+			
+			parent.cb_ResvSaId.setValue(grd_List.getCellData(nRow, 3));
+			parent.fn_StallParams(arrResult);				
+		}
+		
+        fn_OnLoad();
+        ]]></script>
+    </head>
+    <body>
+    	<w2:textbox class="se_box" id="output130" label=""
+    		style="position: absolute ;height:520px;width:980px;left:0px;border:none;top:0px;">
+    	</w2:textbox>
+    	<xf:group 
+    		id="roundRectangle2"
+    		style="position: absolute ;height:42px;width:973px;left:4px;top:55px;" class="if_group">
+    	</xf:group>
+    	<xf:image id="image45"
+    		style="position: absolute ;height:45px;width:980px;left:0px;top:0px;"
+    		src="/mp/images/pop_title_bg.png">
+    	</xf:image>
+    	<w2:textbox class="title_back" id="output137" label="스톨 선택"
+    		style="position: absolute ;height:20px;text-align:left;width:149px;left:15px;top:14px;">
+    	</w2:textbox>
+    	<w2:textbox class="title" id="output136" label="스톨 선택"
+    		style="position: absolute ;height:20px;text-align:left;width:149px;left:15px;top:13px;">
+    	</w2:textbox>
+    	<xf:trigger class="btn_po" id="btn_Close"
+    		style="position: absolute ;height:30px;color:#FFFFFF;width:70px;left:901px;top:10px;"
+    		type="image">
+    		<xf:label>닫 기</xf:label>
+    		<script ev:event="onclick" type="javascript"><![CDATA[ 
+    			parent.fn_StallParams();
+    		]]></script>
+    	</xf:trigger>
+    	<xf:image id="btn_Next"
+    		src="/mp/images/btn2_right.png"
+    		style="position: absolute ;cursor:hand;height:24px;width:31px;left:522px;top:65px;">
+    		<script ev:event="onclick" type="javascript"><![CDATA[ 
+    			gfn_GetDateCount("next",cal_RealResvDt);
+    		]]></script>
+    	</xf:image>
+    	<xf:image id="btn_Prev"
+    		src="/mp/images/btn2_left.png"
+    		style="position: absolute ;cursor:hand;height:24px;width:31px;left:487px;top:65px;">
+    		<script ev:event="onclick" type="javascript"><![CDATA[ 
+    			gfn_GetDateCount("prev",cal_RealResvDt);
+    		]]></script>
+    	</xf:image>
+    	<xf:image id="image48" src="/mp/images/if_btn_seach.png"
+    		style="position: absolute ;cursor:pointer;height:25px;width:77px;left:885px;top:64px;">
+    		<script type="javascript" ev:event="onclick"><![CDATA[
+				fn_Search();
+    		]]></script>
+    	</xf:image>
+    	<w2:inputCalendar calendarValueType="yearMonthDate"
+    		class="input_edit" id="cal_RealResvDt"
+    		style="position: absolute ;height:24px;width:136px;left:348px;top:66px;">
+    		<script ev:event="onchange" type="javascript"><![CDATA[ 
+    			edt_StHm.setValue("");
+        		edt_EndHm.setValue("");
+        		edt_StallNo.setValue("");
+        		edt_StallNm.setValue("");
+        		
+    			fn_Search();
+    		]]></script>
+    	</w2:inputCalendar>
+    	<w2:textbox class="if_lable" id="output218" label="실예약일자"
+    		style="position: absolute ;height:22px;width:68px;left:278px;top:65px;">
+    	</w2:textbox>
+    	<w2:textbox class="if_lable" id="output231" label="예약 서비스센터"
+    		style="position: absolute ;height:22px;width:89px;left:13px;top:65px;">
+    	</w2:textbox>
+
+    	<xf:input class="input_edit" id="edt_ShopCd" readOnly="true"
+    		readOnlyClass="input_readonly"
+    		style="position: absolute ;height:22px;visibility:hidden;width:165px;left:104px;top:65px;">
+    	</xf:input>
+    	<xf:input class="input_edit" id="edt_ShopNm"
+    		style="position: absolute ;height:22px;width:165px;left:105px;top:65px;"
+    		readOnlyClass="input_readonly" readOnly="true">
+    	</xf:input>
+    	<w2:textbox id="output233"
+    		style="position: absolute ;height:22px;width:60px;left:556px;top:65px;"
+    		class="if_lable" label="예약시간">
+    	</w2:textbox>
+    	<xf:input id="edt_StHm"
+    		style="position: absolute ;height:22px;width:50px;left:619px;top:65px;"
+    		class="input_edit" readOnly="true" readOnlyClass="input_readonly"
+    		displayFormat="##:##">
+    	</xf:input>
+    	<xf:input id="edt_EndHm"
+    		style="position: absolute ;height:22px;width:50px;left:694px;top:65px;"
+    		class="input_edit" readOnlyClass="input_readonly" readOnly="true"
+    		displayFormat="##:##">
+    	</xf:input>
+    	<w2:textbox class="txt1" id="output236" label="~"
+    		style="position: absolute ;height:21px;text-align:center;width:18px;left:676px;top:65px;">
+    	</w2:textbox>
+    	<w2:grid autoFit="" baseNode="" class="grid" id="grd_List"
+    		overflowX="hidden" overflowY="hidden"
+    		readOnly="true" repeatNode="" resize=""
+    		sortEvent="onclick"
+    		style="position:absolute;height:400px;width:973px;left:4px;top:107px;" rowMouseOver="false">
+    		<w2:header class="gridHeaderTable"
+    			columnClass="gridHeaderTD1" id="header3" style="" width="472">
+    			<w2:row id="row6" style="">
+    				<w2:column id="column605" style="height:48px"
+    					hidden="" inputType="text" width="70" valueType="binary"
+    					colSpan="" rowSpan="2">
+    				</w2:column>
+    				<w2:column id="column602" style="height:48px"
+    					hidden="" inputType="text" width="70" valueType="binary"
+    					colSpan="" rowSpan="2">
+    				</w2:column>
+    				<w2:column colSpan="" hidden="" id="column105"
+    					inputType="text" rowSpan="2" style="height:27px" value="스톨"
+    					valueType="binary" width="49">
+    				</w2:column>
+    				<w2:column colSpan="12" hidden="" id="column106"
+    					inputType="text" rowSpan="" style="height:27px" value="08시"
+    					valueType="binary" width="84">
+    				</w2:column>
+    				<w2:column id="column305" style="height:27px"
+    					hidden="" width="84" inputType="text" valueType="binary"
+    					colSpan="12" rowSpan="" value="09시">
+    				</w2:column>
+    				<w2:column id="column317" style="height:27px"
+    					hidden="" width="84" inputType="text" valueType="binary"
+    					colSpan="12" rowSpan="" value="10시">
+    				</w2:column>
+    				<w2:column id="column240" style="height:27px"
+    					hidden="" inputType="text" width="84" valueType="binary"
+    					colSpan="12" rowSpan="" value="11시">
+    				</w2:column>
+    				<w2:column id="column350" style="height:27px"
+    					hidden="" inputType="text" width="84" valueType="binary"
+    					colSpan="12" rowSpan="" value="12시">
+    				</w2:column>
+    				<w2:column id="column383" style="height:27px"
+    					hidden="" inputType="text" width="84" valueType="binary"
+    					colSpan="12" rowSpan="" value="13시">
+    				</w2:column>
+    				<w2:column id="column434" style="height:27px"
+    					hidden="" inputType="text" width="84" valueType="binary"
+    					colSpan="12" rowSpan="" value="14시">
+    				</w2:column>
+    				<w2:column id="column458" style="height:27px"
+    					hidden="" inputType="text" width="84" valueType="binary"
+    					colSpan="12" rowSpan="" value="15시">
+    				</w2:column>
+    				<w2:column id="column497" style="height:27px"
+    					hidden="" inputType="text" width="84" valueType="binary"
+    					colSpan="12" rowSpan="" value="16시">
+    				</w2:column>
+    				<w2:column id="column530" style="height:27px"
+    					hidden="" inputType="text" width="84" valueType="binary"
+    					colSpan="12" rowSpan="" value="17시">
+    				</w2:column>
+    				<w2:column id="column569" style="height:27px"
+    					hidden="" inputType="text" width="84" valueType="binary"
+    					colSpan="12" rowSpan="" value="18시">
+    				</w2:column>
+    			</w2:row>
+    			<w2:row id="row8" style="">
+    				<w2:column id="column139" style="height:21px"
+    					hidden="" width="21" inputType="text" valueType="binary"
+    					value="15" colSpan="3" rowSpan="">
+    				</w2:column>
+    				<w2:column id="column136" style="height:21px"
+    					hidden="" width="21" inputType="text" valueType="binary"
+    					value="30" colSpan="3" rowSpan="">
+    				</w2:column>
+    				<w2:column id="column133" style="height:21px"
+    					hidden="" width="21" inputType="text" valueType="binary"
+    					value="45" colSpan="3" rowSpan="">
+    				</w2:column>
+    				<w2:column id="column130" style="height:21px"
+    					hidden="" width="21" inputType="text" valueType="binary"
+    					value="60" colSpan="3" rowSpan="">
+    				</w2:column>
+    				<w2:column id="column148" style="height:21px"
+    					hidden="" inputType="text" width="21" valueType="binary"
+    					value="15" colSpan="3" rowSpan="">
+    				</w2:column>
+    				<w2:column id="column154" style="height:21px"
+    					hidden="" inputType="text" width="21" valueType="binary"
+    					value="30" colSpan="3" rowSpan="">
+    				</w2:column>
+    				<w2:column id="column163" style="height:21px"
+    					hidden="" inputType="text" width="21" valueType="binary"
+    					value="45" colSpan="3" rowSpan="">
+    				</w2:column>
+    				<w2:column id="column175" style="height:21px"
+    					hidden="" inputType="text" width="21" valueType="binary"
+    					value="60" colSpan="3" rowSpan="">
+    				</w2:column>
+    				<w2:column id="column181" style="height:21px"
+    					hidden="" inputType="text" width="21" valueType="binary"
+    					value="15" colSpan="3" rowSpan="">
+    				</w2:column>
+    				<w2:column id="column214" style="height:21px"
+    					hidden="" inputType="text" width="21" valueType="binary"
+    					value="30" colSpan="3" rowSpan="">
+    				</w2:column>
+    				<w2:column id="column223" style="height:21px"
+    					hidden="" inputType="text" width="21" valueType="binary"
+    					value="45" colSpan="3" rowSpan="">
+    				</w2:column>
+    				<w2:column id="column229" style="height:21px"
+    					hidden="" inputType="text" width="21" valueType="binary"
+    					value="60" colSpan="3" rowSpan="">
+    				</w2:column>
+    				<w2:column id="column241" style="height:21px"
+    					hidden="" inputType="text" width="21" valueType="binary"
+    					value="15" colSpan="3" rowSpan="">
+    				</w2:column>
+    				<w2:column id="column250" style="height:21px"
+    					hidden="" inputType="text" width="21" valueType="binary"
+    					value="30" colSpan="3" rowSpan="">
+    				</w2:column>
+    				<w2:column id="column259" style="height:21px"
+    					hidden="" inputType="text" width="21" valueType="binary"
+    					value="45" colSpan="3" rowSpan="">
+    				</w2:column>
+    				<w2:column id="column342" style="height:21px"
+    					hidden="" inputType="text" width="21" valueType="binary"
+    					colSpan="3" rowSpan="" value="60">
+    				</w2:column>
+    				<w2:column id="column351" style="height:21px"
+    					hidden="" inputType="text" width="21" valueType="binary"
+    					colSpan="3" rowSpan="" value="15">
+    				</w2:column>
+    				<w2:column id="column360" style="height:21px"
+    					hidden="" inputType="text" width="21" valueType="binary"
+    					colSpan="3" rowSpan="" value="30">
+    				</w2:column>
+    				<w2:column id="column369" style="height:21px"
+    					hidden="" inputType="text" width="21" valueType="binary"
+    					colSpan="3" rowSpan="" value="45">
+    				</w2:column>
+    				<w2:column id="column375" style="height:21px"
+    					hidden="" inputType="text" width="21" valueType="binary"
+    					colSpan="3" rowSpan="" value="60">
+    				</w2:column>
+    				<w2:column id="column384" style="height:21px"
+    					hidden="" inputType="text" width="21" valueType="binary"
+    					colSpan="3" rowSpan="" value="15">
+    				</w2:column>
+    				<w2:column id="column426" style="height:21px"
+    					hidden="" inputType="text" width="21" valueType="binary"
+    					colSpan="3" rowSpan="" value="30">
+    				</w2:column>
+    				<w2:column id="column453" style="height:21px"
+    					hidden="" inputType="text" width="21" valueType="binary"
+    					colSpan="3" rowSpan="" value="45">
+    				</w2:column>
+    				<w2:column id="column444" style="height:21px"
+    					hidden="" inputType="text" width="21" valueType="binary"
+    					colSpan="3" rowSpan="" value="60">
+    				</w2:column>
+    				<w2:column id="column435" style="height:21px"
+    					hidden="" inputType="text" width="21" valueType="binary"
+    					colSpan="3" rowSpan="" value="15">
+    				</w2:column>
+    				<w2:column id="column423" style="height:21px"
+    					hidden="" inputType="text" width="21" valueType="binary"
+    					colSpan="3" rowSpan="" value="30">
+    				</w2:column>
+    				<w2:column id="column414" style="height:21px"
+    					hidden="" inputType="text" width="21" valueType="binary"
+    					colSpan="3" rowSpan="" value="45">
+    				</w2:column>
+    				<w2:column id="column405" style="height:21px"
+    					hidden="" inputType="text" width="21" valueType="binary"
+    					colSpan="3" rowSpan="" value="60">
+    				</w2:column>
+    				<w2:column id="column459" style="height:21px"
+    					hidden="" inputType="text" width="21" valueType="binary"
+    					colSpan="3" rowSpan="" value="15">
+    				</w2:column>
+    				<w2:column id="column525" style="height:21px"
+    					hidden="" inputType="text" width="21" valueType="binary"
+    					colSpan="3" rowSpan="" value="30">
+    				</w2:column>
+    				<w2:column id="column516" style="height:21px"
+    					hidden="" inputType="text" width="21" valueType="binary"
+    					colSpan="3" rowSpan="" value="45">
+    				</w2:column>
+    				<w2:column id="column507" style="height:21px"
+    					hidden="" inputType="text" width="21" valueType="binary"
+    					colSpan="3" rowSpan="" value="60">
+    				</w2:column>
+    				<w2:column id="column498" style="height:21px"
+    					hidden="" inputType="text" width="21" valueType="binary"
+    					colSpan="3" rowSpan="" value="15">
+    				</w2:column>
+    				<w2:column id="column489" style="height:21px"
+    					hidden="" inputType="text" width="21" valueType="binary"
+    					colSpan="3" rowSpan="" value="30">
+    				</w2:column>
+    				<w2:column id="column480" style="height:21px"
+    					hidden="" inputType="text" width="21" valueType="binary"
+    					colSpan="3" rowSpan="" value="45">
+    				</w2:column>
+    				<w2:column id="column471" style="height:21px"
+    					hidden="" inputType="text" width="21" valueType="binary"
+    					colSpan="3" rowSpan="" value="60">
+    				</w2:column>
+    				<w2:column id="column531" style="height:21px"
+    					hidden="" inputType="text" width="21" valueType="binary"
+    					colSpan="3" rowSpan="" value="15">
+    				</w2:column>
+    				<w2:column id="column597" style="height:21px"
+    					hidden="" inputType="text" width="21" valueType="binary"
+    					colSpan="3" rowSpan="" value="30">
+    				</w2:column>
+    				<w2:column id="column588" style="height:21px"
+    					hidden="" inputType="text" width="21" valueType="binary"
+    					colSpan="3" rowSpan="" value="45">
+    				</w2:column>
+    				<w2:column id="column579" style="height:21px"
+    					hidden="" inputType="text" width="21" valueType="binary"
+    					colSpan="3" rowSpan="" value="60">
+    				</w2:column>
+    				<w2:column id="column570" style="height:21px"
+    					hidden="" inputType="text" width="21" valueType="binary"
+    					colSpan="3" rowSpan="" value="15">
+    				</w2:column>
+    				<w2:column id="column561" style="height:21px"
+    					hidden="" inputType="text" width="21" valueType="binary"
+    					colSpan="3" rowSpan="" value="30">
+    				</w2:column>
+    				<w2:column id="column552" style="height:21px"
+    					hidden="" inputType="text" width="21" valueType="binary"
+    					colSpan="3" rowSpan="" value="45">
+    				</w2:column>
+    				<w2:column id="column543" style="height:21px"
+    					hidden="" inputType="text" width="21" valueType="binary"
+    					colSpan="3" rowSpan="" value="60">
+    				</w2:column>
+    			</w2:row>
+    		</w2:header>
+    		<w2:gBody class="" columnClass="" id="gBody3" style="">
+    			<w2:row id="row7" style="">
+    				<w2:column id="STALL_NO" style="height:41px"
+    					hidden="true" inputType="text" width="70" valueType="binary">
+    				</w2:column>
+    				<w2:column id="STALL_NM" style="height:41px"
+    					hidden="true" inputType="text" width="70" valueType="binary">
+    				</w2:column>
+    				<w2:column hidden="" id="ST_TEXT" inputType="text"
+    					style="height:41px;" value=""
+    					valueType="binary" width="52">
+    				</w2:column>
+    				<w2:column hidden="" id="column118" inputType="text"
+    					style="height:41px;" value="" valueType="binary" width="7">
+    				</w2:column>
+    				<w2:column hidden="" id="column119" inputType="text"
+    					style="height:41px;" value="" valueType="binary" width="7">
+    				</w2:column>
+    				<w2:column hidden="" id="column120" inputType="text"
+    					style="height:41px;" value="" valueType="binary" width="7">
+    				</w2:column>
+    				<w2:column hidden="" id="column121" inputType="text"
+    					style="height:41px;" value="" valueType="binary" width="7">
+    				</w2:column>
+    				<w2:column hidden="" id="column122" inputType="text"
+    					style="height:41px;" valueType="binary" width="7">
+    				</w2:column>
+    				<w2:column hidden="" id="column123" inputType="text"
+    					style="height:41px;" valueType="binary" width="7">
+    				</w2:column>
+    				<w2:column hidden="" id="column124" inputType="text"
+    					style="height:41px;" valueType="binary" width="7">
+    				</w2:column>
+    				<w2:column hidden="" id="column125" inputType="text"
+    					style="height:41px;" valueType="binary" width="7">
+    				</w2:column>
+    				<w2:column hidden="" id="column126" inputType="text"
+    					style="height:41px;" valueType="binary" width="7">
+    				</w2:column>
+    				<w2:column hidden="" id="column127" inputType="text"
+    					style="height:41px;" valueType="binary" width="7">
+    				</w2:column>
+    				<w2:column hidden="" id="column128" inputType="text"
+    					style="height:41px;" valueType="binary" width="7">
+    				</w2:column>
+    				<w2:column id="column143" style="height:41px;"
+    					hidden="" inputType="text" width="7" valueType="binary">
+    				</w2:column>
+    				<w2:column id="column149" style="height:41px;"
+    					hidden="" inputType="text" width="7" valueType="binary">
+    				</w2:column>
+    				<w2:column id="column146" style="height:41px;"
+    					hidden="" inputType="text" width="7" valueType="binary">
+    				</w2:column>
+    				<w2:column id="column152" style="height:41px;"
+    					hidden="" inputType="text" width="7" valueType="binary">
+    				</w2:column>
+    				<w2:column id="column155" style="height:41px;"
+    					hidden="" inputType="text" width="7" valueType="binary">
+    				</w2:column>
+    				<w2:column id="column158" style="height:41px;"
+    					hidden="" inputType="text" width="7" valueType="binary">
+    				</w2:column>
+    				<w2:column id="column161" style="height:41px;"
+    					hidden="" inputType="text" width="7" valueType="binary">
+    				</w2:column>
+    				<w2:column id="column164" style="height:41px;"
+    					hidden="" inputType="text" width="7" valueType="binary">
+    				</w2:column>
+    				<w2:column id="column170" style="height:41px;"
+    					hidden="" inputType="text" width="7" valueType="binary">
+    				</w2:column>
+    				<w2:column id="column167" style="height:41px;"
+    					hidden="" inputType="text" width="7" valueType="binary">
+    				</w2:column>
+    				<w2:column id="column176" style="height:41px;"
+    					hidden="" inputType="text" width="7" valueType="binary">
+    				</w2:column>
+    				<w2:column id="column173" style="height:41px;"
+    					hidden="" inputType="text" width="7" valueType="binary">
+    				</w2:column>
+    				<w2:column id="column179" style="height:41px;"
+    					hidden="" inputType="text" width="7" valueType="binary">
+    				</w2:column>
+    				<w2:column id="column182" style="height:41px;"
+    					hidden="" inputType="text" width="7" valueType="binary">
+    				</w2:column>
+    				<w2:column id="column209" style="height:41px"
+    					hidden="" inputType="text" width="7" valueType="binary">
+    				</w2:column>
+    				<w2:column id="column212" style="height:41px"
+    					hidden="" inputType="text" width="7" valueType="binary">
+    				</w2:column>
+    				<w2:column id="column215" style="height:41px"
+    					hidden="" inputType="text" width="7" valueType="binary">
+    				</w2:column>
+    				<w2:column id="column218" style="height:41px"
+    					hidden="" inputType="text" width="7" valueType="binary">
+    				</w2:column>
+    				<w2:column id="column221" style="height:41px"
+    					hidden="" inputType="text" width="7" valueType="binary">
+    				</w2:column>
+    				<w2:column id="column224" style="height:41px"
+    					hidden="" inputType="text" width="7" valueType="binary">
+    				</w2:column>
+    				<w2:column id="column227" style="height:41px"
+    					hidden="" inputType="text" width="7" valueType="binary">
+    				</w2:column>
+    				<w2:column id="column233" style="height:41px"
+    					hidden="" inputType="text" width="7" valueType="binary">
+    				</w2:column>
+    				<w2:column id="column230" style="height:41px"
+    					hidden="" inputType="text" width="7" valueType="binary">
+    				</w2:column>
+    				<w2:column id="column239" style="height:41px"
+    					hidden="" inputType="text" width="7" valueType="binary">
+    				</w2:column>
+    				<w2:column id="column236" style="height:41px"
+    					hidden="" inputType="text" width="7" valueType="binary">
+    				</w2:column>
+    				<w2:column id="column242" style="height:41px"
+    					hidden="" inputType="text" width="7" valueType="binary">
+    				</w2:column>
+    				<w2:column id="column248" style="height:41px"
+    					hidden="" inputType="text" width="7" valueType="binary">
+    				</w2:column>
+    				<w2:column id="column245" style="height:41px"
+    					hidden="" inputType="text" width="7" valueType="binary">
+    				</w2:column>
+    				<w2:column id="column251" style="height:41px"
+    					hidden="" inputType="text" width="7" valueType="binary">
+    				</w2:column>
+    				<w2:column id="column254" style="height:41px"
+    					hidden="" inputType="text" width="7" valueType="binary">
+    				</w2:column>
+    				<w2:column id="column257" style="height:41px"
+    					hidden="" inputType="text" width="7" valueType="binary">
+    				</w2:column>
+    				<w2:column id="column260" style="height:41px"
+    					hidden="" inputType="text" width="7" valueType="binary">
+    				</w2:column>
+    				<w2:column id="column263" style="height:41px"
+    					hidden="" inputType="text" width="7" valueType="binary">
+    				</w2:column>
+    				<w2:column id="column331" style="height:41px"
+    					hidden="" inputType="text" width="7" valueType="binary">
+    				</w2:column>
+    				<w2:column id="column343" style="height:41px"
+    					hidden="" inputType="text" width="7" valueType="binary">
+    				</w2:column>
+    				<w2:column id="column346" style="height:41px"
+    					hidden="" inputType="text" width="7" valueType="binary">
+    				</w2:column>
+    				<w2:column id="column349" style="height:41px"
+    					hidden="" inputType="text" width="7" valueType="binary">
+    				</w2:column>
+    				<w2:column id="column352" style="height:41px"
+    					hidden="" inputType="text" width="7" valueType="binary">
+    				</w2:column>
+    				<w2:column id="column355" style="height:41px"
+    					hidden="" inputType="text" width="7" valueType="binary">
+    				</w2:column>
+    				<w2:column id="column358" style="height:41px"
+    					hidden="" inputType="text" width="7" valueType="binary">
+    				</w2:column>
+    				<w2:column id="column361" style="height:41px"
+    					hidden="" inputType="text" width="7" valueType="binary">
+    				</w2:column>
+    				<w2:column id="column340" style="height:41px"
+    					hidden="" inputType="text" width="7" valueType="binary">
+    				</w2:column>
+    				<w2:column id="column373" style="height:41px"
+    					hidden="" inputType="text" width="7" valueType="binary">
+    				</w2:column>
+    				<w2:column id="column370" style="height:41px"
+    					hidden="" inputType="text" width="7" valueType="binary">
+    				</w2:column>
+    				<w2:column id="column367" style="height:41px"
+    					hidden="" inputType="text" width="7" valueType="binary">
+    				</w2:column>
+    				<w2:column id="column364" style="height:41px"
+    					hidden="" inputType="text" width="7" valueType="binary">
+    				</w2:column>
+    				<w2:column id="column376" style="height:41px"
+    					hidden="" inputType="text" width="7" valueType="binary">
+    				</w2:column>
+    				<w2:column id="column379" style="height:41px"
+    					hidden="" inputType="text" width="7" valueType="binary">
+    				</w2:column>
+    				<w2:column id="column382" style="height:41px"
+    					hidden="" inputType="text" width="7" valueType="binary">
+    				</w2:column>
+    				<w2:column id="column385" style="height:41px"
+    					hidden="" inputType="text" width="7" valueType="binary">
+    				</w2:column>
+    				<w2:column id="column391" style="height:41px"
+    					hidden="" inputType="text" width="7" valueType="binary">
+    				</w2:column>
+    				<w2:column id="column388" style="height:41px"
+    					hidden="" inputType="text" width="7" valueType="binary">
+    				</w2:column>
+    				<w2:column id="column427" style="height:41px"
+    					hidden="" inputType="text" width="7" valueType="binary">
+    				</w2:column>
+    				<w2:column id="column394" style="height:41px"
+    					hidden="" inputType="text" width="7" valueType="binary">
+    				</w2:column>
+    				<w2:column id="column457" style="height:41px"
+    					hidden="" inputType="text" width="7" valueType="binary">
+    				</w2:column>
+    				<w2:column id="column454" style="height:41px"
+    					hidden="" inputType="text" width="7" valueType="binary">
+    				</w2:column>
+    				<w2:column id="column451" style="height:41px"
+    					hidden="" inputType="text" width="7" valueType="binary">
+    				</w2:column>
+    				<w2:column id="column448" style="height:41px"
+    					hidden="" inputType="text" width="7" valueType="binary">
+    				</w2:column>
+    				<w2:column id="column445" style="height:41px"
+    					hidden="" inputType="text" width="7" valueType="binary">
+    				</w2:column>
+    				<w2:column id="column442" style="height:41px"
+    					hidden="" inputType="text" width="7" valueType="binary">
+    				</w2:column>
+    				<w2:column id="column439" style="height:41px"
+    					hidden="" inputType="text" width="7" valueType="binary">
+    				</w2:column>
+    				<w2:column id="column436" style="height:41px"
+    					hidden="" inputType="text" width="7" valueType="binary">
+    				</w2:column>
+    				<w2:column id="column433" style="height:41px"
+    					hidden="" inputType="text" width="7" valueType="binary">
+    				</w2:column>
+    				<w2:column id="column430" style="height:41px"
+    					hidden="" inputType="text" width="7" valueType="binary">
+    				</w2:column>
+    				<w2:column id="column424" style="height:41px"
+    					hidden="" inputType="text" width="7" valueType="binary">
+    				</w2:column>
+    				<w2:column id="column421" style="height:41px"
+    					hidden="" inputType="text" width="7" valueType="binary">
+    				</w2:column>
+    				<w2:column id="column418" style="height:41px"
+    					hidden="" inputType="text" width="7" valueType="binary">
+    				</w2:column>
+    				<w2:column id="column415" style="height:41px"
+    					hidden="" inputType="text" width="7" valueType="binary">
+    				</w2:column>
+    				<w2:column id="column412" style="height:41px"
+    					hidden="" inputType="text" width="7" valueType="binary">
+    				</w2:column>
+    				<w2:column id="column409" style="height:41px"
+    					hidden="" inputType="text" width="7" valueType="binary">
+    				</w2:column>
+    				<w2:column id="column406" style="height:41px"
+    					hidden="" inputType="text" width="7" valueType="binary">
+    				</w2:column>
+    				<w2:column id="column403" style="height:41px"
+    					hidden="" inputType="text" width="7" valueType="binary">
+    				</w2:column>
+    				<w2:column id="column400" style="height:41px"
+    					hidden="" inputType="text" width="7" valueType="binary">
+    				</w2:column>
+    				<w2:column id="column460" style="height:41px"
+    					hidden="" inputType="text" width="7" valueType="binary">
+    				</w2:column>
+    				<w2:column id="column463" style="height:41px"
+    					hidden="" inputType="text" width="7" valueType="binary">
+    				</w2:column>
+    				<w2:column id="column529" style="height:41px"
+    					hidden="" inputType="text" width="7" valueType="binary">
+    				</w2:column>
+    				<w2:column id="column526" style="height:41px"
+    					hidden="" inputType="text" width="7" valueType="binary">
+    				</w2:column>
+    				<w2:column id="column523" style="height:41px"
+    					hidden="" inputType="text" width="7" valueType="binary">
+    				</w2:column>
+    				<w2:column id="column520" style="height:41px"
+    					hidden="" inputType="text" width="7" valueType="binary">
+    				</w2:column>
+    				<w2:column id="column517" style="height:41px"
+    					hidden="" inputType="text" width="7" valueType="binary">
+    				</w2:column>
+    				<w2:column id="column514" style="height:41px"
+    					hidden="" inputType="text" width="7" valueType="binary">
+    				</w2:column>
+    				<w2:column id="column511" style="height:41px"
+    					hidden="" inputType="text" width="7" valueType="binary">
+    				</w2:column>
+    				<w2:column id="column508" style="height:41px"
+    					hidden="" inputType="text" width="7" valueType="binary">
+    				</w2:column>
+    				<w2:column id="column505" style="height:41px"
+    					hidden="" inputType="text" width="7" valueType="binary">
+    				</w2:column>
+    				<w2:column id="column502" style="height:41px"
+    					hidden="" inputType="text" width="7" valueType="binary">
+    				</w2:column>
+    				<w2:column id="column499" style="height:41px"
+    					hidden="" inputType="text" width="7" valueType="binary">
+    				</w2:column>
+    				<w2:column id="column496" style="height:41px"
+    					hidden="" inputType="text" width="7" valueType="binary">
+    				</w2:column>
+    				<w2:column id="column493" style="height:41px"
+    					hidden="" inputType="text" width="7" valueType="binary">
+    				</w2:column>
+    				<w2:column id="column490" style="height:41px"
+    					hidden="" inputType="text" width="7" valueType="binary">
+    				</w2:column>
+    				<w2:column id="column487" style="height:41px"
+    					hidden="" inputType="text" width="7" valueType="binary">
+    				</w2:column>
+    				<w2:column id="column484" style="height:41px"
+    					hidden="" inputType="text" width="7" valueType="binary">
+    				</w2:column>
+    				<w2:column id="column481" style="height:41px"
+    					hidden="" inputType="text" width="7" valueType="binary">
+    				</w2:column>
+    				<w2:column id="column478" style="height:41px"
+    					hidden="" inputType="text" width="7" valueType="binary">
+    				</w2:column>
+    				<w2:column id="column475" style="height:41px"
+    					hidden="" inputType="text" width="7" valueType="binary">
+    				</w2:column>
+    				<w2:column id="column472" style="height:41px"
+    					hidden="" inputType="text" width="7" valueType="binary">
+    				</w2:column>
+    				<w2:column id="column469" style="height:41px"
+    					hidden="" inputType="text" width="7" valueType="binary">
+    				</w2:column>
+    				<w2:column id="column466" style="height:41px"
+    					hidden="" inputType="text" width="7" valueType="binary">
+    				</w2:column>
+    				<w2:column id="column532" style="height:41px"
+    					hidden="" inputType="text" width="7" valueType="binary">
+    				</w2:column>
+    				<w2:column id="column535" style="height:41px"
+    					hidden="" inputType="text" width="7" valueType="binary">
+    				</w2:column>
+    				<w2:column id="column601" style="height:41px"
+    					hidden="" inputType="text" width="7" valueType="binary">
+    				</w2:column>
+    				<w2:column id="column598" style="height:41px"
+    					hidden="" inputType="text" width="7" valueType="binary">
+    				</w2:column>
+    				<w2:column id="column595" style="height:41px"
+    					hidden="" inputType="text" width="7" valueType="binary">
+    				</w2:column>
+    				<w2:column id="column592" style="height:41px"
+    					hidden="" inputType="text" width="7" valueType="binary">
+    				</w2:column>
+    				<w2:column id="column589" style="height:41px"
+    					hidden="" inputType="text" width="7" valueType="binary">
+    				</w2:column>
+    				<w2:column id="column586" style="height:41px"
+    					hidden="" inputType="text" width="7" valueType="binary">
+    				</w2:column>
+    				<w2:column id="column583" style="height:41px"
+    					hidden="" inputType="text" width="7" valueType="binary">
+    				</w2:column>
+    				<w2:column id="column580" style="height:41px"
+    					hidden="" inputType="text" width="7" valueType="binary">
+    				</w2:column>
+    				<w2:column id="column577" style="height:41px"
+    					hidden="" inputType="text" width="7" valueType="binary">
+    				</w2:column>
+    				<w2:column id="column574" style="height:41px"
+    					hidden="" inputType="text" width="7" valueType="binary">
+    				</w2:column>
+    				<w2:column id="column571" style="height:41px"
+    					hidden="" inputType="text" width="7" valueType="binary">
+    				</w2:column>
+    				<w2:column id="column568" style="height:41px"
+    					hidden="" inputType="text" width="7" valueType="binary">
+    				</w2:column>
+    				<w2:column id="column565" style="height:41px"
+    					hidden="" inputType="text" width="7" valueType="binary">
+    				</w2:column>
+    				<w2:column id="column562" style="height:41px"
+    					hidden="" inputType="text" width="7" valueType="binary">
+    				</w2:column>
+    				<w2:column id="column559" style="height:41px"
+    					hidden="" inputType="text" width="7" valueType="binary">
+    				</w2:column>
+    				<w2:column id="column556" style="height:41px"
+    					hidden="" inputType="text" width="7" valueType="binary">
+    				</w2:column>
+    				<w2:column id="column553" style="height:41px"
+    					hidden="" inputType="text" width="7" valueType="binary">
+    				</w2:column>
+    				<w2:column id="column550" style="height:41px"
+    					hidden="" inputType="text" width="7" valueType="binary">
+    				</w2:column>
+    				<w2:column id="column547" style="height:41px"
+    					hidden="" inputType="text" width="7" valueType="binary">
+    				</w2:column>
+    				<w2:column id="column544" style="height:41px"
+    					hidden="" inputType="text" width="7" valueType="binary">
+    				</w2:column>
+    				<w2:column id="column541" style="height:41px"
+    					hidden="" inputType="text" width="7" valueType="binary">
+    				</w2:column>
+    				<w2:column id="column538" style="height:41px"
+    					hidden="" inputType="text" width="7" valueType="binary">
+    				</w2:column>
+    			</w2:row>
+    		</w2:gBody>
+    		<script ev:event="onCellClick( row , col )" type="javascript"><![CDATA[ 
+    			fn_SelectStall(row,col);
+    		]]></script>
+    	</w2:grid>
+
+    	<xf:input class="input_edit" id="edt_StallNo" readOnly="true"
+    		readOnlyClass="input_readonly"
+    		style="position: absolute ;height:22px;visibility:hidden;width:50px;left:755px;top:65px;">
+    	</xf:input>
+    	<xf:input class="input_edit" id="edt_StallNm" readOnly="true"
+    		readOnlyClass="input_readonly"
+    		style="position: absolute ;height:22px;visibility:hidden;width:50px;left:812px;top:65px;">
+    	</xf:input>
+    	<xf:trigger class="btn_po" id="btn_Confirm"
+    		style="position: absolute ;height:30px;color:#FFFFFF;width:70px;left:830px;top:10px;"
+    		type="image">
+    		<xf:label>확 인</xf:label>
+    		<script ev:event="onclick" type="javascript"><![CDATA[ 
+    			fn_Confirm();
+    		]]></script>
+    	</xf:trigger>
+    </body>
+</html>

@@ -1,0 +1,825 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?xml-stylesheet href="/mp/css/style.css" type="text/css"?>
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:ev="http://www.w3.org/2001/xml-events"
+    xmlns:w2="http://www.inswave.com/websquare" xmlns:xf="http://www.w3.org/2002/xforms">
+    <head>
+    	<w2:buildDate />
+    	<xf:model>
+    		<xf:instance>
+    			<data xmlns="">
+    				<params>
+						<param id="Gubun" />
+						<param id="DealerId" />
+						<param id="ReservedDt" />
+						<param id="FrTime" />
+						<param id="ToTime" />
+						<param id="TestcarNo" />
+						<param id="TrialNo" />
+						<param id="Vin" />
+						<param id="VehicNo" />
+						<param id="VariantCd" />
+						<param id="VariantNm" />
+						<param id="ShopCd" />
+					</params>
+    			</data>
+    		</xf:instance>
+    		<xf:submission id="submissionList" ref="request" target="resList"
+        		action=""
+        		method="post" mediatype="application/xml" encoding="UTF-8" instance="" replace="instance"
+        		errorHandler="" customHandler="" mode="synchronous"
+        		processMsg="">
+        	</xf:submission>
+        	<xf:submission id="submissionTrialList" ref="request" target="resTrialList"
+        		action=""
+        		method="post" mediatype="application/xml" encoding="UTF-8" instance="" replace="instance"
+        		errorHandler="" customHandler="" mode="synchronous"
+        		processMsg="">
+        	</xf:submission>
+        	<xf:submission id="submissionCode" ref="request"
+        		target="resCode" action="" method="post"
+        		mediatype="application/xml" encoding="UTF-8" instance=""
+        		replace="instance" errorHandler="" customHandler=""
+        		mode="asynchronous" processMsg="">
+        		<script type="javascript" ev:event="xforms-submit-done"><![CDATA[        			
+		        	var params = WebSquare.uiplugin.popup.getPopupParam();
+					
+					if(!gfn_IsNullVal(params)){
+						FV_Dealer = WebSquare.xml.getValue(xmlDoc, "params/param[@id='DealerId']");
+					} else{
+						FV_Dealer = GV_UP_GROUP_ID;
+					}
+					
+					cb_ShopCd.setValue(GV_GROUP_ID);	
+		        	cal_ReservedDt.setValue(gfn_GetDate(0,0,0));
+		      		
+		      		parent.fn_SpinnerHide();
+		      		
+		        	FV_sTerm = 1800000;
+		        	fn_Search();
+        		]]></script>
+        	</xf:submission>
+    	</xf:model>
+    	<script type="javascript" src="/mp/js/common.js"></script>
+		<script type="javascript" src="/mp/js/WebSquare.js"></script>
+    	<script type="javascript"><![CDATA[
+    	var FV_SEARCH_CNT = 10;		// 조회 건수
+		var FV_nMAXCNT = -1;		// 전체 데이터 수
+    	var FV_sOffSetTime = 25200000; //기준 OffSet시간 오전 7시
+		var FV_sStatus = 0; //예약입력가능 상태값
+		var FV_sFrCell = 0; //시작CELL
+		var FV_sFrRow = 0; //시작ROW
+		var FV_sFrTime = 0; //시작 시간
+		var FV_sToTime = 0; //종료시간
+		var FV_sTerm = 0;
+		var FV_sImagePath = "/mp/images/";
+		var FV_sCustNm = "";
+		var FV_sDealerId = "";
+		var	FV_sCustType = "";
+		var FV_bInit = true;
+		var FV_Dealer = ""; 
+     	/****************************************************************
+		* 화면로드
+		* @param  : 없음
+		* @return : 없음
+		******************************************************************/
+        function fn_OnLoad(){        	
+        	// 전시장 , 차종 , 구분	
+			setTitSendInfo("request", "", "", "mdms/mp/tride::S310401_W01_S06,mdms/mp/tride::S310401_W01_S03,mdms/mp/tride::S310401_W01_S04,mdms/mp/tride::S310401_W01_S05");
+			setInputParamData("COND1", GV_UP_GROUP_ID);
+			setInputParamData("CD_KND", "'SF0107'");
+			setInputParamData("DEPT_CD",GV_DEPT_CD);	
+        	setSubmissison("submissionCode");
+        }
+        /****************************************************************
+		* 조회
+		* @param  : 페이지번호
+		* @return : 없음
+		******************************************************************/ 
+        function fn_Search(pageNo){
+        	if(pageNo == null){
+				FV_nMAXCNT = -1;
+				pageNo = 1;
+				fn_InitPage();
+			}
+        	
+        	var sSqlid = "mdms/mp/tride:S310401_W01_S01@" + pageNo + "/" + FV_SEARCH_CNT; 
+        	setTitSendInfo("request", "", "", sSqlid);
+        	setInputParamData("DEALER_ID", FV_Dealer);
+        	setInputParamData("SHOP_CD", cb_ShopCd.getValue());
+  			setInputParamData("VARIANT_CD", cb_Variant.getValue());
+        	setInputParamData("RESERVED_DT", cal_ReservedDt.getValue());
+        	setInputParamData("TYPE", cb_Type.getValue());
+    		setSubmissison("submissionList");
+    		
+    		setTitSendInfo("request", "", "", "mdms/mp/tride:S310401_W01_S02");
+        	setInputParamData("DEALER_ID", FV_Dealer);
+        	setInputParamData("SHOP_CD", cb_ShopCd.getValue());
+  			setInputParamData("VARIANT_CD", cb_Variant.getValue());
+        	setInputParamData("RESERVED_DT", cal_ReservedDt.getValue());
+    		setSubmissison("submissionTrialList");
+    		
+    		fn_AfterSearch();
+        }
+        /****************************************************************
+		* callback (조회)
+		* @param  : 없음
+		* @return : 없음
+		******************************************************************/
+        function fn_AfterSearch(){
+        	FV_sFrCell = 0; //시작CELL
+		    FV_sFrRow = 0; //시작ROW
+		    FV_sFrTime = 0; //시작 시간
+		    FV_sToTime = 0; //종료시간
+		    FV_sStatus = 0; //예약입력가능 상태값
+		    
+        	grd_List.initGrid();
+        	
+        	// 열 배경색
+        	grd_List.setColumnBackgroundColor("V_TYPE", "#dedcdc");
+        	grd_List.setColumnBackgroundColor("CAR_KIND", "#dedcdc");
+        	grd_List.setColumnBackgroundColor("VEHIC_NO", "#dedcdc");
+        	
+        	var lstMaster = WebSquare.ModelUtil.findInstanceNodes("resList/root/dataset[@id='ds_List']/record");
+        	
+        	for(var i=0; i<lstMaster.length; i++){
+        		var nRow = grd_List.insertRow();
+    			var sTestCarNo =  WebSquare.xml.getValue(lstMaster[i],"TESTCAR_NO");
+    			grd_List.setCellData(nRow, 0, sTestCarNo);
+    			grd_List.setCellData(nRow, 1, WebSquare.xml.getValue(lstMaster[i],"SHOP_CD"));
+    			grd_List.setCellData(nRow, 2, WebSquare.xml.getValue(lstMaster[i],"VARIANT_CD"));
+    			grd_List.setCellData(nRow, 3, WebSquare.xml.getValue(lstMaster[i],"VARIANT_NM"));
+    			grd_List.setCellData(nRow, 4, WebSquare.xml.getValue(lstMaster[i],"VARIANT_NM_ETC"));
+    			grd_List.setCellData(nRow, 5, WebSquare.xml.getValue(lstMaster[i],"VIN"));
+    			grd_List.setCellData(nRow, 10, WebSquare.xml.getValue(lstMaster[i],"V_TYPE"));
+    			grd_List.setCellData(nRow, 11, WebSquare.xml.getValue(lstMaster[i],"CAR_KIND"));
+    			grd_List.setCellData(nRow, 12, WebSquare.xml.getValue(lstMaster[i],"VEHIC_NO"));
+        		grd_List.setCellData(0, "_T_CNT", WebSquare.xml.getValue(lstMaster[0],"_T_CNT"));
+        		
+        		var lstTrial = WebSquare.ModelUtil.findInstanceNodes("resTrialList/root/dataset[@id='ds_TrialList']/record[TESTCAR_NO='"+sTestCarNo+"']");
+        		
+        		for(var j=0; j<lstTrial.length; j++){
+        			for(var k=0; k<34; k++){
+        				var timeVal = FV_sOffSetTime+(FV_sTerm*k); // 1800000 = 60 * 30 * 1000 --30분을 의미
+						var frTime = WebSquare.xml.getValue(lstTrial[j],"FROM_TIME"); //시승시작시간
+						var toTime = WebSquare.xml.getValue(lstTrial[j],"TO_TIME"); //시승종료시간
+						var custNm = WebSquare.xml.getValue(lstTrial[j],"CUST_NM"); //메모
+						var testYn = WebSquare.xml.getValue(lstTrial[j],"INTEREST_DEGREE"); //결과등록 TEST_YN->INTEREST_DEGREE로 변경
+						var regUserId = WebSquare.xml.getValue(lstTrial[j],"RES_USER_ID"); //시승담당자 ID
+						var trialNo = WebSquare.xml.getValue(lstTrial[j],"TRIAL_NO"); //시승예약번호
+						var toDay = gfn_GetDate(0,0,0).replaceAll("-",""); 
+						var reservedDt = cal_ReservedDt.getValue().replaceAll("-","");
+						
+						grd_List.setCellData(nRow, 7, trialNo);
+        				grd_List.setCellData(nRow, 47, regUserId);
+        				
+        				if(toDay > reservedDt && gfn_IsNullVal(testYn)){ //예약날짜를 넘기고 결과등록이 없을시 실패(RED)
+        				//if(toDay > reservedDt && testYn == "N"){ //예약날짜를 넘기고 결과등록이 없을시 실패(RED)
+        					if(frTime == timeVal){
+								//간략메모 생성
+								
+								grd_List.setCellData(nRow, k+13, FV_sImagePath+"ma_im_grid_arrow_r_left.png");
+							} else if(frTime < timeVal && toTime > timeVal){
+								grd_List.setCellData(nRow, k+13, FV_sImagePath+"ma_im_grid_arrow_r_middle.png");
+							} else if(toTime == timeVal){
+								grd_List.setCellData(nRow, k+13, FV_sImagePath+"ma_im_grid_arrow_r_right.png");
+							} else if(frTime == timeVal && toTime == timeVal){
+								grd_List.setCellData(nRow, k+13, FV_sImagePath+"ma_im_grid_arrow_r_2way.png");
+							} else{
+								if(grd_List.getCellData(nRow, k+13) == "0"){									
+									grd_List.setCellData(nRow, k+13, "");
+								}
+							}
+        			
+        				} else if(!gfn_IsNullVal(testYn)){ // 시승결과의 값이 'Y'인경우 (BLUE)
+        				//} else if(testYn == "Y"){ // 시승결과의 값이 'Y'인경우 (BLUE)
+        					if(frTime == timeVal){
+								//간략메모 생성
+								
+								grd_List.setCellData(nRow, k+13, FV_sImagePath+"ma_im_grid_arrow_b_left.png");
+							}else if(frTime < timeVal && toTime > timeVal){
+								grd_List.setCellData(nRow, k+13, FV_sImagePath+"ma_im_grid_arrow_b_middle.png");
+							}else if(toTime == timeVal){
+								grd_List.setCellData(nRow, k+13, FV_sImagePath+"ma_im_grid_arrow_b_right.png");
+							}else if(frTime == timeVal && toTime == timeVal){
+								grd_List.setCellData(nRow, k+13, FV_sImagePath+"ma_im_grid_arrow_b_2way.png");
+							}else{
+								if(grd_List.getCellData(nRow, k+13) == "0"){									
+									grd_List.setCellData(nRow, k+13, "");
+								}
+							}
+							
+        				} else{ //그외 예약등록(YELLOW)
+        					if(frTime == timeVal){
+								//간략메모 생성
+								
+								grd_List.setCellData(nRow, k+13, FV_sImagePath+"ma_im_grid_arrow_y_left.png");
+							}else if(frTime < timeVal && toTime > timeVal){
+								grd_List.setCellData(nRow, k+13, FV_sImagePath+"ma_im_grid_arrow_y_middle.png");
+							}else if(toTime == timeVal){
+								grd_List.setCellData(nRow, k+13, FV_sImagePath+"ma_im_grid_arrow_y_right.png");
+							}else if(frTime == timeVal && toTime == timeVal){
+								grd_List.setCellData(nRow, k+13, FV_sImagePath+"ma_im_grid_arrow_y_2way.png");
+							}else{
+								if(grd_List.getCellData(nRow, k+13) == "0"){									
+									grd_List.setCellData(nRow, k+13, "");
+								}
+							}
+        				}
+        			}
+        		}			
+        	}
+        	
+        	if(FV_nCurrPage == -1 && grd_List.getRowCount() > 0){
+				FV_nMAXCNT = grd_List.getCellData(0,48);
+				fn_SetPageInfo(1,FV_nMAXCNT,FV_SEARCH_CNT);
+			}
+			
+        	FV_bInit = false;	
+        }
+        /****************************************************************
+		* 그리드 셀 클릭 시
+		* @param  : 없음
+		* @return : 없음
+		******************************************************************/
+        function fn_NewTride(row,col){
+       		if(col < 13)	return;
+       		
+       		var colVal = grd_List.getCellData(row,col);
+        	if(gfn_IsNullVal(colVal)){
+        		if(FV_sStatus == 0){
+        			FV_sFrCell = col;
+				    FV_sFrRow = row;
+				    grd_List.setCellData(row, col, FV_sImagePath+"ma_im_grid_arrow_y_left.png");
+					FV_sStatus = 1;	        		
+        		} else if(FV_sStatus == 1){
+        			if(FV_sFrCell > col || FV_sFrRow != row){
+						grd_List.setCellData(row, FV_sFrCell, "");
+					} else{
+			            var isPossible = true; //예약시간은 겹쳐 잡을수 없음.. 검사..
+			            
+			            for(var i=FV_sFrCell+1; i<col; i++){
+			                var testVal = grd_List.getCellData(row,i);
+							
+							if(!gfn_IsNullVal(testVal)){
+								isPossible = false;
+								break;
+							}
+						}
+		 	            
+			            if(isPossible){ //예약시간이 겹치지 않을경우
+							for(var j=FV_sFrCell+1; j<col; j++){
+								grd_List.setCellData(row, j, FV_sImagePath+"ma_im_grid_arrow_y_middle.png"); //예약진행시간YELLOW
+							}
+							FV_sFrTime = FV_sOffSetTime + (FV_sTerm * (FV_sFrCell-13));
+							FV_sToTime = FV_sOffSetTime + (FV_sTerm * (col-13));
+							grd_List.setCellData(row, col, FV_sImagePath+"ma_im_grid_arrow_y_right.png"); //예약종료시간 YELLOW
+							fn_SavePopup("INSERT", row); //시승예약등록 팝업
+						} else{ //겹칠경우
+							grd_List.setCellData(FV_sFrRow, FV_sFrCell, "");
+							alert("예약시간을 겹쳐 잡을 수 없습니다.");
+							FV_sStatus = 0;
+							return;
+						}
+					}
+					FV_sStatus = 0;
+				}
+        	
+        	} else if(FV_sFrCell == col && FV_sFrRow == row){ //시작과 종료시간이 같을 경우 양방향 화살표
+        		grd_List.setCellData(FV_sFrRow, FV_sFrCell, FV_sImagePath+"ma_im_grid_arrow_y_2way.png");
+				FV_sFrTime = FV_sOffSetTime + (FV_sTerm * (FV_sFrCell-13));
+				FV_sToTime = FV_sOffSetTime + (FV_sTerm * (col-13));
+				fn_SavePopup("INSERT", row); //시승예약등록 팝업
+				FV_sStatus = 0;        	
+        	} else{	//그외 초기화
+        		
+        	//	grd_List.setCellData(FV_sFrRow, FV_sFrCell, "");
+			//	FV_sStatus = 0;
+				var colVal = grd_List.getCellData(row, col);
+       			var scVal = grd_List.getCellData(row, 47);
+				var userType = GV_USER_TYPE;
+			
+				if(GV_USER_GROUP.indexOf("DS6",0) != -1 && userType == '23'){
+					var isMember = false;
+					var ds_DeptUser = WebSquare.ModelUtil.findInstanceNodes("resCode/root/dataset[@id='ds_DeptUser']/record");
+					for(var i=0; i<ds_DeptUser.length; i++){
+						var member = WebSquare.xml.getValue(ds_DeptUser[i],"USER_ID"); //멤버
+						if(scVal==member){
+							isMember = true;
+							break;
+						}
+					}
+					if(!isMember){
+						alert('자신의 팀원것만 수정 및 결과 등록 가능합니다.');
+						return;
+					}
+				}else{
+					if(scVal != GV_USER_ID && userType == "23"){
+						alert("담당건만 수정 및 결과 등록 가능합니다.");
+						return;
+					}
+				}
+			
+		    	if(!gfn_IsNullVal(colVal) && !FV_sStatus){
+					fn_SavePopup("UPDATE", row, col);
+				}        
+        	}
+        }
+        /****************************************************************
+		* 그리드 셀 더블클릭 시
+		* @param  : 없음
+		* @return : 없음
+		******************************************************************/
+        function fn_ModifyTride(row,col){
+        	if(col < 12)	return;
+
+       		var colVal = grd_List.getCellData(row, col);
+       		var scVal = grd_List.getCellData(row, 47);
+			var userType = GV_USER_TYPE;
+
+			if(scVal != GV_USER_ID && userType == "23"){
+		        alert("담당건만 수정 및 결과 등록 가능합니다.");
+				return;
+		    }
+
+		    if(!gfn_IsNullVal(colVal) && !FV_sStatus){
+				fn_SavePopup("UPDATE", row, col);
+			}        
+        }
+        /****************************************************************
+		* 시승예약 및 결과 등록/수정
+		* @param  : 없음
+		* @return : 없음
+		******************************************************************/
+        function fn_SavePopup(gubun,row,col){
+        	WebSquare.ModelUtil.setInstanceValue("params/param[@id='Gubun']",gubun);
+        	WebSquare.ModelUtil.setInstanceValue("params/param[@id='DealerId']",FV_Dealer);
+        	WebSquare.ModelUtil.setInstanceValue("params/param[@id='ReservedDt']",cal_ReservedDt.getValue());
+        	WebSquare.ModelUtil.setInstanceValue("params/param[@id='FrTime']",FV_sFrTime);
+        	WebSquare.ModelUtil.setInstanceValue("params/param[@id='ToTime']",FV_sToTime);
+        	WebSquare.ModelUtil.setInstanceValue("params/param[@id='TestcarNo']",grd_List.getCellData(row,0));
+        	WebSquare.ModelUtil.setInstanceValue("params/param[@id='TrialNo']",grd_List.getCellData(row,7));
+        	WebSquare.ModelUtil.setInstanceValue("params/param[@id='Vin']",grd_List.getCellData(row,5));
+        	WebSquare.ModelUtil.setInstanceValue("params/param[@id='VehicNo']",grd_List.getCellData(row,12));
+        	WebSquare.ModelUtil.setInstanceValue("params/param[@id='VariantCd']",grd_List.getCellData(row,2));
+        	WebSquare.ModelUtil.setInstanceValue("params/param[@id='VariantNm']",grd_List.getCellData(row,3));
+        	WebSquare.ModelUtil.setInstanceValue("params/param[@id='ShopCd']",grd_List.getCellData(row,1));
+        	
+        	gfn_OpenPopup("/mp/tride/S310402_W01.xml","시승예약/결과 등록",814,456,90,46);
+        }
+		/****************************************************************
+		* 팝업 닫기
+		* @param  : 없음
+		* @return : 없음
+		******************************************************************/
+		function fn_PopupClose(){
+			gfn_PopupClose();
+		}
+		
+        fn_OnLoad();
+        ]]></script>
+    </head>
+    <body>
+
+    	<w2:grid baseNode="" autoFit="" class="grid" resize=""
+    		id="grd_List" focusMode="row"
+    		style="position:absolute;height:464px;width:991px;left:0px;top:95px;"
+    		evenRowBackgroundColor="#e1ebf5" overflowX="hidden"
+    		overflowY="hidden" oddEvenColorDisplay="true"
+    		oddRowBackgroundColor="#ffffff" repeatNode="" sortEvent="onclick"
+    		readOnly="true" rowMouseOver="false">
+    		<w2:header id="header7" style="" width="472"
+    			columnClass="gridHeaderTD1" class="gridHeaderTable">
+    			<w2:row id="row16" style="">
+    				<w2:column id="column413" style="height:25px"
+    					hidden="" inputType="text" width="70" valueType="binary">
+    				</w2:column>
+    				<w2:column id="column415" style="height:25px"
+    					hidden="" inputType="text" width="70" valueType="binary">
+    				</w2:column>
+    				<w2:column id="column417" style="height:25px"
+    					hidden="" inputType="text" width="70" valueType="binary">
+    				</w2:column>
+    				<w2:column id="column419" style="height:25px"
+    					hidden="" inputType="text" width="70" valueType="binary">
+    				</w2:column>
+    				<w2:column id="column421" style="height:25px"
+    					hidden="" inputType="text" width="70" valueType="binary">
+    				</w2:column>
+    				<w2:column id="column423" style="height:25px"
+    					hidden="" inputType="text" width="70" valueType="binary">
+    				</w2:column>
+    				<w2:column id="column427" style="height:25px"
+    					hidden="" inputType="text" width="70" valueType="binary">
+    				</w2:column>
+    				<w2:column id="column429" style="height:25px"
+    					hidden="" inputType="text" width="70" valueType="binary">
+    				</w2:column>
+    				<w2:column id="column431" style="height:25px"
+    					hidden="" inputType="text" width="70" valueType="binary">
+    				</w2:column>
+    				<w2:column id="column433" style="height:25px"
+    					hidden="" inputType="text" width="70" valueType="binary">
+    				</w2:column>
+    				<w2:column id="column436" style="height:25px"
+    					hidden="" inputType="text" width="50" valueType="binary" value="구분">
+    				</w2:column>
+    				<w2:column id="column222" style="height:20px;"
+    					hidden="" width="200" inputType="text" value="차종" rowSpan=""
+    					valueType="binary" colSpan="">
+    				</w2:column>
+    				<w2:column id="column223" style="height:20px;"
+    					hidden="" width="60" inputType="text" value="차량번호"
+    					valueType="binary" colSpan="" rowSpan="">
+    				</w2:column>
+    				<w2:column id="column224" style="height:25px;"
+    					hidden="" width="40" inputType="text" value="7"
+    					valueType="binary" colSpan="2" rowSpan="">
+    				</w2:column>
+    				<w2:column id="column226" style="height:25px;"
+    					hidden="" width="40" inputType="text" value="8"
+    					valueType="binary" colSpan="2" rowSpan="">
+    				</w2:column>
+    				<w2:column id="column342" style="height:25px"
+    					hidden="" width="40" inputType="text" valueType="binary"
+    					value="9" colSpan="2" rowSpan="">
+    				</w2:column>
+    				<w2:column id="column344" style="height:25px"
+    					hidden="" width="90" inputType="text" valueType="binary"
+    					value="10" colSpan="2" rowSpan="">
+    				</w2:column>
+    				<w2:column id="column354" style="height:25px"
+    					hidden="" inputType="text" width="140" valueType="binary"
+    					colSpan="2" rowSpan="" value="11">
+    				</w2:column>
+    				<w2:column id="column360" style="height:25px"
+    					hidden="" inputType="text" width="140" valueType="binary"
+    					colSpan="2" rowSpan="" value="12">
+    				</w2:column>
+    				<w2:column id="column364" style="height:25px"
+    					hidden="" inputType="text" width="140" valueType="binary"
+    					colSpan="2" rowSpan="" value="13">
+    				</w2:column>
+    				<w2:column id="column368" style="height:25px"
+    					hidden="" inputType="text" width="140" valueType="binary"
+    					colSpan="2" rowSpan="" value="14">
+    				</w2:column>
+    				<w2:column id="column388" style="height:25px"
+    					hidden="" inputType="text" width="140" valueType="binary"
+    					colSpan="2" rowSpan="" value="15">
+    				</w2:column>
+    				<w2:column id="column384" style="height:25px"
+    					hidden="" inputType="text" width="140" valueType="binary"
+    					colSpan="2" rowSpan="" value="16">
+    				</w2:column>
+    				<w2:column id="column380" style="height:25px"
+    					hidden="" inputType="text" width="140" valueType="binary"
+    					colSpan="2" rowSpan="" value="17">
+    				</w2:column>
+    				<w2:column id="column376" style="height:25px"
+    					hidden="" inputType="text" width="140" valueType="binary"
+    					colSpan="2" rowSpan="" value="18">
+    				</w2:column>
+    				<w2:column id="column372" style="height:25px"
+    					hidden="" inputType="text" width="140" valueType="binary"
+    					colSpan="2" rowSpan="" value="19">
+    				</w2:column>
+    				<w2:column id="column401" style="height:25px"
+    					hidden="" width="140" inputType="text" valueType="binary"
+    					colSpan="2" rowSpan="" value="20">
+    				</w2:column>
+    				<w2:column id="column394" style="height:25px"
+    					hidden="" inputType="text" width="140" valueType="binary"
+    					colSpan="2" rowSpan="" value="21">
+    				</w2:column>
+    				<w2:column id="column409" style="height:25px"
+    					hidden="" inputType="text" width="140" valueType="binary"
+    					colSpan="2" rowSpan="" value="22">
+    				</w2:column>
+    				<w2:column id="column405" style="height:25px"
+    					hidden="" inputType="text" width="140" valueType="binary"
+    					colSpan="2" rowSpan="" value="23">
+    				</w2:column>
+    				<w2:column id="column434" style="height:25px"
+    					hidden="" inputType="text" width="70" valueType="binary">
+    				</w2:column>
+    				<w2:column id="column435" style="height:25px"
+    					hidden="" inputType="text" width="70" valueType="binary">
+    				</w2:column>
+    			</w2:row>
+    		</w2:header>
+    		<w2:gBody id="gBody7" style="" columnClass="gridBodyTD2"
+    			class="gridBodyTable">
+    			<w2:row id="row17" style="">
+    				<w2:column id="TESTCAR_NO" style="height:40px"
+    					hidden="true" inputType="text" width="70" valueType="binary">
+    				</w2:column>
+    				<w2:column id="SHOP_CD" style="height:40px"
+    					hidden="true" inputType="text" width="70" valueType="binary">
+    				</w2:column>
+    				<w2:column id="VARIANT_CD" style="height:40px"
+    					hidden="true" inputType="text" width="70" valueType="binary">
+    				</w2:column>
+    				<w2:column id="VARIANT_NM" style="height:40px"
+    					hidden="true" inputType="text" width="70" valueType="binary">
+    				</w2:column>
+    				<w2:column id="VARIANT_NM_ETC" style="height:40px"
+    					hidden="true" inputType="text" width="70" valueType="binary">
+    				</w2:column>
+    				<w2:column id="VIN" style="height:40px"
+    					hidden="true" inputType="text" width="70" valueType="binary">
+    				</w2:column>
+    				<w2:column id="CUST_NM" style="height:40px"
+    					hidden="true" inputType="text" width="70" valueType="binary">
+    				</w2:column>
+    				<w2:column id="TRIAL_NO" style="height:40px"
+    					hidden="true" inputType="text" width="70" valueType="binary">
+    				</w2:column>
+    				<w2:column id="INTEREST_DEGREE" style="height:40px"
+    					hidden="true" inputType="text" width="70" valueType="binary">
+    				</w2:column>
+    				<w2:column id="RES_USER_ID" style="height:40px"
+    					hidden="true" inputType="text" width="70" valueType="binary">
+    				</w2:column>
+    				<w2:column id="V_TYPE" style="height:40px;"
+    					hidden="" inputType="text" width="70" valueType="binary">
+    				</w2:column>
+    				<w2:column id="CAR_KIND"
+    					style="height:40px;" hidden=""
+    					width="230" inputType="text" value="" valueType="binary"
+    					textAlign="left">
+    				</w2:column>
+    				<w2:column id="VEHIC_NO"
+    					style="height:40px;"
+    					hidden="" width="80" inputType="text" value=""
+    					valueType="binary">
+    				</w2:column>
+    				<w2:column id="column412" style="height:40px"
+    					hidden="" inputType="image" width="20" valueType="binary"
+    					imageSrc="/mp/images/ma_im_grid_arrow.gif">
+    				</w2:column>
+    				<w2:column id="column229" style="height:40px;"
+    					hidden="" inputType="image" width="20" valueType="binary"
+    					imageSrc="/mp/images/ma_im_grid_arrow.gif">
+    				</w2:column>
+    				<w2:column id="column230" style="height:40px;"
+    					hidden="" inputType="image" width="20" valueType="binary"
+    					imageSrc="/mp/images/ma_im_grid_arrow.gif">
+    				</w2:column>
+    				<w2:column id="column231" style="height:40px;"
+    					hidden="" inputType="image" width="20" valueType="binary"
+    					imageSrc="/mp/images/ma_im_grid_arrow.gif">
+    				</w2:column>
+    				<w2:column id="column286" style="height:40px;"
+    					hidden="" inputType="image" width="20" valueType="binary"
+    					imageSrc="/mp/images/ma_im_grid_arrow.gif">
+    				</w2:column>
+    				<w2:column id="column303" style="height:40px;"
+    					hidden="" inputType="image" width="20" valueType="binary"
+    					imageSrc="/mp/images/ma_im_grid_arrow.gif">
+    				</w2:column>
+    				<w2:column id="column289" style="height:40px;"
+    					hidden="" inputType="image" width="20" valueType="binary"
+    					imageSrc="/mp/images/ma_im_grid_arrow.gif">
+    				</w2:column>
+    				<w2:column id="column312" style="height:40px;"
+    					hidden="" inputType="image" width="20" valueType="binary"
+    					imageSrc="/mp/images/ma_im_grid_arrow.gif">
+    				</w2:column>
+    				<w2:column id="column357" style="height:40px;"
+    					hidden="" inputType="image" width="20" valueType="binary"
+    					imageSrc="/mp/images/ma_im_grid_arrow.gif">
+    				</w2:column>
+    				<w2:column id="column355" style="height:40px;"
+    					hidden="" inputType="image" width="20" valueType="binary"
+    					imageSrc="/mp/images/ma_im_grid_arrow.gif">
+    				</w2:column>
+    				<w2:column id="column359" style="height:40px;"
+    					hidden="" inputType="image" width="20" valueType="binary"
+    					imageSrc="/mp/images/ma_im_grid_arrow.gif">
+    				</w2:column>
+    				<w2:column id="column361" style="height:40px;"
+    					hidden="" inputType="image" width="20" valueType="binary"
+    					imageSrc="/mp/images/ma_im_grid_arrow.gif">
+    				</w2:column>
+    				<w2:column id="column363" style="height:40px;"
+    					hidden="" inputType="image" width="20" valueType="binary"
+    					imageSrc="/mp/images/ma_im_grid_arrow.gif">
+    				</w2:column>
+    				<w2:column id="column365" style="height:40px;"
+    					hidden="" inputType="image" width="20" valueType="binary"
+    					imageSrc="/mp/images/ma_im_grid_arrow.gif">
+    				</w2:column>
+    				<w2:column id="column367" style="height:40px;"
+    					hidden="" inputType="image" width="20" valueType="binary"
+    					imageSrc="/mp/images/ma_im_grid_arrow.gif">
+    				</w2:column>
+    				<w2:column id="column369" style="height:40px;"
+    					hidden="" inputType="image" width="20" valueType="binary"
+    					imageSrc="/mp/images/ma_im_grid_arrow.gif">
+    				</w2:column>
+    				<w2:column id="column371" style="height:40px;"
+    					hidden="" inputType="image" width="20" valueType="binary"
+    					imageSrc="/mp/images/ma_im_grid_arrow.gif">
+    				</w2:column>
+    				<w2:column id="column389" style="height:40px;"
+    					hidden="" inputType="image" width="20" valueType="binary"
+    					imageSrc="/mp/images/ma_im_grid_arrow.gif">
+    				</w2:column>
+    				<w2:column id="column387" style="height:40px;"
+    					hidden="" inputType="image" width="20" valueType="binary"
+    					imageSrc="/mp/images/ma_im_grid_arrow.gif">
+    				</w2:column>
+    				<w2:column id="column385" style="height:40px;"
+    					hidden="" inputType="image" width="20" valueType="binary"
+    					imageSrc="/mp/images/ma_im_grid_arrow.gif">
+    				</w2:column>
+    				<w2:column id="column383" style="height:40px;"
+    					hidden="" inputType="image" width="20" valueType="binary"
+    					imageSrc="/mp/images/ma_im_grid_arrow.gif">
+    				</w2:column>
+    				<w2:column id="column381" style="height:40px;"
+    					hidden="" inputType="image" width="20" valueType="binary"
+    					imageSrc="/mp/images/ma_im_grid_arrow.gif">
+    				</w2:column>
+    				<w2:column id="column379" style="height:40px;"
+    					hidden="" inputType="image" width="20" valueType="binary"
+    					imageSrc="/mp/images/ma_im_grid_arrow.gif">
+    				</w2:column>
+    				<w2:column id="column377" style="height:40px;"
+    					hidden="" inputType="image" width="20" valueType="binary"
+    					imageSrc="/mp/images/ma_im_grid_arrow.gif">
+    				</w2:column>
+    				<w2:column id="column375" style="height:40px;"
+    					hidden="" inputType="image" width="20" valueType="binary"
+    					imageSrc="/mp/images/ma_im_grid_arrow.gif">
+    				</w2:column>
+    				<w2:column id="column373" style="height:40px;"
+    					hidden="" inputType="image" width="20" valueType="binary"
+    					imageSrc="/mp/images/ma_im_grid_arrow.gif">
+    				</w2:column>
+    				<w2:column id="column391" style="height:40px;"
+    					hidden="" inputType="image" width="20" valueType="binary"
+    					imageSrc="/mp/images/ma_im_grid_arrow.gif">
+    				</w2:column>
+    				<w2:column id="column399" style="height:40px;"
+    					hidden="" inputType="image" width="20" valueType="binary"
+    					imageSrc="/mp/images/ma_im_grid_arrow.gif">
+    				</w2:column>
+    				<w2:column id="column397" style="height:40px;"
+    					hidden="" inputType="image" width="20" valueType="binary"
+    					imageSrc="/mp/images/ma_im_grid_arrow.gif">
+    				</w2:column>
+    				<w2:column id="column395" style="height:40px;"
+    					hidden="" inputType="image" width="20" valueType="binary"
+    					imageSrc="/mp/images/ma_im_grid_arrow.gif">
+    				</w2:column>
+    				<w2:column id="column393" style="height:40px;"
+    					hidden="" inputType="image" width="20" valueType="binary"
+    					imageSrc="/mp/images/ma_im_grid_arrow.gif">
+    				</w2:column>
+    				<w2:column id="column410" style="height:40px;"
+    					hidden="" inputType="image" width="20" valueType="binary"
+    					imageSrc="/mp/images/ma_im_grid_arrow.gif">
+    				</w2:column>
+    				<w2:column id="column408" style="height:40px;"
+    					hidden="" inputType="image" width="20" valueType="binary"
+    					imageSrc="/mp/images/ma_im_grid_arrow.gif">
+    				</w2:column>
+    				<w2:column id="column406" style="height:40px;"
+    					hidden="" inputType="image" width="20" valueType="binary"
+    					imageSrc="/mp/images/ma_im_grid_arrow.gif">
+    				</w2:column>
+    				<w2:column id="SC" style="height:40px" hidden="true"
+    					inputType="text" width="70" valueType="binary">
+    				</w2:column>
+    				<w2:column id="_T_CNT" style="height:40px"
+    					hidden="true" inputType="text" width="70" valueType="binary">
+    				</w2:column>
+    			</w2:row>
+    		</w2:gBody>
+    		<script ev:event="onCellClick( row , col )"
+    			type="javascript"><![CDATA[ 
+    			fn_NewTride(row,col);
+    		]]></script>
+    		<script ev:event="onCellDblClick( row , col )"
+    			type="javascript"><![CDATA[ 
+    			fn_ModifyTride(row,col);
+    		]]></script>
+    	</w2:grid>
+    	<xf:image id="image42" src="/mp/images/smenu_bg.png"
+    		style="position: absolute ;height:36px;width:991px;left:0px;top:0px;">
+    	</xf:image>
+
+    	<xf:image id="image43" src="/mp/images/stitle_bg.png"
+    		style="position: absolute ;height:36px;width:172px;left:1px;top:0px;">
+    	</xf:image>
+    	<w2:textbox class="title" id="title" label="시승예약"
+    		style="position: absolute ;height:20px;width:149px;left:3px;top:11px;;text-align:center">
+    	</w2:textbox>
+    	<xf:group 
+    		id="roundRectangle2"
+    		style="position: absolute ;height:42px;width:991px;left:1px;top:45px;" class="if_group">
+    	</xf:group>
+    	<xf:select1 id="cb_Type" appearance="minimal"
+    		style="position: absolute ;height:22px;width:107px;left:47px;top:55px;"
+    		direction="auto" chooseOption="" displayMode="label" allOption=""
+    		class="input_edit" disabled="false" submenuSize="auto"
+    		chooseOptionLabel="" visibleRowNum="10">
+    		<xf:choices>
+    			<xf:itemset
+    				nodeset="resCode/root/dataset[@id='ds_Type']">
+    				<xf:label ref="record/NAME"></xf:label>
+    				<xf:value ref="record/CODE"></xf:value>
+    			</xf:itemset>
+    		</xf:choices>
+    		<script ev:event="onchange" type="javascript"><![CDATA[ 
+    			if(!FV_bInit)	fn_Search();
+    		]]></script>
+    	</xf:select1>
+    	<xf:select1 allOption="" appearance="minimal"
+    		chooseOption="true" class="input_edit" direction="auto"
+    		disabled="false" displayMode="label" id="cb_ShopCd"
+    		style="position: absolute ;height:22px;width:90px;left:206px;top:55px;"
+    		submenuSize="auto" chooseOptionLabel="전시장" visibleRowNum="10">
+    		<xf:choices>
+    			<xf:itemset
+    				nodeset="resCode/root/dataset[@id='ds_ShopCd']">
+    				<xf:label ref="record/NAME"></xf:label>
+    				<xf:value ref="record/CODE"></xf:value>
+    			</xf:itemset>
+    		</xf:choices>
+    		<script ev:event="onchange" type="javascript"><![CDATA[ 
+    			if(!FV_bInit)	fn_Search();
+    		]]></script>
+    	</xf:select1>
+    	<w2:textbox class="if_lable" id="output50" label="전시장"
+    		style="position: absolute ;height:22px;width:51px;left:153px;top:55px;">
+    	</w2:textbox>
+    	<xf:image id="btn_Search"
+    		src="/mp/images/if_btn_seach.png"
+    		style="position: absolute ;cursor:pointer;height:25px;width:77px;left:892px;top:54px;">
+    		<script ev:event="onclick" type="javascript"><![CDATA[ 
+    			if(!FV_bInit)	fn_Search();
+    		]]></script>
+    	</xf:image>
+    	<xf:trigger class="btn_on4" id="trigger1"
+    		style="position: absolute ;height:25px;width:88px;left:893px;top:6px;"
+    		type="image">
+    		<xf:label>시승예약</xf:label>
+    		<script ev:event="onclick" type="javascript"><![CDATA[ 
+    			parent.fn_SpinnerShow();
+    			parent.ifrm_Main.setSrc("/mp/tride/S310401_W01.xml");
+    		]]></script>
+    	</xf:trigger>
+    	<w2:textbox class="if_lable" id="output72" label="구분"
+    		style="position: absolute ;height:22px;width:34px;left:10px;top:55px;">
+    	</w2:textbox>
+    	<w2:textbox id="output73"
+    		style="position: absolute ;height:22px;width:34px;left:303px;top:55px;"
+    		class="if_lable" label="차종">
+    	</w2:textbox>
+    	<xf:select1 id="cb_Variant" appearance="minimal"
+    		style="position: absolute ;height:22px;width:107px;left:340px;top:55px;"
+    		direction="auto" chooseOption="true" class="input_edit"
+    		allOption="" displayMode="label" submenuSize="auto"
+    		disabled="false" chooseOptionLabel="ALL" visibleRowNum="20">
+    		<xf:choices>
+    			<xf:itemset
+    				nodeset="resCode/root/dataset[@id='ds_Variant']">
+    				<xf:label ref="record/NAME"></xf:label>
+    				<xf:value ref="record/CODE"></xf:value>
+    			</xf:itemset>
+    		</xf:choices>
+    		<script ev:event="onchange" type="javascript"><![CDATA[ 
+    			if(!FV_bInit)	fn_Search();
+    		]]></script>
+    	</xf:select1>
+    	<w2:textbox id="output74"
+    		style="position: absolute ;height:22px;width:51px;left:447px;top:55px;"
+    		class="if_lable" label="기준일">
+    	</w2:textbox>
+    	<xf:image id="btn_Next" src="/mp/images/btn2_right.png"
+    		style="position: absolute ;cursor:hand;height:24px;width:31px;left:674px;top:55px;">
+    		<script ev:event="onclick" type="javascript"><![CDATA[ 
+    			gfn_GetDateCount("next",cal_ReservedDt);
+    		]]></script>
+    	</xf:image>
+    	<xf:image id="btn_Prev" src="/mp/images/btn2_left.png"
+    		style="position: absolute ;cursor:hand;height:24px;width:31px;left:639px;top:55px;">
+    		<script ev:event="onclick" type="javascript"><![CDATA[ 
+    			gfn_GetDateCount("prev",cal_ReservedDt);
+    		]]></script>
+    	</xf:image>
+    	<w2:inputCalendar calendarValueType="yearMonthDate"
+    		class="input_edit" id="cal_ReservedDt"
+    		style="position: absolute ;height:24px;width:136px;left:500px;top:56px;">
+    		<script ev:event="onchange" type="javascript"><![CDATA[ 
+    			if(!FV_bInit)	fn_Search();
+    		]]></script>
+    	</w2:inputCalendar>
+    	<w2:wframe id="wfrm_Page" mode="sync"
+    		src="/mp/comm/Paging.xml"
+    		style="position: absolute ;left:281px;top:569px;width:443px;height:28px;">
+    	</w2:wframe>
+    </body>
+</html>

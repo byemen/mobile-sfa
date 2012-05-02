@@ -1,0 +1,609 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?xml-stylesheet href="/mp/css/style.css" type="text/css"?>
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:ev="http://www.w3.org/2001/xml-events"
+    xmlns:w2="http://www.inswave.com/websquare" xmlns:xf="http://www.w3.org/2002/xforms">
+    <head>
+    	<w2:buildDate />
+    	<xf:model>
+    		<xf:instance>
+    			<data xmlns="" />
+    		</xf:instance>
+    		<xf:submission id="submissionList" ref="request" target="resList"
+        		action=""
+        		method="post" mediatype="application/xml" encoding="UTF-8" instance="" replace="instance"
+        		errorHandler="" customHandler="" mode="asynchronous"
+        		processMsg="처리중입니다.">
+        		<script type="javascript" ev:event="xforms-submit-done"><![CDATA[
+            		grd_List.setXML(WebSquare.ModelUtil.findInstanceNode("resList/root/dataset[@id='ds_List']"));
+				
+    				fn_AfterSearchCust();
+            	]]></script>
+        	</xf:submission>
+    		<xf:submission id="submissionDealer" ref="request"
+    			target="resDealer" action="" method="post"
+    			mediatype="application/xml" encoding="UTF-8" instance=""
+    			replace="instance" errorHandler="" customHandler=""
+    			mode="asynchronous" processMsg="">
+    			<script type="javascript" ev:event="xforms-submit-done"><![CDATA[ 
+
+    				cb_Dealer.setValue(parent.FV_sDealerId);
+		     		cb_CustType.setSelectedIndex(0);
+		     		edt_CustName.setValue(parent.FV_sCustNm);
+		     	
+		     		if(!gfn_IsNullVal(edt_CustName.getValue()))
+
+		     			fn_Search();
+    			]]></script>
+    		</xf:submission>
+    	</xf:model>
+    	<script type="javascript" src="/mp/js/common.js"></script>
+		<script type="javascript" src="/mp/js/WebSquare.js"></script>
+    	<script type="javascript"><![CDATA[
+    	var FV_SEARCH_CNT = 10;		// 조회 건수
+
+		var FV_nMAXCNT = -1;		// 전체 데이터 수
+    	var FV_sCustTypeSql = "";
+
+		edt_TaxpayNo.visible(false);
+		cb_CompType.visible(false);
+		cb_Dealer.visible(false);
+		cb_CustType.visible(false);
+		cb_DisuseYn.visible(false);
+		output85.visible(false);
+		output88.visible(false);
+		output89.visible(false);
+		output93.visible(false);
+     	/****************************************************************
+		* 화면로드
+
+		* @param  : 없음
+
+		* @return : 없음
+
+		******************************************************************/
+     	function fn_OnLoadCust(){
+     		wfrm_Page.visible(false);
+     		cb_CustType.removeAll();
+     		cb_CustType.addItem("","ALL",0);
+     	
+     		// 딜러      
+			setTitSendInfo("request", "", "", "mdms/mp/comm::CO_GROUP_S01");
+        	setSubmissison("submissionDealer");
+        
+     		if(parent.FV_sCustType == "P"){
+     			cb_CustType.addItem("01","개인",1);
+     			cb_CustType.addItem("04","등록외국인",2);
+     			cb_CustType.addItem("05","기타 개인",3);
+     		
+     			FV_sCustTypeSql = "AND A.CUST_TYPE IN('01','04','05')";
+     		} else if(parent.FV_sCustType == "B"){
+     			cb_CustType.addItem("02","법인",1); 
+
+     			cb_CustType.addItem("03","개인사업자",2);
+     		
+     			FV_sCustTypeSql = "AND A.CUST_TYPE IN('02','03')";
+     		} else{
+     			cb_CustType.addItem("01","개인",1);
+     			cb_CustType.addItem("04","등록외국인",2);
+     			cb_CustType.addItem("05","기타 개인",3);
+     			cb_CustType.addItem("02","법인",4); 
+
+     			cb_CustType.addItem("03","개인사업자",5);
+     		}
+
+     	
+     	
+     	}
+
+     	/****************************************************************
+		* 조회
+
+		* @param  : 없음
+
+		* @return : 없음
+
+		******************************************************************/
+     	function fn_Search(pageNo){
+     		if(pageNo == null){
+				FV_nMAXCNT = -1;
+				pageNo = 1;
+				fn_InitPage();
+			}
+
+        	var sSqlid = "mdms/mp/comm:CU_BASE_S03@" + pageNo + "/" + FV_SEARCH_CNT;        
+        	setTitSendInfo("request", "", "", sSqlid);
+			setInputParamData("CUST_TYPE_SQL", FV_sCustTypeSql);
+			setInputParamData("DEALER_ID", parent.FV_sDealerId);
+			setInputParamData("CUST_NM", edt_CustName.getValue());
+			setInputParamData("CUST_TYPE", cb_CustType.getValue());
+			setInputParamData("TAXPAY_NO", edt_TaxpayNo.getValue());
+			setInputParamData("HP_AREA", cb_HpArea.getValue());
+			setInputParamData("HP_NO", edt_Hp.getValue());
+			setInputParamData("COMPANY_TYPE", cb_CompType.getValue());
+			setInputParamData("DISUSE_YN", cb_DisuseYn.getValue());
+			if(parent.GV_USER_TYPE == "23")
+				setInputParamData("MNG_SC_ID", parent.GV_USER_ID);
+			
+			setSubmissison("submissionList");
+        }
+
+        /****************************************************************
+		* callback (조회)
+
+		* @param  : 없음
+
+		* @return : 없음
+
+		******************************************************************/
+        function fn_AfterSearchCust(){
+        	var nRownum = (FV_nCurrPage-1) * FV_SEARCH_CNT;
+        
+        	if(FV_nCurrPage == -1 && grd_List.getRowCount() > 0){
+				FV_nMAXCNT = grd_List.getCellData(0,0);
+				fn_SetPageInfo(1,FV_nMAXCNT,FV_SEARCH_CNT);
+				nRownum = 0;
+			}
+
+		
+			for(var i=0; i<grd_List.getRowCount(); i++){
+        		grd_List.setCellData(i, 1, (i+1)+nRownum);
+        	}
+
+        }
+
+        /****************************************************************
+		* 고객정보
+
+		* @param  : 없음
+
+		* @return : 없음
+
+		******************************************************************/
+        function fn_SetParams(row,col){
+        	if(col == 2){
+        		var arrResult = new Array();
+        	
+        		arrResult[0] = grd_List.getCellData(row,2);			//	고객번호
+        		arrResult[1] = grd_List.getCellData(row,3);			//	고객명
+        		arrResult[2] = grd_List.getCellData(row,4);			//	고객유형
+				arrResult[3] = grd_List.getCellData(row,6);			//	주민/사업자번호
+				arrResult[4] = grd_List.getCellData(row,9);			//	전화번호
+				arrResult[5] = grd_List.getCellData(row,10);		//	핸드폰
+				arrResult[6] = grd_List.getCellData(row,13);		//	팩스번호
+				arrResult[7] = grd_List.getCellData(row,14);		//	회사 전화번호
+				arrResult[8] = grd_List.getCellData(row,15);		//	우편번호
+				arrResult[9] = grd_List.getCellData(row,16);		//	주소
+				arrResult[10] = grd_List.getCellData(row,17);		//	주소
+				arrResult[11] = grd_List.getCellData(row,18);		//	회사 우편번호
+				arrResult[12] = grd_List.getCellData(row,19);		//	회사 주소
+				arrResult[13] = grd_List.getCellData(row,20);		//	회사 주소
+				arrResult[14] = grd_List.getCellData(row,11);		//	관계법인명
+				arrResult[15] = grd_List.getCellData(row,21);		//	관계법인 일련번호
+				arrResult[16] = grd_List.getCellData(row,22);		//	관계법인 사업자번호
+			
+				if(typeof(FV_bSwitch) != 'undefined' ){
+					switch_Popup.setSelectedIndex(0);
+					fn_CustParams(arrResult);
+				} else{
+					parent.fn_CustParams(arrResult);
+				}
+        	}
+
+        }
+
+        /****************************************************************
+		* 닫기
+
+		* @param  : 없음
+
+		* @return : 없음
+
+		******************************************************************/
+        function fn_CloseCust(){        
+
+        	if(typeof(FV_bSwitch) != 'undefined' ){
+				switch_Popup.setSelectedIndex(0);
+			} else{
+				parent.fn_CustParams();
+			}
+
+        }
+
+        
+
+        if(typeof(FV_bSwitch) == 'undefined' )	fn_OnLoadCust(); 
+
+        ]]></script>
+    </head>
+    <body>
+    	<w2:textbox class="se_box" id="output71" label=""
+    		style="position: absolute ;height:420px;width:800px;left:0px;border:none;top:1px;">
+    	</w2:textbox>
+    	<xf:image id="image49" src="/mp/images/pop_title_bg.png"
+    		style="position: absolute ;height:45px;width:800px;left:0px;top:0px;">
+    	</xf:image>
+    	<w2:textbox class="title_back" id="output72" label="고객기본정보검색"
+    		style="position: absolute ;height:20px;text-align:left;width:149px;left:15px;top:14px;">
+    	</w2:textbox>
+    	<xf:group id="roundRectangle2"
+    		style="position: absolute ;height:42px;width:780px;left:10px;top:55px;"
+    		class="if_group">
+    		<xf:input id="input1"
+    			style="position: absolute ;height:22px;width:60px;left:287px;top:9px;"
+    			class="input_edit">
+    		</xf:input>
+    		<xf:select1 id="select11" appearance="minimal"
+    			chooseOptionLabel="ALL"
+    			style="position: absolute ;height:22px;width:51px;left:231px;top:9px;"
+    			direction="auto" chooseOption="true" displayMode="label"
+    			class="input_edit" allOption="" submenuSize="auto"
+    			disabled="false">
+    			<xf:choices>
+    				<xf:item>
+    					<xf:label>010</xf:label>
+    					<xf:value>010</xf:value>
+    				</xf:item>
+    				<xf:item>
+    					<xf:label>011</xf:label>
+    					<xf:value>011</xf:value>
+    				</xf:item>
+    				<xf:item>
+    					<xf:label>016</xf:label>
+    					<xf:value>016</xf:value>
+    				</xf:item>
+    				<xf:item>
+    					<xf:label>017</xf:label>
+    					<xf:value>017</xf:value>
+    				</xf:item>
+    				<xf:item>
+    					<xf:label>018</xf:label>
+    					<xf:value>018</xf:value>
+    				</xf:item>
+    				<xf:item>
+    					<xf:label>019</xf:label>
+    					<xf:value>019</xf:value>
+    				</xf:item>
+    			</xf:choices>
+    		</xf:select1>
+    	</xf:group>
+    	<w2:textbox class="title" id="output70" label="고객기본정보검색"
+    		style="position: absolute ;height:20px;text-align:left;width:149px;left:15px;top:13px;">
+    	</w2:textbox>
+    	<xf:trigger class="btn_po" id="btn_CustClose"
+    		style="position: absolute ;height:30px;color:#FFFFFF;width:70px;left:716px;top:10px;"
+    		type="image">
+    		<xf:label>닫 기</xf:label>
+    		<script ev:event="onclick" type="javascript"><![CDATA[ 
+
+    			fn_CloseCust();
+    		]]></script>
+    	</xf:trigger>
+    	<w2:grid autoFit="" baseNode="dataset" class="grid"
+    		evenRowBackgroundColor="#e1ebf5" focusMode="row" id="grd_List"
+    		oddEvenColorDisplay="true" oddRowBackgroundColor="#ffffff"
+    		overflowX="hidden" overflowY="hidden" readOnly="true"
+    		repeatNode="record" resize=""
+    		style="position:absolute;height:243px;width:780px;left:10px;top:109px;">
+    		<w2:header class="gridHeaderTable"
+    			columnClass="gridHeaderTD1" id="header9" style="" width="472">
+    			<w2:row id="row20" style="">
+    				<w2:column id="" style="height:26px" hidden="true"
+    					inputType="text" width="30" valueType="binary">
+    				</w2:column>
+    				<w2:column colSpan="" hidden="" id="column371"
+    					inputType="text" rowSpan="" style="height:26px;" value="No"
+    					valueType="binary" width="30" textAlign="left">
+    				</w2:column>
+    				<w2:column colSpan="" hidden="" id="column375"
+    					inputType="text" rowSpan="" style="height:26px;" value="고객번호"
+    					valueType="binary" width="60">
+    				</w2:column>
+    				<w2:column id="column385" style="height:26px"
+    					hidden="" inputType="text" width="107" valueType="binary"
+    					value="고객명">
+    				</w2:column>
+    				<w2:column id="column420" style="height:26px"
+    					hidden="" inputType="text" width="70" valueType="binary">
+    				</w2:column>
+    				<w2:column id="column387" style="height:26px"
+    					hidden="" inputType="text" width="64" valueType="binary"
+    					value="고객유형">
+    				</w2:column>
+    				<w2:column id="column418" style="height:26px"
+    					hidden="" inputType="text" width="70" valueType="binary">
+    				</w2:column>
+    				<w2:column id="column389" style="height:26px"
+    					hidden="" inputType="text" width="98" valueType="binary"
+    					value="주민/사업자번호">
+    				</w2:column>
+    				<w2:column id="column391" style="height:26px"
+    					hidden="" inputType="text" width="70" valueType="binary"
+    					value="회사구분">
+    				</w2:column>
+    				<w2:column id="column393" style="height:26px"
+    					hidden="" inputType="text" width="80" valueType="binary"
+    					value="연락처">
+    				</w2:column>
+    				<w2:column id="column395" style="height:26px"
+    					hidden="" inputType="text" width="90" valueType="binary"
+    					value="핸드폰">
+    				</w2:column>
+    				<w2:column id="column397" style="height:26px"
+    					hidden="" inputType="text" width="120" valueType="binary"
+    					value="관계법인">
+    				</w2:column>
+    				<w2:column id="column399" style="height:26px"
+    					hidden="" inputType="text" width="60" valueType="binary"
+    					value="상태">
+    				</w2:column>
+    				<w2:column id="column405" style="height:26px"
+    					hidden="" inputType="text" width="70" valueType="binary">
+    				</w2:column>
+    				<w2:column id="column417" style="height:26px"
+    					hidden="" inputType="text" width="70" valueType="binary">
+    				</w2:column>
+    				<w2:column id="column415" style="height:26px"
+    					hidden="" inputType="text" width="70" valueType="binary">
+    				</w2:column>
+    				<w2:column id="column413" style="height:26px"
+    					hidden="" inputType="text" width="70" valueType="binary">
+    				</w2:column>
+    				<w2:column id="column411" style="height:26px"
+    					hidden="" inputType="text" width="70" valueType="binary">
+    				</w2:column>
+    				<w2:column id="column409" style="height:26px"
+    					hidden="" inputType="text" width="70" valueType="binary">
+    				</w2:column>
+    				<w2:column id="column407" style="height:26px"
+    					hidden="" inputType="text" width="70" valueType="binary">
+    				</w2:column>
+    				<w2:column id="column403" style="height:26px"
+    					hidden="" inputType="text" width="70" valueType="binary">
+    				</w2:column>
+    				<w2:column id="column423" style="height:26px"
+    					hidden="" inputType="text" width="70" valueType="binary">
+    				</w2:column>
+    				<w2:column id="column421" style="height:26px"
+    					hidden="" inputType="text" width="70" valueType="binary">
+    				</w2:column>
+    			</w2:row>
+    		</w2:header>
+    		<w2:gBody class="gridBodyTable" columnClass="gridBodyTD"
+    			id="gBody9" style="">
+    			<w2:row id="row21" style="">
+    				<w2:column id="_T_CNT" style="height:21px" hidden=""
+    					inputType="text" width="70" valueType="binary">
+    				</w2:column>
+    				<w2:column hidden="" id="column380" inputType="text"
+    					style="height:21px" valueType="binary" width="40"
+    					textAlign="left">
+    				</w2:column>
+    				<w2:column hidden="" id="CUST_SEQ" inputType="text"
+    					style="color:#519eec;" valueType="binary" width="70"
+    					value="">
+    				</w2:column>
+    				<w2:column id="CUST_NM" style="height:21px"
+    					hidden="" inputType="text" width="102" valueType="binary"
+    					textAlign="left">
+    				</w2:column>
+    				<w2:column id="CUST_TYPE" style="height:21px"
+    					hidden="true" inputType="text" width="70" valueType="binary">
+    				</w2:column>
+    				<w2:column id="CUST_TYPE_NM" style="height:21px"
+    					hidden="" inputType="text" width="70" valueType="binary"
+    					textAlign="left">
+    				</w2:column>
+    				<w2:column id="TAXPAY_NO" style="height:21px"
+    					hidden="true" inputType="text" width="70" valueType="binary">
+    				</w2:column>
+    				<w2:column id="TAXPAY_NO_BK" style="height:21px"
+    					hidden="" inputType="text" width="98" valueType="binary"
+    					textAlign="left">
+    				</w2:column>
+    				<w2:column id="COMPANY_TYPE_NM" style="height:21px"
+    					hidden="" inputType="text" width="70" valueType="binary"
+    					textAlign="left">
+    				</w2:column>
+    				<w2:column id="TEL_NO" style="height:21px" hidden=""
+    					inputType="text" width="80" valueType="binary"
+    					textAlign="left">
+    				</w2:column>
+    				<w2:column id="HP_NO" style="height:21px" hidden=""
+    					inputType="text" width="90" valueType="binary"
+    					textAlign="left">
+    				</w2:column>
+    				<w2:column id="REL_CUST_NM" style="height:21px"
+    					hidden="" inputType="text" width="88" valueType="binary"
+    					textAlign="left">
+    				</w2:column>
+    				<w2:column id="DISUSE_NM" style="height:21px"
+    					hidden="" inputType="text" width="70" valueType="binary"
+    					textAlign="left">
+    				</w2:column>
+    				<w2:column id="FAX_NO" style="height:21px"
+    					hidden="true" inputType="text" width="70" valueType="binary">
+    				</w2:column>
+    				<w2:column id="OFFICE_TEL_NO" style="height:21px"
+    					hidden="true" inputType="text" width="70" valueType="binary">
+    				</w2:column>
+    				<w2:column id="ZIP_REG" style="height:21px"
+    					hidden="true" inputType="text" width="70" valueType="binary">
+    				</w2:column>
+    				<w2:column id="ADDR_REG" style="height:21px"
+    					hidden="true" inputType="text" width="70" valueType="binary">
+    				</w2:column>
+    				<w2:column id="ADDR_NO_REG" style="height:21px"
+    					hidden="true" inputType="text" width="70" valueType="binary">
+    				</w2:column>
+    				<w2:column id="ZIP_OFFICE" style="height:21px"
+    					hidden="true" inputType="text" width="70" valueType="binary">
+    				</w2:column>
+    				<w2:column id="ADDR_OFFICE" style="height:21px"
+    					hidden="true" inputType="text" width="70" valueType="binary">
+    				</w2:column>
+    				<w2:column id="ADDR_NO_OFFICE" style="height:21px"
+    					hidden="true" inputType="text" width="70" valueType="binary">
+    				</w2:column>
+    				<w2:column id="REL_CUST_SEQ" style="height:21px"
+    					hidden="true" inputType="text" width="70" valueType="binary">
+    				</w2:column>
+    				<w2:column id="REL_TAXPAY_NO" style="height:21px"
+    					hidden="true" inputType="text" width="70" valueType="binary">
+    				</w2:column>
+    			</w2:row>
+    		</w2:gBody>
+    		<script ev:event="onCellClick( row , col )"
+    			type="javascript"><![CDATA[ 
+
+    			fn_SetParams(row,col);
+    		]]></script>
+    	</w2:grid>
+    	<w2:textbox class="if_lable" id="output85" label="상태"
+    		style="position: absolute ;height:22px;width:30px;left:553px;top:93px;visibility:hidden;">
+    	</w2:textbox>
+    	<w2:textbox class="if_lable" id="output86" label="딜러"
+    		style="position: absolute ;height:22px;width:82px;left:20px;top:66px;">
+    	</w2:textbox>
+    	<w2:textbox class="if_lable" id="output87" label="고객명"
+    		style="position: absolute ;height:22px;width:42px;left:18px;top:66px;">
+    	</w2:textbox>
+    	<w2:textbox class="if_lable" id="output88" label="고객유형"
+    		style="position: absolute ;height:22px;width:48px;left:388px;top:66px;visibility:hidden;">
+    	</w2:textbox>
+    	<xf:input class="input_edit" id="edt_Hp"
+    		style="position: absolute ;height:22px;width:60px;left:298px;top:65px;">
+    	</xf:input>
+    	<xf:input class="input_edit" id="edt_TaxpayNo"
+    		style="position: absolute ;height:22px;width:104px;left:104px;top:93px;visibility:hidden;">
+    	</xf:input>
+    	<w2:textbox class="if_lable" id="output89" label="주민/사업자번호"
+    		style="position: absolute ;height:22px;width:82px;left:20px;top:93px;visibility:hidden;">
+    	</w2:textbox>
+    	<xf:image id="btn_Search"
+    		src="/mp/images/if_btn_seach.png"
+    		style="position: absolute ;cursor:pointer;height:25px;width:77px;left:706px;top:65px;">
+    		<script ev:event="onclick" type="javascript"><![CDATA[ 
+
+    			fn_Search();
+    		]]></script>
+    	</xf:image>
+    	<xf:select1 allOption="" appearance="minimal"
+    		chooseOption="true" class="input_edit" direction="auto"
+    		disabled="false" displayMode="label" id="cb_HpArea"
+    		style="position: absolute ;height:22px;width:51px;left:242px;top:65px;"
+    		submenuSize="auto" chooseOptionLabel="ALL">
+    		<xf:choices>
+    			<xf:item>
+    				<xf:label>010</xf:label>
+    				<xf:value>010</xf:value>
+    			</xf:item>
+    			<xf:item>
+    				<xf:label>011</xf:label>
+    				<xf:value>011</xf:value>
+    			</xf:item>
+    			<xf:item>
+    				<xf:label>016</xf:label>
+    				<xf:value>016</xf:value>
+    			</xf:item>
+    			<xf:item>
+    				<xf:label>017</xf:label>
+    				<xf:value>017</xf:value>
+    			</xf:item>
+    			<xf:item>
+    				<xf:label>018</xf:label>
+    				<xf:value>018</xf:value>
+    			</xf:item>
+    			<xf:item>
+    				<xf:label>019</xf:label>
+    				<xf:value>019</xf:value>
+    			</xf:item>
+    		</xf:choices>
+    	</xf:select1>
+    	<xf:input class="input_edit" id="edt_CustName"
+    		style="position: absolute ;height:22px;width:115px;left:63px;top:65px;">
+    	</xf:input>
+    	<xf:select1 allOption="" appearance="minimal"
+    		chooseOption="true" class="input_edit" direction="auto"
+    		disabled="false" displayMode="label" id="cb_CompType"
+    		style="position: absolute ;height:22px;width:109px;left:438px;top:93px;visibility:hidden;"
+    		submenuSize="auto" chooseOptionLabel="회사구분">
+    		<xf:choices>
+    			<xf:item>
+    				<xf:label>법인고객</xf:label>
+    				<xf:value>C</xf:value>
+    			</xf:item>
+    			<xf:item>
+    				<xf:label>배정용매입(시승)</xf:label>
+    				<xf:value>D</xf:value>
+    			</xf:item>
+    			<xf:item>
+    				<xf:label>리스사</xf:label>
+    				<xf:value>L</xf:value>
+    			</xf:item>
+    			<xf:item>
+    				<xf:label>할부사</xf:label>
+    				<xf:value>R</xf:value>
+    			</xf:item>
+    			<xf:item>
+    				<xf:label>세관</xf:label>
+    				<xf:value>T</xf:value>
+    			</xf:item>
+    			<xf:item>
+    				<xf:label>VOC 입력</xf:label>
+    				<xf:value>V</xf:value>
+    			</xf:item>
+    			<xf:item>
+    				<xf:label>TMKR거래처</xf:label>
+    				<xf:value>Y</xf:value>
+    			</xf:item>
+    		</xf:choices>
+    	</xf:select1>
+    	<w2:textbox class="if_lable" id="output92" label="핸드폰"
+    		style="position: absolute ;height:22px;width:42px;left:198px;top:65px;">
+    	</w2:textbox>
+    	<xf:select1 allOption="" appearance="minimal" chooseOption=""
+    		class="input_edit" direction="auto" disabled="false"
+    		displayMode="label" id="cb_Dealer"
+    		style="position: absolute ;height:22px;width:108px;left:104px;top:65px;visibility:hidden;"
+    		submenuSize="auto" chooseOptionLabel="">
+    		<xf:choices>
+    			<xf:itemset
+    				nodeset="resDealer/root/dataset[@id='ds_Dealer']">
+    				<xf:label ref="record/NAME"></xf:label>
+    				<xf:value ref="record/CODE"></xf:value>
+    			</xf:itemset>
+    		</xf:choices>
+    	</xf:select1>
+    	<w2:textbox id="output93"
+    		style="position: absolute ;height:22px;width:48px;left:388px;top:93px;visibility:hidden;"
+    		class="if_lable" label="회사구분">
+    	</w2:textbox>
+    	<xf:select1 id="cb_CustType" appearance="minimal"
+    		style="position: absolute ;height:22px;width:109px;left:438px;top:65px;visibility:hidden;"
+    		direction="auto" chooseOption="" displayMode="label"
+    		class="input_edit" allOption="" submenuSize="auto"
+    		disabled="false">
+    		<xf:choices></xf:choices>
+    	</xf:select1>
+    	<xf:select1 id="cb_DisuseYn" appearance="minimal"
+    		style="position: absolute ;height:22px;width:109px;left:585px;top:93px;visibility:hidden;"
+    		direction="auto" chooseOption="" displayMode="label"
+    		class="input_edit" allOption="" submenuSize="auto"
+    		disabled="false">
+    		<xf:choices>
+    			<xf:item>
+    				<xf:label>관리중</xf:label>
+    				<xf:value>N</xf:value>
+    			</xf:item>
+    			<xf:item>
+    				<xf:label>폐기</xf:label>
+    				<xf:value>Y</xf:value>
+    			</xf:item>
+    		</xf:choices>
+    	</xf:select1>
+    	<w2:wframe id="wfrm_Page" mode="async"
+    		src="/mp/comm/Paging.xml"
+    		style="position: absolute ;left:180px;top:376px;width:443px;height:28px;">
+    	</w2:wframe>
+    </body>
+</html>

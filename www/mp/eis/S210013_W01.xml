@@ -1,0 +1,720 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?xml-stylesheet href="/mp/css/frame.css" type="text/css"?>
+<html xmlns="http://www.w3.org/1999/xhtml"
+    xmlns:ev="http://www.w3.org/2001/xml-events"
+    xmlns:w2="http://www.inswave.com/websquare" xmlns:xf="http://www.w3.org/2002/xforms">
+    <head>
+        <w2:buildDate/>
+        <xf:model>
+            <xf:instance>
+                <data xmlns=""/>
+            </xf:instance>
+            <xf:submission id="submissionWeek" ref="request" target="resWeek"
+        		action=""
+        		method="post" mediatype="application/xml" encoding="UTF-8" instance="" replace="instance"
+        		errorHandler="" customHandler="" mode="asynchronous"
+        		processMsg="">
+        		<script type="javascript" ev:event="xforms-submit-done"><![CDATA[
+				   	FV_sTerm_Type = fn_GetTermType();
+					fn_MaxValue(FV_DealerName);
+            	]]></script>
+        	</xf:submission>
+        	<xf:submission id="submissionUpMax" ref="request" target="resMaxUp"
+        		action=""
+        		method="post" mediatype="application/xml" encoding="UTF-8" instance="" replace="instance"
+        		errorHandler="" customHandler="" mode="asynchronous"
+        		processMsg="">
+        		<script type="javascript" ev:event="xforms-submit-done"><![CDATA[
+				   	FV_UpMaxValue = WebSquare.ModelUtil.getInstanceValue("resMaxUp/root/dataset[@id='ds_Max']/record/MAX_VALUE");
+				   	fn_Search(FV_DealerName);
+            	]]></script>
+        	</xf:submission>
+        	<xf:submission id="submissionDownMax" ref="request" target="resMaxDown"
+        		action=""
+        		method="post" mediatype="application/xml" encoding="UTF-8" instance="" replace="instance"
+        		errorHandler="" customHandler="" mode="asynchronous"
+        		processMsg="">
+        		<script type="javascript" ev:event="xforms-submit-done"><![CDATA[
+				   	FV_DownMaxValue = WebSquare.ModelUtil.getInstanceValue("resMaxDown/root/dataset[@id='ds_Max']/record/MAX_VALUE");
+				   	fn_Search(FV_DealerName);
+            	]]></script>
+        	</xf:submission>
+        </xf:model>
+        <script type="javascript" src="/mp/js/common.js"></script>
+        <script type="javascript" src="/mp/js/WebSquare.js"></script>
+        <script type="javascript"><![CDATA[
+        	var FV_UpMaxValue = 0;
+        	var FV_DownMaxValue = 0;
+        	var FV_DealerName="GN / SC";
+        	
+        	
+        	var FV_sShopCd ="";  //팝업전용
+        	var FV_sSvcNm = parent.FV_SvcNm;
+			var FV_sToday = gfn_GetDate(0,0,0);
+			var FV_sTerm_Type="";
+			var actionNm = "";
+			
+			if(FV_sSvcNm == "T"){
+				actionNm = "TOYOTAAction";
+			}
+			
+			//전시장 아이디 
+			var FV_sU1="";
+			var FV_sU2="";
+			var FV_sU3="";
+			
+			var FV_sD1="";
+			var FV_sD2="";
+			var FV_sD3="";
+			
+			if(parent.FV_SvcNm == "T"){
+				btn_M_1.hide();
+				btn_M_5.hide();
+
+				btn_M_2.setLabel("GN / SC");
+				document.getElementById("btn_M_2").className = "btn_p";
+				btn_M_3.setLabel("YS / BD");
+				btn_M_4.setLabel("BS");
+			}else{
+				btn_M_1.setLabel("GN / SC");
+				btn_M_2.setLabel("YS / BD");
+				btn_M_3.setLabel("BS / IC");
+				btn_M_4.setLabel("GJ / DG");
+				btn_M_5.setLabel("DJ");
+			}
+			//화면 로드 후 조회
+			//fn_Search("GN / SC");
+			setTitSendInfo("request", actionNm, "", "mdms/mp/eis:S210004_W01_S02");
+        	setInputParamData("TARGET_YM", gfn_GetDate(0,0,0).replaceAll("-","").substring(0,6));
+			setSubmissison("submissionWeek");
+			
+			function fn_MaxValue(DealerNm){
+	        	if(parent.FV_SvcNm == "T"){	 
+	        		switch(DealerNm) {
+						case "GN / SC":
+							fn_GetMaxValueUp("TD00000");
+							fn_GetMaxValueDown("HS00000");
+							break;
+						case "YS / BD":
+							fn_GetMaxValueUp("LS00000");
+							fn_GetMaxValueDown("KJ00000");
+							break;
+						case "BS":
+							fn_GetMaxValueUp("DM00000");				
+							break;
+					}
+				}else{			
+					switch(DealerNm) {
+						case "GN / SC":
+							fn_GetMaxValueUp("DT00000");
+							fn_GetMaxValueDown("PM00000");
+							break;
+						case "YS / BD":
+							fn_GetMaxValueUp("CW00000");
+							fn_GetMaxValueDown("CT00000");
+							break;
+						case "BS / IC":
+							fn_GetMaxValueUp("KM00000");
+							fn_GetMaxValueDown("SY00000");
+							break;
+						case "GJ / DG":
+							fn_GetMaxValueUp("NY00000");
+							fn_GetMaxValueDown("YM00000");
+							break;
+						case "DJ":
+							fn_GetMaxValueUp("JB00000");
+							break;
+					}
+				}
+			}
+			
+			
+			
+			function fn_Search(DealerNm){
+	        	if(parent.FV_SvcNm == "T"){
+	        		fn_Showroom_Button(DealerNm);
+	 
+	        		switch(DealerNm) {
+						case "GN / SC":
+							group3.show();
+							ifrm_U_1.setSrc("/mp/FusionCharts/Code/S210013_C01.jsp?DEALER_ID=TD00000&SVC=CALL&MAX_VALUE="+FV_UpMaxValue);	
+							ifrm_D_1.setSrc("/mp/FusionCharts/Code/S210013_C01.jsp?DEALER_ID=HS00000&SVC=CALL&MAX_VALUE="+FV_DownMaxValue);	
+							ifrm_U_2.setSrc("/mp/FusionCharts/Code/S210013_C01.jsp?DEALER_ID=TD00000&SVC=VISIT&MAX_VALUE="+FV_UpMaxValue);	
+							ifrm_D_2.setSrc("/mp/FusionCharts/Code/S210013_C01.jsp?DEALER_ID=HS00000&SVC=VISIT&MAX_VALUE="+FV_DownMaxValue);	
+							ifrm_U_3.setSrc("/mp/FusionCharts/Code/S210013_C01.jsp?DEALER_ID=TD00000&SVC=DRIVE&MAX_VALUE="+FV_UpMaxValue);	
+							ifrm_D_3.setSrc("/mp/FusionCharts/Code/S210013_C01.jsp?DEALER_ID=HS00000&SVC=DRIVE&MAX_VALUE="+FV_DownMaxValue);	
+							ifrm_U_4.setSrc("/mp/FusionCharts/Code/S210013_C01.jsp?DEALER_ID=TD00000&SVC=CONTRACT&MAX_VALUE="+FV_UpMaxValue);	
+							ifrm_D_4.setSrc("/mp/FusionCharts/Code/S210013_C01.jsp?DEALER_ID=HS00000&SVC=CONTRACT&MAX_VALUE="+FV_DownMaxValue);	
+							ifrm_U_5.setSrc("/mp/FusionCharts/Code/S210013_C01.jsp?DEALER_ID=TD00000&SVC=SALES&MAX_VALUE="+FV_UpMaxValue);	
+							ifrm_D_5.setSrc("/mp/FusionCharts/Code/S210013_C01.jsp?DEALER_ID=HS00000&SVC=SALES&MAX_VALUE="+FV_DownMaxValue);	
+							ifrm_U_6.setSrc("/mp/FusionCharts/Code/S210013_C01.jsp?DEALER_ID=TD00000&SVC=BOC&MAX_VALUE="+FV_UpMaxValue);	
+							ifrm_D_6.setSrc("/mp/FusionCharts/Code/S210013_C01.jsp?DEALER_ID=HS00000&SVC=BOC&MAX_VALUE="+FV_DownMaxValue);	
+							ifrm_U_7.setSrc("/mp/FusionCharts/Code/S210013_C01.jsp?DEALER_ID=TD00000&SVC=STOCK&MAX_VALUE="+FV_UpMaxValue);	
+							ifrm_D_7.setSrc("/mp/FusionCharts/Code/S210013_C01.jsp?DEALER_ID=HS00000&SVC=STOCK&MAX_VALUE="+FV_DownMaxValue);			
+							break;
+						case "YS / BD":
+							group3.show();
+							ifrm_U_1.setSrc("/mp/FusionCharts/Code/S210013_C01.jsp?DEALER_ID=LS00000&SVC=CALL&MAX_VALUE="+FV_UpMaxValue);		
+							ifrm_D_1.setSrc("/mp/FusionCharts/Code/S210013_C01.jsp?DEALER_ID=KJ00000&SVC=CALL&MAX_VALUE="+FV_DownMaxValue);		
+							ifrm_U_2.setSrc("/mp/FusionCharts/Code/S210013_C01.jsp?DEALER_ID=LS00000&SVC=VISIT&MAX_VALUE="+FV_UpMaxValue);		
+							ifrm_D_2.setSrc("/mp/FusionCharts/Code/S210013_C01.jsp?DEALER_ID=KJ00000&SVC=VISIT&MAX_VALUE="+FV_DownMaxValue);		
+							ifrm_U_3.setSrc("/mp/FusionCharts/Code/S210013_C01.jsp?DEALER_ID=LS00000&SVC=DRIVE&MAX_VALUE="+FV_UpMaxValue);		
+							ifrm_D_3.setSrc("/mp/FusionCharts/Code/S210013_C01.jsp?DEALER_ID=KJ00000&SVC=DRIVE&MAX_VALUE="+FV_DownMaxValue);		
+							ifrm_U_4.setSrc("/mp/FusionCharts/Code/S210013_C01.jsp?DEALER_ID=LS00000&SVC=CONTRACT&MAX_VALUE="+FV_UpMaxValue);	
+							ifrm_D_4.setSrc("/mp/FusionCharts/Code/S210013_C01.jsp?DEALER_ID=KJ00000&SVC=CONTRACT&MAX_VALUE="+FV_DownMaxValue);	
+							ifrm_U_5.setSrc("/mp/FusionCharts/Code/S210013_C01.jsp?DEALER_ID=LS00000&SVC=SALES&MAX_VALUE="+FV_UpMaxValue);		
+							ifrm_D_5.setSrc("/mp/FusionCharts/Code/S210013_C01.jsp?DEALER_ID=KJ00000&SVC=SALES&MAX_VALUE="+FV_DownMaxValue);		
+							ifrm_U_6.setSrc("/mp/FusionCharts/Code/S210013_C01.jsp?DEALER_ID=LS00000&SVC=BOC&MAX_VALUE="+FV_UpMaxValue);		
+							ifrm_D_6.setSrc("/mp/FusionCharts/Code/S210013_C01.jsp?DEALER_ID=KJ00000&SVC=BOC&MAX_VALUE="+FV_DownMaxValue);		
+							ifrm_U_7.setSrc("/mp/FusionCharts/Code/S210013_C01.jsp?DEALER_ID=LS00000&SVC=STOCK&MAX_VALUE="+FV_UpMaxValue);		
+							ifrm_D_7.setSrc("/mp/FusionCharts/Code/S210013_C01.jsp?DEALER_ID=KJ00000&SVC=STOCK&MAX_VALUE="+FV_DownMaxValue);						
+							break;
+						case "BS":
+							group3.hide();
+							ifrm_U_1.setSrc("/mp/FusionCharts/Code/S210013_C01.jsp?DEALER_ID=DM00000&SVC=CALL&MAX_VALUE="+FV_UpMaxValue);		
+							ifrm_U_2.setSrc("/mp/FusionCharts/Code/S210013_C01.jsp?DEALER_ID=DM00000&SVC=VISIT&MAX_VALUE="+FV_UpMaxValue);			
+							ifrm_U_3.setSrc("/mp/FusionCharts/Code/S210013_C01.jsp?DEALER_ID=DM00000&SVC=DRIVE&MAX_VALUE="+FV_UpMaxValue);			
+							ifrm_U_4.setSrc("/mp/FusionCharts/Code/S210013_C01.jsp?DEALER_ID=DM00000&SVC=CONTRACT&MAX_VALUE="+FV_UpMaxValue);			
+							ifrm_U_5.setSrc("/mp/FusionCharts/Code/S210013_C01.jsp?DEALER_ID=DM00000&SVC=SALES&MAX_VALUE="+FV_UpMaxValue);		
+							ifrm_U_6.setSrc("/mp/FusionCharts/Code/S210013_C01.jsp?DEALER_ID=DM00000&SVC=BOC&MAX_VALUE="+FV_UpMaxValue);		
+							ifrm_U_7.setSrc("/mp/FusionCharts/Code/S210013_C01.jsp?DEALER_ID=DM00000&SVC=STOCK&MAX_VALUE="+FV_UpMaxValue);							
+							break;
+					}
+				}else{
+					fn_Showroom_Button(DealerNm);
+				
+					switch(DealerNm) {
+						case "GN / SC":
+							group3.show();
+							ifrm_U_1.setSrc("/mp/FusionCharts/Code/S210013_C01.jsp?DEALER_ID=DT00000&SVC=CALL&MAX_VALUE="+FV_UpMaxValue);		
+							ifrm_D_1.setSrc("/mp/FusionCharts/Code/S210013_C01.jsp?DEALER_ID=PM00000&SVC=CALL&MAX_VALUE="+FV_DownMaxValue);		
+							ifrm_U_2.setSrc("/mp/FusionCharts/Code/S210013_C01.jsp?DEALER_ID=DT00000&SVC=VISIT&MAX_VALUE="+FV_UpMaxValue);		
+							ifrm_D_2.setSrc("/mp/FusionCharts/Code/S210013_C01.jsp?DEALER_ID=PM00000&SVC=VISIT&MAX_VALUE="+FV_DownMaxValue);		
+							ifrm_U_3.setSrc("/mp/FusionCharts/Code/S210013_C01.jsp?DEALER_ID=DT00000&SVC=DRIVE&MAX_VALUE="+FV_UpMaxValue);		
+							ifrm_D_3.setSrc("/mp/FusionCharts/Code/S210013_C01.jsp?DEALER_ID=PM00000&SVC=DRIVE&MAX_VALUE="+FV_DownMaxValue);		
+							ifrm_U_4.setSrc("/mp/FusionCharts/Code/S210013_C01.jsp?DEALER_ID=DT00000&SVC=CONTRACT&MAX_VALUE="+FV_UpMaxValue);	
+							ifrm_D_4.setSrc("/mp/FusionCharts/Code/S210013_C01.jsp?DEALER_ID=PM00000&SVC=CONTRACT&MAX_VALUE="+FV_DownMaxValue);	
+							ifrm_U_5.setSrc("/mp/FusionCharts/Code/S210013_C01.jsp?DEALER_ID=DT00000&SVC=SALES&MAX_VALUE="+FV_UpMaxValue);		
+							ifrm_D_5.setSrc("/mp/FusionCharts/Code/S210013_C01.jsp?DEALER_ID=PM00000&SVC=SALES&MAX_VALUE="+FV_DownMaxValue);		
+							ifrm_U_6.setSrc("/mp/FusionCharts/Code/S210013_C01.jsp?DEALER_ID=DT00000&SVC=BOC&MAX_VALUE="+FV_UpMaxValue);		
+							ifrm_D_6.setSrc("/mp/FusionCharts/Code/S210013_C01.jsp?DEALER_ID=PM00000&SVC=BOC&MAX_VALUE="+FV_DownMaxValue);		
+							ifrm_U_7.setSrc("/mp/FusionCharts/Code/S210013_C01.jsp?DEALER_ID=DT00000&SVC=STOCK&MAX_VALUE="+FV_UpMaxValue);		
+							ifrm_D_7.setSrc("/mp/FusionCharts/Code/S210013_C01.jsp?DEALER_ID=PM00000&SVC=STOCK&MAX_VALUE="+FV_DownMaxValue);			
+							break;
+						case "YS / BD":
+							group3.show();
+							ifrm_U_1.setSrc("/mp/FusionCharts/Code/S210013_C01.jsp?DEALER_ID=CW00000&SVC=CALL&MAX_VALUE="+FV_UpMaxValue);		
+							ifrm_D_1.setSrc("/mp/FusionCharts/Code/S210013_C01.jsp?DEALER_ID=CT00000&SVC=CALL&MAX_VALUE="+FV_DownMaxValue);		
+							ifrm_U_2.setSrc("/mp/FusionCharts/Code/S210013_C01.jsp?DEALER_ID=CW00000&SVC=VISIT&MAX_VALUE="+FV_UpMaxValue);		
+							ifrm_D_2.setSrc("/mp/FusionCharts/Code/S210013_C01.jsp?DEALER_ID=CT00000&SVC=VISIT&MAX_VALUE="+FV_DownMaxValue);		
+							ifrm_U_3.setSrc("/mp/FusionCharts/Code/S210013_C01.jsp?DEALER_ID=CW00000&SVC=DRIVE&MAX_VALUE="+FV_UpMaxValue);		
+							ifrm_D_3.setSrc("/mp/FusionCharts/Code/S210013_C01.jsp?DEALER_ID=CT00000&SVC=DRIVE&MAX_VALUE="+FV_DownMaxValue);		
+							ifrm_U_4.setSrc("/mp/FusionCharts/Code/S210013_C01.jsp?DEALER_ID=CW00000&SVC=CONTRACT&MAX_VALUE="+FV_UpMaxValue);	
+							ifrm_D_4.setSrc("/mp/FusionCharts/Code/S210013_C01.jsp?DEALER_ID=CT00000&SVC=CONTRACT&MAX_VALUE="+FV_DownMaxValue);	
+							ifrm_U_5.setSrc("/mp/FusionCharts/Code/S210013_C01.jsp?DEALER_ID=CW00000&SVC=SALES&MAX_VALUE="+FV_UpMaxValue);		
+							ifrm_D_5.setSrc("/mp/FusionCharts/Code/S210013_C01.jsp?DEALER_ID=CT00000&SVC=SALES&MAX_VALUE="+FV_DownMaxValue);		
+							ifrm_U_6.setSrc("/mp/FusionCharts/Code/S210013_C01.jsp?DEALER_ID=CW00000&SVC=BOC&MAX_VALUE="+FV_UpMaxValue);		
+							ifrm_D_6.setSrc("/mp/FusionCharts/Code/S210013_C01.jsp?DEALER_ID=CT00000&SVC=BOC&MAX_VALUE="+FV_DownMaxValue);		
+							ifrm_U_7.setSrc("/mp/FusionCharts/Code/S210013_C01.jsp?DEALER_ID=CW00000&SVC=STOCK&MAX_VALUE="+FV_UpMaxValue);		
+							ifrm_D_7.setSrc("/mp/FusionCharts/Code/S210013_C01.jsp?DEALER_ID=CT00000&SVC=STOCK&MAX_VALUE="+FV_DownMaxValue);							
+							break;
+						case "BS / IC":
+							group3.show();
+							ifrm_U_1.setSrc("/mp/FusionCharts/Code/S210013_C01.jsp?DEALER_ID=KM00000&SVC=CALL&MAX_VALUE="+FV_UpMaxValue);		
+							ifrm_D_1.setSrc("/mp/FusionCharts/Code/S210013_C01.jsp?DEALER_ID=SY00000&SVC=CALL&MAX_VALUE="+FV_DownMaxValue);		
+							ifrm_U_2.setSrc("/mp/FusionCharts/Code/S210013_C01.jsp?DEALER_ID=KM00000&SVC=VISIT&MAX_VALUE="+FV_UpMaxValue);		
+							ifrm_D_2.setSrc("/mp/FusionCharts/Code/S210013_C01.jsp?DEALER_ID=SY00000&SVC=VISIT&MAX_VALUE="+FV_DownMaxValue);		
+							ifrm_U_3.setSrc("/mp/FusionCharts/Code/S210013_C01.jsp?DEALER_ID=KM00000&SVC=DRIVE&MAX_VALUE="+FV_UpMaxValue);		
+							ifrm_D_3.setSrc("/mp/FusionCharts/Code/S210013_C01.jsp?DEALER_ID=SY00000&SVC=DRIVE&MAX_VALUE="+FV_DownMaxValue);		
+							ifrm_U_4.setSrc("/mp/FusionCharts/Code/S210013_C01.jsp?DEALER_ID=KM00000&SVC=CONTRACT&MAX_VALUE="+FV_UpMaxValue);	
+							ifrm_D_4.setSrc("/mp/FusionCharts/Code/S210013_C01.jsp?DEALER_ID=SY00000&SVC=CONTRACT&MAX_VALUE="+FV_DownMaxValue);	
+							ifrm_U_5.setSrc("/mp/FusionCharts/Code/S210013_C01.jsp?DEALER_ID=KM00000&SVC=SALES&MAX_VALUE="+FV_UpMaxValue);		
+							ifrm_D_5.setSrc("/mp/FusionCharts/Code/S210013_C01.jsp?DEALER_ID=SY00000&SVC=SALES&MAX_VALUE="+FV_DownMaxValue);		
+							ifrm_U_6.setSrc("/mp/FusionCharts/Code/S210013_C01.jsp?DEALER_ID=KM00000&SVC=BOC&MAX_VALUE="+FV_UpMaxValue);		
+							ifrm_D_6.setSrc("/mp/FusionCharts/Code/S210013_C01.jsp?DEALER_ID=SY00000&SVC=BOC&MAX_VALUE="+FV_DownMaxValue);		
+							ifrm_U_7.setSrc("/mp/FusionCharts/Code/S210013_C01.jsp?DEALER_ID=KM00000&SVC=STOCK&MAX_VALUE="+FV_UpMaxValue);		
+							ifrm_D_7.setSrc("/mp/FusionCharts/Code/S210013_C01.jsp?DEALER_ID=SY00000&SVC=STOCK&MAX_VALUE="+FV_DownMaxValue);					
+							break;
+						case "GJ / DG":
+							group3.show();
+							ifrm_U_1.setSrc("/mp/FusionCharts/Code/S210013_C01.jsp?DEALER_ID=NY00000&SVC=CALL&MAX_VALUE="+FV_UpMaxValue);		
+							ifrm_D_1.setSrc("/mp/FusionCharts/Code/S210013_C01.jsp?DEALER_ID=YM00000&SVC=CALL&MAX_VALUE="+FV_DownMaxValue);		
+							ifrm_U_2.setSrc("/mp/FusionCharts/Code/S210013_C01.jsp?DEALER_ID=NY00000&SVC=VISIT&MAX_VALUE="+FV_UpMaxValue);		
+							ifrm_D_2.setSrc("/mp/FusionCharts/Code/S210013_C01.jsp?DEALER_ID=YM00000&SVC=VISIT&MAX_VALUE="+FV_DownMaxValue);		
+							ifrm_U_3.setSrc("/mp/FusionCharts/Code/S210013_C01.jsp?DEALER_ID=NY00000&SVC=DRIVE&MAX_VALUE="+FV_UpMaxValue);		
+							ifrm_D_3.setSrc("/mp/FusionCharts/Code/S210013_C01.jsp?DEALER_ID=YM00000&SVC=DRIVE&MAX_VALUE="+FV_DownMaxValue);		
+							ifrm_U_4.setSrc("/mp/FusionCharts/Code/S210013_C01.jsp?DEALER_ID=NY00000&SVC=CONTRACT&MAX_VALUE="+FV_UpMaxValue);	
+							ifrm_D_4.setSrc("/mp/FusionCharts/Code/S210013_C01.jsp?DEALER_ID=YM00000&SVC=CONTRACT&MAX_VALUE="+FV_DownMaxValue);	
+							ifrm_U_5.setSrc("/mp/FusionCharts/Code/S210013_C01.jsp?DEALER_ID=NY00000&SVC=SALES&MAX_VALUE="+FV_UpMaxValue);		
+							ifrm_D_5.setSrc("/mp/FusionCharts/Code/S210013_C01.jsp?DEALER_ID=YM00000&SVC=SALES&MAX_VALUE="+FV_DownMaxValue);		
+							ifrm_U_6.setSrc("/mp/FusionCharts/Code/S210013_C01.jsp?DEALER_ID=NY00000&SVC=BOC&MAX_VALUE="+FV_UpMaxValue);		
+							ifrm_D_6.setSrc("/mp/FusionCharts/Code/S210013_C01.jsp?DEALER_ID=YM00000&SVC=BOC&MAX_VALUE="+FV_DownMaxValue);		
+							ifrm_U_7.setSrc("/mp/FusionCharts/Code/S210013_C01.jsp?DEALER_ID=NY00000&SVC=STOCK&MAX_VALUE="+FV_UpMaxValue);		
+							ifrm_D_7.setSrc("/mp/FusionCharts/Code/S210013_C01.jsp?DEALER_ID=YM00000&SVC=STOCK&MAX_VALUE="+FV_DownMaxValue);						
+							break;
+						case "DJ":
+							group3.hide();
+							ifrm_U_1.setSrc("/mp/FusionCharts/Code/S210013_C01.jsp?DEALER_ID=JB00000&SVC=CALL&MAX_VALUE="+FV_UpMaxValue);			
+							ifrm_U_2.setSrc("/mp/FusionCharts/Code/S210013_C01.jsp?DEALER_ID=JB00000&SVC=VISIT&MAX_VALUE="+FV_UpMaxValue);		
+							ifrm_U_3.setSrc("/mp/FusionCharts/Code/S210013_C01.jsp?DEALER_ID=JB00000&SVC=DRIVE&MAX_VALUE="+FV_UpMaxValue);			
+							ifrm_U_4.setSrc("/mp/FusionCharts/Code/S210013_C01.jsp?DEALER_ID=JB00000&SVC=CONTRACT&MAX_VALUE="+FV_UpMaxValue);		
+							ifrm_U_5.setSrc("/mp/FusionCharts/Code/S210013_C01.jsp?DEALER_ID=JB00000&SVC=SALES&MAX_VALUE="+FV_UpMaxValue);			
+							ifrm_U_6.setSrc("/mp/FusionCharts/Code/S210013_C01.jsp?DEALER_ID=JB00000&SVC=BOC&MAX_VALUE="+FV_UpMaxValue);			
+							ifrm_U_7.setSrc("/mp/FusionCharts/Code/S210013_C01.jsp?DEALER_ID=JB00000&SVC=STOCK&MAX_VALUE="+FV_UpMaxValue);						
+							break;
+					}
+				}
+			}
+			
+			function fn_GetMaxValueUp(sDealerId) {
+				setTitSendInfo("request", actionNm, "", "mdms/mp/eis:S210013_W01_S08");
+        		setInputParamData("DEALER_ID", sDealerId);
+        		setInputParamData("TODAY_DT", FV_sToday);
+        		setInputParamData("TERM_TYPE", FV_sTerm_Type);
+				setSubmissison("submissionUpMax");
+			}
+			function fn_GetMaxValueDown(sDealerId) {
+				setTitSendInfo("request", actionNm, "", "mdms/mp/eis:S210013_W01_S08");
+        		setInputParamData("DEALER_ID", sDealerId);
+        		setInputParamData("TODAY_DT", FV_sToday);
+        		setInputParamData("TERM_TYPE", FV_sTerm_Type);
+				setSubmissison("submissionDownMax");
+			}
+			
+			function fn_GetTermType() {
+				var Week = WebSquare.ModelUtil.findInstanceNodes("resWeek/root/dataset[@id='ds_Weekend']/record");
+				
+				return "W"+Week.length;
+			}
+			
+			function fn_SetSubTitle(DealerNm1, DealerNm2){
+					se_T_1.setLabel(DealerNm1);
+    				se_Tb_1.setLabel(DealerNm1);
+    				se_T_2.setLabel(DealerNm2);
+    				se_Tb_2.setLabel(DealerNm2);
+			}
+			
+			function fn_Showroom_Button(sDealer){		
+				//토요타
+				if(parent.FV_SvcNm == "T"){
+					if(sDealer == "GN / SC"){	//강남, 서초
+						btn_U_1.show();
+						btn_U_1.setLabel("GD");
+						FV_sU1= "TD10101";
+						btn_U_2.show();
+						btn_U_2.setLabel("GN");			
+						FV_sU2 = "TD00000";
+						btn_U_3.hide();
+
+						btn_D_1.show();
+						btn_D_1.setLabel("PC");
+						FV_sD1 = "HS10102";
+						btn_D_2.show();
+						btn_D_2.setLabel("GS");
+						FV_sD2 = "HS10101";
+						btn_D_3.show();
+						btn_D_3.setLabel("SC");
+						FV_sD3 = "HS00000";
+					} else if(sDealer == "YS / BD"){	//용산 분당
+						btn_U_1.show();
+						btn_U_1.setLabel("IS");
+						FV_sU1= "LS10102";
+						btn_U_2.show();
+						btn_U_2.setLabel("JHP");			
+						FV_sU2 = "LS10101";
+						btn_U_3.show();
+						btn_D_3.setLabel("YS");
+						FV_sU3 = "LS00000";
+
+						btn_D_1.show();
+						btn_D_1.setLabel("SW");
+						FV_sD1 = "KJ10101";
+						btn_D_2.show();
+						btn_D_2.setLabel("BD");
+						FV_sD2 = "KJ00000";
+						btn_D_3.hide();
+					} else {	//부산
+						btn_U_1.show();
+						btn_U_1.setLabel("CW");
+						FV_sU1= "DM10101";
+						btn_U_2.show();
+						btn_U_2.setLabel("BS");			
+						FV_sU2 = "DM00000";
+						btn_U_3.hide();
+						
+						btn_D_1.hide();
+						btn_D_2.hide();
+						btn_D_3.hide();
+					}
+				//렉서스
+				} else {
+					if(sDealer == "GN / SC"){	//강남 서초
+						btn_U_1.hide();
+						btn_U_2.hide();
+						btn_U_3.hide();
+						
+						btn_D_1.show();
+						btn_D_1.setLabel("GS");
+						FV_sD1 = "PM10101";
+						btn_D_2.show();
+						btn_D_2.setLabel("SC");
+						FV_sD2 = "PM00000";
+						btn_D_3.hide();
+					} else if (sDealer == "YS / BD"){	//용산 분당
+						btn_U_1.show();
+						btn_U_1.setLabel("IS");
+						FV_sU1= "CW10101";
+						btn_U_2.show();
+						btn_U_2.setLabel("YS");			
+						FV_sU2 = "CW00000";
+						btn_U_3.hide();
+
+						//jhkim, 2012-04-17, SR 120409_0007 용인광교 추가
+						btn_D_1.show();
+						btn_D_1.setLabel("YG");
+						FV_sD1= "CT30104";
+						btn_D_2.show();
+						btn_D_2.setLabel("BD");			
+						FV_sD2 = "CT00000";
+						btn_D_3.hide();
+					} else if (sDealer == "BS / IC"){	//부산 인천
+						btn_U_1.show();
+						btn_U_1.setLabel("HUD");
+						FV_sU1= "KM10101";
+						btn_U_2.show();
+						btn_U_2.setLabel("CW");			
+						FV_sU2 = "KM10102";
+						btn_U_3.show();
+						btn_D_3.setLabel("BS");
+						FV_sU3 = "KM00000";
+
+						btn_D_1.hide();
+						btn_D_2.hide();
+						btn_D_3.hide();
+					} else if (sDealer == "GJ / DG"){	//광주 대구
+						btn_U_1.show();
+						btn_U_1.setLabel("JJ");
+						FV_sU1= "NY10101";
+						btn_U_2.show();
+						btn_U_2.setLabel("GJ");			
+						FV_sU2 = "NY00000";
+						btn_U_3.hide();
+					
+						btn_D_1.show();
+						btn_D_1.setLabel("PH");
+						FV_sD1 = "YM10101";
+						btn_D_2.show();
+						btn_D_2.setLabel("DG");
+						FV_sD2 = "YM00000";
+						btn_D_3.hide();
+
+					} else {	//대전
+						btn_U_1.show();
+						btn_U_1.setLabel("CA");
+						FV_sU1= "JB10101";
+						btn_U_2.show();
+						btn_U_2.setLabel("DJ");			
+						FV_sU2 = "JB00000";
+						btn_U_3.hide();
+					
+						btn_D_1.hide();
+						btn_D_2.hide();
+						btn_D_3.hide();
+					}
+				}
+			}
+			
+			function fn_ChangeButton(ButtonId){
+				switch(ButtonId) {
+						case "btn_M_1":
+							document.getElementById("btn_M_1").className = "btn_p";
+							document.getElementById("btn_M_2").className = "btn_b";
+							document.getElementById("btn_M_3").className = "btn_b";
+							document.getElementById("btn_M_4").className = "btn_b";
+							document.getElementById("btn_M_5").className = "btn_b";
+							break;
+						case "btn_M_2":
+							document.getElementById("btn_M_1").className = "btn_b";
+							document.getElementById("btn_M_2").className = "btn_p";
+							document.getElementById("btn_M_3").className = "btn_b";
+							document.getElementById("btn_M_4").className = "btn_b";
+							document.getElementById("btn_M_5").className = "btn_b";
+							break;
+						case "btn_M_3":
+							document.getElementById("btn_M_1").className = "btn_b";
+							document.getElementById("btn_M_2").className = "btn_b";
+							document.getElementById("btn_M_3").className = "btn_p";
+							document.getElementById("btn_M_4").className = "btn_b";
+							document.getElementById("btn_M_5").className = "btn_b";
+							break;
+						case "btn_M_4":
+							document.getElementById("btn_M_1").className = "btn_b";
+							document.getElementById("btn_M_2").className = "btn_b";
+							document.getElementById("btn_M_3").className = "btn_b";
+							document.getElementById("btn_M_4").className = "btn_p";
+							document.getElementById("btn_M_5").className = "btn_b";
+							break;
+						case "btn_M_5":
+							document.getElementById("btn_M_1").className = "btn_b";
+							document.getElementById("btn_M_2").className = "btn_b";
+							document.getElementById("btn_M_3").className = "btn_b";
+							document.getElementById("btn_M_4").className = "btn_b";
+							document.getElementById("btn_M_5").className = "btn_p";
+							break;
+						}
+			}
+			
+			/****************************************************************
+			* 팝업 닫기
+			* @param  : flag	팝업 닫은 후 재조회 여부
+			* @return : 없음
+			******************************************************************/
+        	function fn_PopupClose(){
+        		gfn_PopupClose();
+        	}
+        ]]></script>
+    </head>
+    <body>
+    	<xf:image id="image24"
+    		style="position:absolute;height:273px;width:1024px;left:0px;top:24px;"
+    		src="/mp/images/eis/shape_4.png">
+    	</xf:image>
+    	<w2:iframe id="ifrm_U_1"
+    		style="position:absolute;left:13px;top:60px;width:141px;height:225px;"
+    		scrolling="no">
+    	</w2:iframe>
+    	<xf:output class="sub_title_b" id="se_Tb_1" label=""
+    		style="position:absolute;height:20px;width:204px;left:20px;top:11px;">
+    		<xf:label>GN</xf:label>
+    	</xf:output>
+    	<xf:output id="se_T_1"
+    		style="position:absolute;height:20px;width:204px;left:20px;top:10px;"
+    		class="sub_title" label="">
+    		<xf:label>GN</xf:label>
+    	</xf:output>
+    	<xf:group id="group1"
+    		style="position:absolute;top:582px;left:288px;width:433px;height:24px;">
+    		<xf:output id="btn_M_1"
+    			style="position: absolute ;left:0px;top:0px;"
+    			class="btn_p" >
+    			<xf:label>GN / SC</xf:label>
+    			<script type="javascript" ev:event="onclick"><![CDATA[
+    				FV_DealerName = "GN / SC";
+    				fn_ChangeButton("btn_M_1"); 
+    				fn_SetSubTitle("GN", "SC");
+    				fn_MaxValue(FV_DealerName);
+    				fn_Search(FV_DealerName);
+    			]]></script>
+    		</xf:output>
+    		<xf:output id="btn_M_2"
+    			style="position: absolute ;left:87px;top:0px;"
+    			class="btn_b" >
+    			<xf:label>YS / BD</xf:label>
+    			<script type="javascript" ev:event="onclick"><![CDATA[
+    				fn_ChangeButton("btn_M_2");
+    				
+    				if(parent.FV_SvcNm == "T"){
+    					FV_DealerName = "GN / SC";
+    					fn_SetSubTitle("GN", "SC");
+    					fn_MaxValue(FV_DealerName);
+    					fn_Search(FV_DealerName);
+    				}else{
+    					FV_DealerName = "YS / BD";
+    					fn_SetSubTitle("YS", "BD");
+    					fn_MaxValue(FV_DealerName);
+    					fn_Search(FV_DealerName);
+    				}
+    			]]></script>
+    		</xf:output>
+    		<xf:output id="btn_M_3"
+    			style="position: absolute ;left:174px;top:0px;"
+    			class="btn_b" >
+    			<xf:label>BS / IC</xf:label>
+    			<script type="javascript" ev:event="onclick"><![CDATA[
+    				fn_ChangeButton("btn_M_3");
+    				 
+    				if(parent.FV_SvcNm == "T"){
+    					FV_DealerName = "YS / BD";
+    					fn_SetSubTitle("YS", "BD");
+    					fn_MaxValue(FV_DealerName);
+    					fn_Search(FV_DealerName);
+    				}else{
+    					FV_DealerName = "BS / IC";
+    					fn_SetSubTitle("BS", "IC");
+    					fn_MaxValue(FV_DealerName);
+    					fn_Search(FV_DealerName);
+    				}
+    			]]></script>
+    		</xf:output>
+    		<xf:output id="btn_M_4"
+    			style="position: absolute ;left:261px;top:0px;"
+    			class="btn_b" >
+    			<xf:label>GJ / DG</xf:label>
+    			<script type="javascript" ev:event="onclick"><![CDATA[ 
+    				fn_ChangeButton("btn_M_4");
+    				
+    				if(parent.FV_SvcNm == "T"){
+    					FV_DealerName = "BS";
+    					fn_SetSubTitle("BS", "");
+    					fn_MaxValue(FV_DealerName);
+    					fn_Search(FV_DealerName);
+    				}else{
+    					FV_DealerName = "GJ / DG";
+    					fn_SetSubTitle("GJ", "DG");
+    					fn_MaxValue(FV_DealerName);
+    					fn_Search(FV_DealerName);
+    				}
+    			]]></script>
+    		</xf:output>
+    		<xf:output id="btn_M_5"
+    			style="position: absolute ;left:348px;top:0px;"
+    			class="btn_b" >
+    			<xf:label>DJ</xf:label>
+    			<script type="javascript" ev:event="onclick"><![CDATA[ 
+    				fn_ChangeButton("btn_M_5");
+    				FV_DealerName = "DJ";
+    				fn_SetSubTitle("DJ", "");
+    				fn_MaxValue(FV_DealerName);
+    				fn_Search(FV_DealerName);
+    			]]></script>
+    		</xf:output>
+    	</xf:group>
+    	<xf:output class="btn_b1" id="btn_U_1"
+    		style="position: absolute ;left:954px;top:5px;display:none;"
+    		>
+    		<xf:label>GS</xf:label>
+    		<script type="javascript" ev:event="onclick"><![CDATA[ 
+    			FV_sShopCd=FV_sU1;
+    			gfn_OpenPopup("/mp/eis/S210001_P05.xml","Sales Progress Report",996,580,0,10);
+    		]]></script>
+    	</xf:output>
+    	<xf:output class="btn_b1" id="btn_U_2"
+    		style="position: absolute ;left:894px;top:4px;display:none;"
+    		>
+    		<xf:label>SC</xf:label>
+    		<script type="javascript" ev:event="onclick"><![CDATA[ 
+    			FV_sShopCd=FV_sU2;
+    			gfn_OpenPopup("/mp/eis/S210001_P05.xml","Sales Progress Report",996,580,0,10);
+    		]]></script>
+    	</xf:output>
+    	<xf:output class="btn_b1" id="btn_U_3"
+    		style="position: absolute ;left:835px;top:5px;display:none;"
+    		>
+    		<xf:label>SC</xf:label>
+    		<script type="javascript" ev:event="onclick"><![CDATA[ 
+    			FV_sShopCd=FV_sU3;
+    			gfn_OpenPopup("/mp/eis/S210001_P05.xml","Sales Progress Report",996,580,0,10);
+    		]]></script>
+    	</xf:output>
+    	<w2:iframe id="ifrm_U_2" scrolling="no"
+    		style="position:absolute;left:156px;top:60px;width:141px;height:225px;">
+    	</w2:iframe>
+    	<w2:iframe id="ifrm_U_4" scrolling="no"
+    		style="position:absolute;left:442px;top:60px;width:141px;height:225px;">
+    	</w2:iframe>
+    	<w2:iframe id="ifrm_U_3" scrolling="no"
+    		style="position:absolute;left:299px;top:60px;width:141px;height:225px;">
+    	</w2:iframe>
+    	<w2:iframe id="ifrm_U_5" scrolling="no"
+    		style="position:absolute;left:585px;top:60px;width:141px;height:225px;">
+    	</w2:iframe>
+    	<w2:iframe id="ifrm_U_6" scrolling="no"
+    		style="position:absolute;left:728px;top:60px;width:141px;height:225px;">
+    	</w2:iframe>
+    	<w2:iframe id="ifrm_U_7" scrolling="no"
+    		style="position:absolute;left:871px;top:60px;width:141px;height:225px;">
+    	</w2:iframe>
+    	<w2:textbox id="txt_U_1" label="- Call -"
+    		style="position: absolute ;height: 16px;color:#ffffff;text-align:center;width:141px;left:13px;top: 42px;">
+    	</w2:textbox>
+    	<w2:textbox id="txt_U_2"
+    		style="position: absolute ;height: 16px;color:#ffffff;text-align:center;width:141px;left:156px;top:42px;"
+    		label="- Visit -">
+    	</w2:textbox>
+    	<w2:textbox id="txt_U_3"
+    		style="position: absolute ;height: 16px;color:#ffffff;text-align:center;width:141px;left:299px;top:42px;"
+    		label="- TestDriving -">
+    	</w2:textbox>
+    	<w2:textbox id="txt_U_4"
+    		style="position: absolute ;height: 16px;color:#ffffff;text-align:center;width:141px;left:442px;top:42px;"
+    		label="- Contract -">
+    	</w2:textbox>
+    	<w2:textbox id="txt_U_5"
+    		style="position: absolute ;height: 16px;color:#ffffff;text-align:center;width:141px;left:585px;top:42px;"
+    		label="- Sales -">
+    	</w2:textbox>
+    	<w2:textbox id="txt_U_6"
+    		style="position: absolute ;height: 16px;color:#ffffff;text-align:center;width:141px;left:728px;top:42px;"
+    		label="- BOC -">
+    	</w2:textbox>
+    	<w2:textbox id="txt_U_7"
+    		style="position: absolute ;height: 16px;color:#ffffff;text-align:center;width:141px;left:871px;top:42px;"
+    		label="- Stock -">
+    	</w2:textbox>
+    	<xf:group id="group3" style="position:absolute;top:292px;left:0px;width:1024px;height:292px;">
+    		<xf:output id="se_Tb_2" style="position: absolute ;height:20px;width:204px;left:20px;top:5px;" class="sub_title_b" label="">
+    			<xf:label>SC</xf:label>
+    		</xf:output>
+    		<xf:output id="se_T_2" style="position: absolute ;height:20px;width:204px;left:20px;top:4px;" class="sub_title" label="">
+    			<xf:label>SC</xf:label>
+    		</xf:output>
+    		<xf:image id="image26" style="position: absolute ;height:273px;width:1024px;left:0px;top:19px;" src="/mp/images/eis/shape_4.png">
+    		</xf:image>
+    		<xf:output id="btn_D_1"
+    			style="position: absolute ;left:954px;top:0px;display:none;"
+    			class="btn_b1" >
+    			<xf:label>GS</xf:label>
+    			<script type="javascript" ev:event="onclick"><![CDATA[ 
+    				FV_sShopCd=FV_sD1;
+    				gfn_OpenPopup("/mp/eis/S210001_P05.xml","Sales Progress Report",996,580,0,10);
+    			]]></script>
+    		</xf:output>
+    		<xf:output id="btn_D_2"
+    			style="position: absolute ;left:894px;top:0px;display:none;"
+    			class="btn_b1" >
+    			<xf:label>SC</xf:label>
+    			<script type="javascript" ev:event="onclick"><![CDATA[ 
+    				FV_sShopCd=FV_sD2;
+    				gfn_OpenPopup("/mp/eis/S210001_P05.xml","Sales Progress Report",996,580,0,10);
+    			]]></script>
+    		</xf:output>
+    		<xf:output id="btn_D_3"
+    			style="position: absolute ;left:835px;top:0px;display:none;"
+    			class="btn_b1" label="" >
+    			<xf:label>SC</xf:label>
+    			<script type="javascript" ev:event="onclick"><![CDATA[
+    				FV_sShopCd=FV_sD3; 
+    				gfn_OpenPopup("/mp/eis/S210001_P05.xml","Sales Progress Report",996,580,0,10);
+    			]]></script>
+    		</xf:output>
+    		<w2:iframe id="ifrm_D_1" style="position:absolute;left:13px;top:55px;width:141px;height:225px;" scrolling="no">
+    		</w2:iframe>
+    		<w2:iframe id="ifrm_D_7" style="position:absolute;left:871px;top:55px;width:141px;height:225px;" scrolling="no">
+    		</w2:iframe>
+    		<w2:iframe id="ifrm_D_6" style="position:absolute;left:728px;top:55px;width:141px;height:225px;" scrolling="no">
+    		</w2:iframe>
+    		<w2:iframe id="ifrm_D_5" style="position:absolute;left:585px;top:55px;width:141px;height:225px;" scrolling="no">
+    		</w2:iframe>
+    		<w2:iframe id="ifrm_D_3" style="position:absolute;left:299px;top:55px;width:141px;height:225px;" scrolling="no">
+    		</w2:iframe>
+    		<w2:iframe id="ifrm_D_4" style="position:absolute;left:442px;top:55px;width:141px;height:225px;" scrolling="no">
+    		</w2:iframe>
+    		<w2:iframe id="ifrm_D_2" style="position:absolute;left:156px;top:55px;width:141px;height:225px;" scrolling="no">
+    		</w2:iframe>
+    		<w2:textbox id="txt_D_1" style="position: absolute ;height: 16px;color:#ffffff;text-align:center;width:141px;left:14px;top:36px;" label="- Call -">
+    		</w2:textbox>
+    		<w2:textbox id="txt_D_2" style="position: absolute ;height: 16px;color:#ffffff;text-align:center;width:141px;left:157px;top:36px;" label="- Visit -">
+    		</w2:textbox>
+    		<w2:textbox id="txt_D_3" style="position: absolute ;height: 16px;color:#ffffff;text-align:center;width:141px;left:300px;top:36px;" label="- TestDriving -">
+    		</w2:textbox>
+    		<w2:textbox id="txt_D_4" style="position: absolute ;height: 16px;color:#ffffff;text-align:center;width:141px;left:443px;top:36px;" label="- Contract -">
+    		</w2:textbox>
+    		<w2:textbox id="txt_D_5" style="position: absolute ;height: 16px;color:#ffffff;text-align:center;width:141px;left:586px;top:36px;" label="- Sales -">
+    		</w2:textbox>
+    		<w2:textbox id="txt_D_6" style="position: absolute ;height: 16px;color:#ffffff;text-align:center;width:141px;left:729px;top:36px;" label="- BOC -">
+    		</w2:textbox>
+    		<w2:textbox id="txt_D_7" style="position: absolute ;height: 16px;color:#ffffff;text-align:center;width:141px;left:872px;top:36px;" label="- Stock -">
+    		</w2:textbox>
+    	</xf:group>
+    </body>
+</html>

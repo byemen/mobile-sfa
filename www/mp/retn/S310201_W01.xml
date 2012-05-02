@@ -1,0 +1,482 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?xml-stylesheet href="/mp/css/style.css" type="text/css"?>
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:ev="http://www.w3.org/2001/xml-events"
+    xmlns:w2="http://www.inswave.com/websquare" xmlns:xf="http://www.w3.org/2002/xforms">
+    <head>
+    	<w2:buildDate />
+    	<xf:model>
+    		<xf:instance>
+    			<data xmlns="" />
+    		</xf:instance>
+    		<xf:submission id="submissionList" ref="request" target="resList"
+        		action=""
+        		method="post" mediatype="application/xml" encoding="UTF-8" instance="" replace="instance"
+        		errorHandler="" customHandler="" mode="asynchronous"
+        		processMsg="처리중입니다.">
+        		<script type="javascript" ev:event="xforms-submit-done"><![CDATA[
+            		grd_List.setXML(WebSquare.ModelUtil.findInstanceNode("resList/root/dataset[@id='ds_List']"));
+            		
+            		fn_AfterSearch();
+            	]]></script>
+        	</xf:submission>    		
+    		<xf:submission id="submissionSc" ref="request"
+    			target="resSc" action="" method="post"
+    			mediatype="application/xml" encoding="UTF-8" instance=""
+    			replace="instance" errorHandler="" customHandler=""
+    			mode="asynchronous" processMsg="">
+    			<script type="javascript" ev:event="xforms-submit-done"><![CDATA[     				
+		        	parent.fn_SpinnerHide();
+		        	if(GV_USER_TYPE == "23"){
+						cb_Sc.removeAll();
+						cb_Sc.addItem( GV_USER_ID, GV_USER_NM, 0 );
+						cb_Sc.setSelectedIndex(0);
+		        	}	
+		        	else
+		        		cb_Sc.setSelectedIndex(0);		        		
+		        	        				        	
+		        	fn_Search();
+    			]]></script>
+    		</xf:submission>
+    	</xf:model>
+    	<script type="text/javascript" src="/mp/js/common.js"></script>
+		<script type="text/javascript" src="/mp/js/WebSquare.js"></script>
+    	<script language="javascript"><![CDATA[
+     	var FV_SEARCH_CNT = 18;		// 조회 건수
+		var FV_nMAXCNT = -1;		// 전체 데이터 수
+		var FV_sContractNo = "";
+		/****************************************************************
+		* 화면로드
+		* @param  : 없음
+		* @return : 없음
+		******************************************************************/
+        function fn_OnLoad(){
+        	wfrm_Page.visible(false);
+        	
+        	cb_Select.setValue("1");
+        	cal_FrDt.setValue(gfn_GetDate(0,0,0,"FM"));
+       		cal_ToDt.setValue(gfn_GetDate(0,0,0));
+
+        	setTitSendInfo("request", "", "", "mdms/mp/comm::CO_USERS_S01");
+        	setInputParamData("COND1", GV_UP_GROUP_ID);
+        	if(GV_USER_GROUP.indexOf("DS6") >= 0)
+        		setInputParamData("COND2", GV_DEPT_CD);
+        	setSubmissison("submissionSc");        	
+       		parent.fn_SpinnerHide();
+        }
+        /****************************************************************
+		* 조회
+		* @param  : 페이지번호
+		* @return : 없음
+		******************************************************************/ 
+        function fn_Search(pageNo){
+        	if(gfn_IsNullVal(cb_Select.getValue())){
+        		alert("조회 할 일자의 종류를 선택하여 주십시오.");
+        		return;
+        	}
+        	
+        	if(pageNo == null){
+				FV_nMAXCNT = -1;
+				pageNo = 1;
+				fn_InitPage();
+			}        	
+        	
+        	var sSqlid = "mdms/mp/retn:S310201_W01_S01@" + pageNo + "/" + FV_SEARCH_CNT;
+        	setTitSendInfo("request", "", "", sSqlid);
+        	setInputParamData("SELECT", cb_Select.getValue());
+        	setInputParamData("FROM_DT", cal_FrDt.getValue());
+        	setInputParamData("TO_DT", cal_ToDt.getValue());
+        	setInputParamData("DEALER_ID",GV_UP_GROUP_ID);
+        	setInputParamData("USER_ID", cb_Sc.getValue());
+        	setInputParamData("CUST_NM", edt_CustNm.getValue());        	
+        	
+    		setSubmissison("submissionList");
+        }
+        /****************************************************************
+		* callback (조회)
+		* @param  : 없음
+		* @return : 없음
+		******************************************************************/
+        function fn_AfterSearch(){
+        	var nRownum = (FV_nCurrPage-1) * FV_SEARCH_CNT;
+        	
+        	if(FV_nCurrPage == -1 && grd_List.getRowCount() > 0){
+				FV_nMAXCNT = grd_List.getCellData(0,0);
+				fn_SetPageInfo(1,FV_nMAXCNT,FV_SEARCH_CNT);
+				nRownum = 0;
+			}
+			
+			for(var i=0; i<grd_List.getRowCount(); i++){
+        		grd_List.setCellData(i, 1, (i+1)+nRownum);
+        	}
+        } 
+		/****************************************************************
+		* 계약번호 클릭 시 고객등록 화면 팝업
+		* @param  : 없음
+		* @return : 없음
+		******************************************************************/
+		function fn_ContractPopup(row,col){
+			if(col == 4){
+				FV_sContractNo = grd_List.getCellData(row, 3);
+				
+				gfn_OpenPopup("/mp/retn/S310202_W01.xml","계약등록",994,620,0,0);
+			}else if(col ==8){
+				var arr = new Array();
+				arr[0] = grd_List.getCellData(row,0);
+				arr[1] = grd_List.getCellData(row,7);
+				arr[2] = grd_List.getCellData(row,8);
+				parent.fn_SmsPopup(arr);
+			}
+		}
+		/****************************************************************
+		* 팝업 닫기
+		* @param  : 없음
+		* @return : 없음
+		******************************************************************/
+        function fn_PopupClose(){ 
+        	gfn_PopupClose();
+        	fn_Search();
+        }
+        
+        fn_OnLoad();
+        ]]></script>
+    </head>
+    <body>
+    	<w2:grid baseNode="dataset" autoFit="" class="grid" resize=""
+    		id="grd_List" focusMode="row"
+    		style="position:absolute;height:460px;width:991px;left:1px;top:99px;"
+    		evenRowBackgroundColor="#e1ebf5" overflowX="hidden"
+    		overflowY="hidden" oddEvenColorDisplay="true"
+    		oddRowBackgroundColor="#ffffff" readOnly="true"
+    		repeatNode="record" sortEvent="onclick">
+    		<w2:header id="header7" style="" width="472"
+    			columnClass="gridHeaderTD1" class="gridHeaderTable">
+    			<w2:row id="row16" style="">
+    				<w2:column id="_CUST_SEQ" style="height:40px"
+    					hidden="true" inputType="text" width="30" valueType="binary"
+    					colSpan="" rowSpan="2">
+    				</w2:column>
+    				<w2:column id="_T_CNT" style="height:40px"
+    					hidden="true" inputType="text" width="30" valueType="binary"
+    					colSpan="" rowSpan="2">
+    				</w2:column>
+    				<w2:column id="column222" style="height:40px;"
+    					hidden="" width="30" inputType="text" value="No" rowSpan="2"
+    					valueType="binary" colSpan="">
+    				</w2:column>
+    				<w2:column id="column327" style="height:40px"
+    					hidden="" inputType="text" width="70" valueType="binary"
+    					colSpan="" rowSpan="2">
+    				</w2:column>
+    				<w2:column id="column225" style="height:40px;"
+    					hidden="" width="57" inputType="text" value="계약번호"
+    					valueType="binary" colSpan="" rowSpan="2">
+    				</w2:column>
+    				<w2:column id="column226" style="height:40px;"
+    					hidden="" width="74" inputType="text" value="담당 SC"
+    					valueType="binary" colSpan="" rowSpan="2">
+    				</w2:column>
+    				<w2:column id="column226_" style="height:40px;"
+    					hidden="" width="85" inputType="text" value="계약상태"
+    					valueType="binary" colSpan="" rowSpan="2">
+    				</w2:column>
+    				<w2:column id="column272" style="height:20px"
+    					hidden="" inputType="text" width="120" valueType="binary"
+    					value="" colSpan="2" rowSpan="">
+    				</w2:column>
+    				<w2:column id="column278" style="height:40px"
+    					hidden="" inputType="text" width="60" valueType="binary"
+    					value="판매유형" colSpan="" rowSpan="2">
+    				</w2:column>
+    				<w2:column id="column281" style="height:40px"
+    					hidden="" inputType="text" width="65" valueType="binary"
+    					value="계약일자" colSpan="" rowSpan="2">
+    				</w2:column>
+    				<w2:column id="column284" style="height:40px"
+    					hidden="" inputType="text" width="65" valueType="binary"
+    					value="출고일자" colSpan="" rowSpan="2">
+    				</w2:column>
+    				<w2:column id="column301" style="height:40px"
+    					hidden="" inputType="text" width="70" valueType="binary"
+    					value="차종코드" colSpan="" rowSpan="2">
+    				</w2:column>
+    				<w2:column id="column287" style="height:40px"
+    					hidden="" inputType="text" width="40" valueType="binary"
+    					value="년식&lt;br&gt;&amp;nbsp;&amp;nbsp;코드" colSpan=""
+    					rowSpan="2">
+    				</w2:column>
+    				<w2:column id="column310" style="height:40px"
+    					hidden="" inputType="text" width="30" valueType="binary"
+    					value="SFX" colSpan="" rowSpan="2">
+    				</w2:column>
+    				<w2:column id="column304" style="height:40px"
+    					hidden="" inputType="text" width="150" valueType="binary"
+    					value="색상" colSpan="" rowSpan="2">
+    				</w2:column>
+    				<w2:column id="column322" style="height:40px"
+    					hidden="" inputType="text" width="85" valueType="binary"
+    					colSpan="" rowSpan="2" value="지불유형">
+    				</w2:column>
+    			</w2:row>
+    			<w2:row id="row18" style="">
+    				<w2:column id="column325" style="height:20px"
+    					hidden="" width="100" inputType="text" valueType="binary"
+    					value="고객명">
+    				</w2:column>
+    				<w2:column id="column326" style="height:20px"
+    					hidden="" width="82" inputType="text" valueType="binary"
+    					value="핸드폰">
+    				</w2:column>
+    			</w2:row>
+    		</w2:header>
+    		<w2:gBody id="gBody7" style="" columnClass="gridBodyTD"
+    			class="gridBodyTable">
+    			<w2:row id="row17" style="">
+    				<w2:column id="CUST_SEQ" style="height:21px"
+    					hidden="true" inputType="text" width="70" valueType="binary">
+    				</w2:column>
+    				<w2:column id="_T_CNT" style="height:21px"
+    					hidden="true" inputType="text" width="70" valueType="binary">
+    				</w2:column>
+    				<w2:column id="column227" style="height:21px;"
+    					hidden="" width="58" inputType="text" value=""
+    					valueType="binary" textAlign="left">
+    				</w2:column>
+    				<w2:column id="CONTRACT_NO" style="height:22px"
+    					hidden="true" inputType="text" width="70" valueType="binary">
+    				</w2:column>
+    				<w2:column id="DLR_CONTRACT_NO"
+    					style="color:#519eec;" hidden="" width="50" inputType="text"
+    					value="" valueType="binary">
+    				</w2:column>
+    				<w2:column id="SC_NM"
+    					style="height:21px;" hidden="" width="50" inputType="text"
+    					value="" valueType="binary">
+    				</w2:column>
+    				<w2:column id="CONTRACT_STAT_NM"
+    					style="height:21px;" hidden="" width="71" inputType="text"
+    					value="" valueType="binary" textAlign="left">
+    				</w2:column>
+    				<w2:column id="CUST_NM" style="height:21px"
+    					hidden="" inputType="text" width="60" valueType="binary"
+    					textAlign="left">
+    				</w2:column>
+    				<w2:column id="HP_NO"
+    					style="color:#519eec;height:21px" hidden="" inputType="text"
+    					width="80" valueType="binary" value="" textAlign="left">
+    				</w2:column>
+    				<w2:column id="SALES_TYPE_NM" style="height:21px;"
+    					hidden="" width="50" inputType="text" value=""
+    					valueType="binary" textAlign="left">
+    				</w2:column>
+    				<w2:column id="CONTRACT_DT" style="height:21px"
+    					hidden="" inputType="text" width="65" valueType="binary"
+    					value="">
+    				</w2:column>
+    				<w2:column id="RETAIL_SALES_DT" style="height:21px"
+    					hidden="" inputType="text" width="65" valueType="binary">
+    				</w2:column>
+    				<w2:column id="VARIANT_NM" style="height:21px"
+    					hidden="" inputType="text" width="70" valueType="binary"
+    					textAlign="left">
+    				</w2:column>
+    				<w2:column id="MY_CD" style="height:21px" hidden=""
+    					inputType="text" width="48" valueType="binary">
+    				</w2:column>
+    				<w2:column id="SFX_NM" style="height:21px" hidden=""
+    					inputType="text" width="30" valueType="binary"
+    					textAlign="left">
+    				</w2:column>
+    				<w2:column id="COL_COMBI_NM" style="height:21px"
+    					hidden="" inputType="text" width="149" valueType="binary"
+    					textAlign="left">
+    				</w2:column>
+    				<w2:column id="PAY_TYPE_NM" style="height:21px"
+    					hidden="" inputType="text" width="81" valueType="binary"
+    					textAlign="left">
+    				</w2:column>
+    			</w2:row>
+    		</w2:gBody>
+    		<script ev:event="onCellClick( row , col )"
+    			type="javascript"><![CDATA[ 
+    			fn_ContractPopup(row,col);
+    		]]></script>
+    	</w2:grid>
+    	<xf:image id="image42" src="/mp/images/smenu_bg.png"
+    		style="position: absolute ;height:36px;width:991px;left:0px;top:0px;">
+    	</xf:image>
+
+    	<xf:image id="image43" src="/mp/images/stitle_bg.png"
+    		style="position: absolute ;height:36px;width:172px;left:1px;top:0px;">
+    	</xf:image>
+    	<w2:textbox class="title" id="title" label="계약조회"
+    		style="position: absolute ;height:20px;width:149px;left:3px;top:11px;;text-align:center">
+    	</w2:textbox>
+    	<xf:select1 id="cb_Select" appearance="minimal"
+    		style="position: absolute ;height:22px;width:80px;left:171px;top:55px;"
+    		direction="auto" chooseOption="true" displayMode="label"
+    		allOption="" class="input_edit" disabled="false"
+    		submenuSize="auto" chooseOptionLabel="select"
+    		visibleRowNum="10">
+    		<xf:choices>
+    			<xf:item>
+    				<xf:label>계약일자</xf:label>
+    				<xf:value>1</xf:value>
+    			</xf:item>
+    			<xf:item>
+    				<xf:label>계약승인일자</xf:label>
+    				<xf:value>2</xf:value>
+    			</xf:item>
+    			<xf:item>
+    				<xf:label>출고요청일자</xf:label>
+    				<xf:value>3</xf:value>
+    			</xf:item>
+    			<xf:item>
+    				<xf:label>출고승인일자</xf:label>
+    				<xf:value>4</xf:value>
+    			</xf:item>
+    			<xf:item>
+    				<xf:label>출고일자</xf:label>
+    				<xf:value>5</xf:value>
+    			</xf:item>
+    			<xf:item>
+    				<xf:label>인도예정일자</xf:label>
+    				<xf:value>6</xf:value>
+    			</xf:item>
+    			<xf:item>
+    				<xf:label>등록예정일자</xf:label>
+    				<xf:value>7</xf:value>
+    			</xf:item>
+    			<xf:item>
+    				<xf:label>취소일자</xf:label>
+    				<xf:value>8</xf:value>
+    			</xf:item>
+    			<xf:item>
+    				<xf:label>등록일시</xf:label>
+    				<xf:value>9</xf:value>
+    			</xf:item>
+    		</xf:choices>
+    	</xf:select1>
+    	<xf:image id="btn_Search"
+    		src="/mp/images/if_btn_seach.png"
+    		style="position: absolute ;height:25px;width:77px;left:892px;top:54px;">
+    		<script ev:event="onclick" type="javascript"><![CDATA[ 
+    			fn_Search();
+    		]]></script>
+    	</xf:image>
+    	<xf:trigger class="btn_on1" id="trigger1"
+    		style="position: absolute ;height:25px;width:88px;left:717px;top:6px;"
+    		type="image">
+    		<xf:label>계약조회</xf:label>
+    		<script ev:event="onclick" type="javascript"><![CDATA[ 
+    			parent.fn_SpinnerShow();
+    			parent.ifrm_Main.setSrc("/mp/retn/S310201_W01.xml");
+    		]]></script>
+    	</xf:trigger>
+    	<xf:trigger class="btn_s2" id="trigger2"
+    		style="position: absolute ;height:25px;width:88px;left:805px;top:6px;"
+    		type="image">
+    		<xf:label>가격조회</xf:label>
+    		<script ev:event="onclick" type="javascript"><![CDATA[ 
+    			parent.fn_SpinnerShow();
+    			parent.ifrm_Main.setSrc("/mp/retn/S310204_W01.xml");
+    		]]></script>
+    	</xf:trigger>
+    	<xf:trigger class="btn_s3" id="trigger3"
+    		style="position: absolute ;height:25px;width:88px;left:894px;top:6px;"
+    		type="image">
+    		<xf:label>계약등록</xf:label>
+    		<script ev:event="onclick" type="javascript"><![CDATA[ 
+    			parent.fn_SpinnerShow();
+    			parent.ifrm_Main.setSrc("/mp/retn/S310202_W01.xml");
+    		]]></script>
+    	</xf:trigger>
+    	<xf:input class="input_edit" id="edt_CustNm"
+    		style="position: absolute ;height:22px;width:134px;left:742px;top:55px;">
+    	</xf:input>
+    	<w2:textbox id="output70"
+    		style="position: absolute ;height:22px;width:50px;left:689px;top:56px;"
+    		class="if_lable" label="고객명">
+    	</w2:textbox>
+    	<xf:image id="btn_Prev" src="/mp/images/btn2_left.png"
+    		style="position: absolute ;height:24px;cursor:hand;width:31px;left:455px;top:55px;">
+    		<script ev:event="onclick" type="javascript">
+    			<![CDATA[ 
+    			gfn_ProcessDate("prev",cal_FrDt,cal_ToDt);
+    		]]></script>
+    	</xf:image>
+    	<w2:inputCalendar calendarValueType="yearMonthDate"
+    		class="input_edit" id="cal_ToDt"
+    		style="position: absolute ;height:24px;width:92px;left:361px;top:55px;">
+    	</w2:inputCalendar>
+    	<xf:image id="btn_Next" src="/mp/images/btn2_right.png"
+    		style="position: absolute ;cursor:hand;height:24px;width:31px;left:489px;top:55px;">
+    		<script ev:event="onclick" type="javascript">
+    			<![CDATA[ 
+    			gfn_ProcessDate("next",cal_FrDt,cal_ToDt);
+    		]]></script>
+    	</xf:image>
+    	<xf:trigger id="btn_Month"
+    		style="position: absolute ;height:26px;width:31px;left:589px;top:54px;"
+    		type="button">
+    		<xf:label>M</xf:label>
+    		<script ev:event="onclick" type="javascript">
+    			<![CDATA[ 
+    			gfn_ProcessDate("month",cal_FrDt,cal_ToDt);
+    		]]></script>
+    	</xf:trigger>
+    	<xf:trigger id="btn_Day"
+    		style="position: absolute ;height:26px;width:31px;left:523px;top:54px;"
+    		type="button">
+    		<xf:label>D</xf:label>
+    		<script ev:event="onclick" type="javascript">
+    			<![CDATA[ 
+    			gfn_ProcessDate("day",cal_FrDt,cal_ToDt);
+    		]]></script>
+    	</xf:trigger>
+    	<xf:trigger id="btn_Year"
+    		style="position: absolute ;height:26px;width:31px;left:622px;top:54px;"
+    		type="button">
+    		<xf:label>Y</xf:label>
+    		<script ev:event="onclick" type="javascript">
+    			<![CDATA[
+    			gfn_ProcessDate("year",cal_FrDt,cal_ToDt);
+    		]]></script>
+    	</xf:trigger>
+    	<w2:textbox class="txt1" id="output2" label="~"
+    		style="position: absolute ;height:21px;text-align:center;width:14px;left:347px;top:56px;">
+    	</w2:textbox>
+    	<w2:inputCalendar calendarValueType="yearMonthDate"
+    		class="input_edit" id="cal_FrDt"
+    		style="position: absolute ;height:24px;width:92px;left:255px;top:55px;">
+    	</w2:inputCalendar>
+    	<xf:trigger id="btn_Week"
+    		style="position: absolute ;height:26px;width:31px;left:556px;top:54px;"
+    		type="button">
+    		<xf:label>W</xf:label>
+    		<script ev:event="onclick" type="javascript">
+    			<![CDATA[ 
+    			gfn_ProcessDate("week",cal_FrDt,cal_ToDt);
+    		]]></script>
+    	</xf:trigger>
+
+    	<w2:wframe id="wfrm_Page" mode="async"
+    		src="/mp/comm/Paging.xml"
+    		style="position: absolute ;left:276px;top:569px;width:443px;height:28px;">
+    	</w2:wframe>
+    	<w2:textbox class="if_lable" id="textbox1" label="담당SC"
+    		style="position: absolute ;height:22px;width:50px;left:5px;top:55px;">
+    	</w2:textbox>
+    	<xf:select1 allOption="" appearance="minimal" chooseOption=""
+    		class="input_edit" direction="auto" disabled="false"
+    		displayMode="label" id="cb_Sc"
+    		style="position: absolute ;height:22px;width:104px;left:58px;top:55px;"
+    		submenuSize="auto" visibleRowNum="20">
+    		<xf:choices>
+    			<xf:itemset nodeset="resSc/root/dataset[@id='ds_Sc']">
+    				<xf:label ref="record/NAME"></xf:label>
+    				<xf:value ref="record/CODE"></xf:value>
+    			</xf:itemset>
+    		</xf:choices>
+    	</xf:select1>
+    </body>
+</html>
