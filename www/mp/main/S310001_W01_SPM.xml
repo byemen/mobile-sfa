@@ -282,6 +282,8 @@
         }
 
         fn_OnLoad();
+            console.log('==============================================================');
+            alert("a");
         ]]></script>
     </head>
     <body>
@@ -685,9 +687,13 @@
     		</w2:gBody>
     		<script ev:event="onCellClick( row , col )"
     			type="javascript"><![CDATA[ 
+                    alert("aaaaa");
+                    console.log("aabsolute");
+                    alert(col);
     			if(col == 4){
 					FV_sCustSeq = grd_DailyActive.getCellData(row, 4);
-					
+                    alert(FV_sCustSeq);
+					console.log(FV_sCustSeq);
 					//gfn_OpenPopup("/mp/cust/S310102_W01.xml","고객등록",994,620,0,0);
 					gfn_OpenPopup("/mp/main/Uc.xml","공사중",994,620,0,0);
 				}else if(col == 5){
@@ -1081,7 +1087,7 @@
     			fn_SearchDaily("C");
     		]]></script>
     	</xf:trigger>
-    	<xf:trigger class="btn_p" id="trigger4"
+    	<xf:button class="btn_p" id="trigger4"
     		style="position: absolute ;height:30px;width:74px;left:911px;top:451px;"
     		type="image">
     		<xf:label>more</xf:label>
@@ -1091,6 +1097,6 @@
 				var sSrc = "/mp/act/S310303_P01.xml";
 				parent.fn_MainPopup(sSrc,"금일영업기회",1024,1087,0,0,"Today");
     		]]></script>
-    	</xf:trigger>
+    	</xf:button>
     </body>
 </html>

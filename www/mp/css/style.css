@@ -68,7 +68,7 @@ a:active, a:hover, a:focus{
 	font-family: Dotum,Helvetica,AppleGothic;
 	font-size: 12px;
 	vertical-align: middle;
-	background-image:url(/mp/images/sub_bullet.png);
+	background-image:url(../mp/images/sub_bullet.png);
 	background-repeat:no-repeat;
 	background-position:left middle;
 	padding-left: 12px;
@@ -78,7 +78,7 @@ a:active, a:hover, a:focus{
 	font-family: Dotum,Helvetica,AppleGothic;
 	font-size: 12px;
 	vertical-align: middle;
-	background-image:url(/mp/images/sub_bullet.png);
+	background-image:url(../mp/images/sub_bullet.png);
 	background-repeat:no-repeat;
 	background-position:left middle;
 	padding-left: 12px;
@@ -322,7 +322,7 @@ a:active, a:hover, a:focus{
 	border-bottom : 1px solid #b4b4b4;	
 }
 .gridHeaderTD1 {	
-	background-image: url(/mp/images/g_h_1.png);
+	background-image: url(../mp/images/g_h_1.png);
 	background-repeat: x-repeat;
 	background-position: top;
 	background-color: #dedcdc;
@@ -411,13 +411,13 @@ a:active, a:hover, a:focus{
 ********************************************************************************/
 .tabL {
 	position:relative;
-	background-image: url(/mp/images/tab_l.png);
+	background-image: url(../mp/images/tab_l.png);
 	background-repeat: no-repeat;
 	width:21px;	
 }
 .tabC_1 {
 	position:relative;
-	background-image: url(/mp/images/tab_c1_over.png);
+	background-image: url(../mp/images/tab_c1_over.png);
 	background-repeat: repeat-x;
 	text-align:center;
 	padding:0px;
@@ -428,7 +428,7 @@ a:active, a:hover, a:focus{
 }
 .tabC_2 {
 	position:relative;
-	background-image: url(/mp/images/tab_c2_over.png);
+	background-image: url(../mp/images/tab_c2_over.png);
 	background-repeat: repeat-x;
 	text-align:center;
 	padding:0px;
@@ -440,7 +440,7 @@ a:active, a:hover, a:focus{
 }
 .tabR {
 	position:relative;
-	background-image: url(/mp/images/tab_r.png);
+	background-image: url(../mp/images/tab_r.png);
 	background-repeat: no-repeat;
 	background-position:right top;	
 	width:21px;	
@@ -449,14 +449,14 @@ a:active, a:hover, a:focus{
 
 .tabL_on {
 	position:relative;
-	background-image: url(/mp/images/tab_l_on.png);
+	background-image: url(../mp/images/tab_l_on.png);
 	background-repeat: no-repeat;
 	width:21px;
 	z-index: 3000;	
 }
 .tabC_on_1 {
 	position:relative;
-	background-image: url(/mp/images/tab_c1_on.png);
+	background-image: url(../mp/images/tab_c1_on.png);
 	background-repeat: repeat-x;
 	text-align:center;
 	padding-top:3px;
@@ -469,7 +469,7 @@ a:active, a:hover, a:focus{
 }
 .tabC_on_2 {
 	position:relative;
-	background-image: url(/mp/images/tab_c2_on.png);
+	background-image: url(../mp/images/tab_c2_on.png);
 	background-repeat: repeat-x;
 	text-align:center;
 	padding-top:3px;
@@ -482,7 +482,7 @@ a:active, a:hover, a:focus{
 }
 .tabR_on {
 	position:relative;
-	background-image: url(/mp/images/tab_r_on.png);
+	background-image: url(../mp/images/tab_r_on.png);
 	background-repeat: no-repeat;
 	background-position:right top;
 	width:21px;
@@ -492,13 +492,13 @@ a:active, a:hover, a:focus{
 
 .tabL_over {
 	position:relative;
-	background-image: url(/mp/images/tab_l_on.png);
+	background-image: url(../mp/images/tab_l_on.png);
 	background-repeat: no-repeat;
 	width:21px;	
 }
 .tabC_over_1 {
 	position:relative;
-	background-image: url(/mp/images/tab_c1_on.png);
+	background-image: url(../mp/images/tab_c1_on.png);
 	background-repeat: repeat-x;
 	text-align:center;
 	padding:0px;
@@ -510,7 +510,7 @@ a:active, a:hover, a:focus{
 }
 .tabC_over_2 {
 	position:relative;
-	background-image: url(/mp/images/tab_c2_on.png);
+	background-image: url(../mp/images/tab_c2_on.png);
 	background-repeat: repeat-x;
 	text-align:center;
 	padding:0px;
@@ -522,7 +522,7 @@ a:active, a:hover, a:focus{
 }
 .tabR_over {
 	position:relative;
-	background-image: url(/mp/images/tab_r_on.png);
+	background-image: url(../mp/images/tab_r_on.png);
 	background-repeat: no-repeat;
 	background-position:right top;
 	width:21px;
@@ -537,13 +537,13 @@ a:active, a:hover, a:focus{
 
 .tab1L {
 	position:relative;
-	background-image: url(/mp/images/ta_l.gif);
+	background-image: url(../mp/images/ta_l.gif);
 	background-repeat: no-repeat;
 	width:10px;	
 }
 .tab1C {
 	position:relative;
-	background-image: url(/mp/images/ta_c.gif);
+	background-image: url(../mp/images/ta_c.gif);
 	background-repeat: repeat-x;
 	text-align:center;
 	padding:0px;
@@ -554,21 +554,21 @@ a:active, a:hover, a:focus{
 }
 .tab1R {
 	position:relative;
-	background-image: url(/mp/images/ta_r.gif);
+	background-image: url(../mp/images/ta_r.gif);
 	background-repeat: no-repeat;
 	background-position:right top;	
 	width:10px;	
 }
 .tab1L_on {
 	position:relative;
-	background-image: url(/mp/images/ta_lOn.gif);
+	background-image: url(../mp/images/ta_lOn.gif);
 	background-repeat: no-repeat;
 	width:10px;
 	z-index: 3000;	
 }
 .tab1C_on {
 	position:relative;
-	background-image: url(/mp/images/ta_cOn.gif);
+	background-image: url(../mp/images/ta_cOn.gif);
 	background-repeat: repeat-x;
 	text-align:center;
 	padding-top:3px;
@@ -580,7 +580,7 @@ a:active, a:hover, a:focus{
 }
 .tab1R_on {
 	position:relative;
-	background-image: url(/mp/images/ta_rOn.gif);
+	background-image: url(../mp/images/ta_rOn.gif);
 	background-repeat: no-repeat;
 	background-position:right top;
 	width:10px;
@@ -588,13 +588,13 @@ a:active, a:hover, a:focus{
 }
 .tab1L_over {
 	position:relative;
-	background-image: url(/mp/images/ta_lOn.gif);
+	background-image: url(../mp/images/ta_lOn.gif);
 	background-repeat: no-repeat;
 	width:10px;	
 }
 .tab1C_over {
 	position:relative;
-	background-image: url(/mp/images/ta_cOn.gif);
+	background-image: url(../mp/images/ta_cOn.gif);
 	background-repeat: repeat-x;
 	text-align:center;
 	padding:0px;
@@ -605,7 +605,7 @@ a:active, a:hover, a:focus{
 }
 .tab1R_over {
 	position:relative;
-	background-image: url(/mp/images/ta_rOn.gif);
+	background-image: url(../mp/images/ta_rOn.gif);
 	background-repeat: no-repeat;
 	background-position:right top;
 	width:10px;
@@ -623,13 +623,13 @@ a:active, a:hover, a:focus{
 /* default */
 
 .btn_n .w2trigger_left {
-	background-image:url(/mp/images/btn_n_l.png);
+	background-image:url(../mp/images/btn_n_l.png);
 	background-repeat:no-repeat;
 	width:17px;
 	height:30px;
 }
 .btn_n .w2trigger_center {
-	background-image:url(/mp/images/btn_n_c.png);
+	background-image:url(../mp/images/btn_n_c.png);
 	background-repeat:repeat-x;
 	font-size: 12px;
 	font-family: dotum;
@@ -638,7 +638,7 @@ a:active, a:hover, a:focus{
 	text-align: center;
 }
 .btn_n .w2trigger_right{
-	background-image:url(/mp/images/btn_n_r.png);
+	background-image:url(../mp/images/btn_n_r.png);
 	background-repeat:no-repeat;
 	width:17px;
 	height:30px;
@@ -647,13 +647,13 @@ a:active, a:hover, a:focus{
 /* over */
 
 .btn_n .w2trigger_over .w2trigger_left {
-	background-image:url(/mp/images/btn_n_l.png);
+	background-image:url(../mp/images/btn_n_l.png);
 	background-repeat:no-repeat;
 	width:17px;
 	height:30px;
 }
 .btn_n .w2trigger_over .w2trigger_center {
-	background-image:url(/mp/images/btn_n_c.png);
+	background-image:url(../mp/images/btn_n_c.png);
 	background-repeat:repeat-x;
 	font-size: 12px;
 	font-family: dotum;
@@ -662,7 +662,7 @@ a:active, a:hover, a:focus{
 	text-align: center;
 }
 .btn_n .w2trigger_over .w2trigger_right{
-	background-image:url(/mp/images/btn_n_r.png);
+	background-image:url(../mp/images/btn_n_r.png);
 	background-repeat:no-repeat;
 	width:17px;
 	height:30px;
@@ -670,13 +670,13 @@ a:active, a:hover, a:focus{
 
 /* Disabled */
 .btn_n .w2trigger_disabled .w2trigger_left {
-	background-image:url(/mp/images/btn_n_l.png);
+	background-image:url(../mp/images/btn_n_l.png);
 	background-repeat:no-repeat;
 	width:17px;
 	height:30px;
 }
 .btn_n .w2trigger_disabled .w2trigger_center {
-	background-image:url(/mp/images/btn_n_c.png);
+	background-image:url(../mp/images/btn_n_c.png);
 	background-repeat:repeat-x;
 	font-size: 12px;
 	font-family: dotum;
@@ -685,7 +685,7 @@ a:active, a:hover, a:focus{
 	text-align: center;
 }
 .btn_n .w2trigger_disabled .w2trigger_right{
-	background-image:url(/mp/images/btn_n_r.png);
+	background-image:url(../mp/images/btn_n_r.png);
 	background-repeat:no-repeat;
 	width:17px;
 	height:30px;
@@ -696,13 +696,13 @@ a:active, a:hover, a:focus{
 /* default */
 
 .btn_p .w2trigger_left {
-	background-image:url(/mp/images/btn_p_l.png);
+	background-image:url(../mp/images/btn_p_l.png);
 	background-repeat:no-repeat;
 	width:17px;
 	height:30px;
 }
 .btn_p .w2trigger_center {
-	background-image:url(/mp/images/btn_n_c.png);
+	background-image:url(../mp/images/btn_n_c.png);
 	background-repeat:repeat-x;
 	font-size: 12px;
 	font-family: dotum;
@@ -711,7 +711,7 @@ a:active, a:hover, a:focus{
 	text-align: center;
 }
 .btn_p .w2trigger_right{
-	background-image:url(/mp/images/btn_n_r.png);
+	background-image:url(../mp/images/btn_n_r.png);
 	background-repeat:no-repeat;
 	width:17px;
 	height:30px;
@@ -720,13 +720,13 @@ a:active, a:hover, a:focus{
 /* over */
 
 .btn_p .w2trigger_over .w2trigger_left {
-	background-image:url(/mp/images/btn_p_l.png);
+	background-image:url(../mp/images/btn_p_l.png);
 	background-repeat:no-repeat;
 	width:17px;
 	height:30px;
 }
 .btn_p .w2trigger_over .w2trigger_center {
-	background-image:url(/mp/images/btn_n_c.png);
+	background-image:url(../mp/images/btn_n_c.png);
 	background-repeat:repeat-x;
 	font-size: 12px;
 	font-family: dotum;
@@ -735,7 +735,7 @@ a:active, a:hover, a:focus{
 	text-align: center;
 }
 .btn_p .w2trigger_over .w2trigger_right{
-	background-image:url(/mp/images/btn_n_r.png);
+	background-image:url(../mp/images/btn_n_r.png);
 	background-repeat:no-repeat;
 	width:17px;
 	height:30px;
@@ -743,13 +743,13 @@ a:active, a:hover, a:focus{
 
 /* Disabled */
 .btn_p .w2trigger_disabled .w2trigger_left {
-	background-image:url(/mp/images/btn_p_l.png);
+	background-image:url(../mp/images/btn_p_l.png);
 	background-repeat:no-repeat;
 	width:17px;
 	height:30px;
 }
 .btn_p .w2trigger_disabled .w2trigger_center {
-	background-image:url(/mp/images/btn_n_c.png);
+	background-image:url(../mp/images/btn_n_c.png);
 	background-repeat:repeat-x;
 	font-size: 12px;
 	font-family: dotum;
@@ -758,7 +758,7 @@ a:active, a:hover, a:focus{
 	text-align: center;
 }
 .btn_p .w2trigger_disabled .w2trigger_right{
-	background-image:url(/mp/images/btn_n_r.png);
+	background-image:url(../mp/images/btn_n_r.png);
 	background-repeat:no-repeat;
 	width:17px;
 	height:30px;
@@ -769,13 +769,13 @@ a:active, a:hover, a:focus{
 /* 1번 */
 
 .btn_s1 .w2trigger_left {
-	background-image:url(/mp/images/btn_s_l.png);
+	background-image:url(../mp/images/btn_s_l.png);
 	background-repeat:no-repeat;
 	width:15px;
 	height:25px;
 }
 .btn_s1 .w2trigger_center {
-	background-image:url(/mp/images/btn_s_c.png);
+	background-image:url(../mp/images/btn_s_c.png);
 	background-repeat:repeat-x;
 	font-size: 12px;
 	font-family: dotum;
@@ -784,7 +784,7 @@ a:active, a:hover, a:focus{
 	text-align: center;
 }
 .btn_s1 .w2trigger_right{
-	background-image:url(/mp/images/btn_s_c.png);
+	background-image:url(../mp/images/btn_s_c.png);
 	background-repeat:no-repeat;
 	width:15px;
 	height:25px;
@@ -793,13 +793,13 @@ a:active, a:hover, a:focus{
 /* over */
 
 .btn_s1 .w2trigger_over .w2trigger_left {
-	background-image:url(/mp/images/btn_s_l.png);
+	background-image:url(../mp/images/btn_s_l.png);
 	background-repeat:no-repeat;
 	width:15px;
 	height:25px;
 }
 .btn_s1 .w2trigger_over .w2trigger_center {
-	background-image:url(/mp/images/btn_s_c.png);
+	background-image:url(../mp/images/btn_s_c.png);
 	background-repeat:repeat-x;
 	font-size: 12px;
 	font-family: dotum;
@@ -808,7 +808,7 @@ a:active, a:hover, a:focus{
 	text-align: center;
 }
 .btn_s1 .w2trigger_over .w2trigger_right{
-	background-image:url(/mp/images/btn_s_c.png);
+	background-image:url(../mp/images/btn_s_c.png);
 	background-repeat:no-repeat;
 	width:15px;
 	height:25px;
@@ -816,13 +816,13 @@ a:active, a:hover, a:focus{
 
 /* Disabled */
 .btn_s1 .w2trigger_disabled .w2trigger_left {
-	background-image:url(/mp/images/btn_s_l.png);
+	background-image:url(../mp/images/btn_s_l.png);
 	background-repeat:no-repeat;
 	width:15px;
 	height:25px;
 }
 .btn_s1 .w2trigger_disabled .w2trigger_center {
-	background-image:url(/mp/images/btn_s_c.png);
+	background-image:url(../mp/images/btn_s_c.png);
 	background-repeat:repeat-x;
 	font-size: 12px;
 	font-family: dotum;
@@ -831,7 +831,7 @@ a:active, a:hover, a:focus{
 	text-align: center;
 }
 .btn_s1.w2trigger_disabled .w2trigger_right{
-	background-image:url(/mp/images/btn_s_c.png);
+	background-image:url(../mp/images/btn_s_c.png);
 	background-repeat:no-repeat;
 	width:15px;
 	height:25px;
@@ -840,13 +840,13 @@ a:active, a:hover, a:focus{
 /* 2번 */
 
 .btn_s2 .w2trigger_left {
-	background-image:url(/mp/images/btn_s_c.png);
+	background-image:url(../mp/images/btn_s_c.png);
 	background-repeat:no-repeat;
 	width:15px;
 	height:25px;
 }
 .btn_s2 .w2trigger_center {
-	background-image:url(/mp/images/btn_s_c.png);
+	background-image:url(../mp/images/btn_s_c.png);
 	background-repeat:repeat-x;
 	font-size: 12px;
 	font-family: dotum;
@@ -855,7 +855,7 @@ a:active, a:hover, a:focus{
 	text-align: center;
 }
 .btn_s2 .w2trigger_right{
-	background-image:url(/mp/images/btn_s_c.png);
+	background-image:url(../mp/images/btn_s_c.png);
 	background-repeat:no-repeat;
 	width:15px;
 	height:25px;
@@ -864,13 +864,13 @@ a:active, a:hover, a:focus{
 /* over */
 
 .btn_s2 .w2trigger_over .w2trigger_left {
-	background-image:url(/mp/images/btn_s_c.png);
+	background-image:url(../mp/images/btn_s_c.png);
 	background-repeat:no-repeat;
 	width:15px;
 	height:25px;
 }
 .btn_s2 .w2trigger_over .w2trigger_center {
-	background-image:url(/mp/images/btn_s_c.png);
+	background-image:url(../mp/images/btn_s_c.png);
 	background-repeat:repeat-x;
 	font-size: 12px;
 	font-family: dotum;
@@ -879,7 +879,7 @@ a:active, a:hover, a:focus{
 	text-align: center;
 }
 .btn_s2 .w2trigger_over .w2trigger_right{
-	background-image:url(/mp/images/btn_s_c.png);
+	background-image:url(../mp/images/btn_s_c.png);
 	background-repeat:no-repeat;
 	width:15px;
 	height:25px;
@@ -887,13 +887,13 @@ a:active, a:hover, a:focus{
 
 /* Disabled */
 .btn_s2 .w2trigger_disabled .w2trigger_left {
-	background-image:url(/mp/images/btn_s_c.png);
+	background-image:url(../mp/images/btn_s_c.png);
 	background-repeat:no-repeat;
 	width:15px;
 	height:25px;
 }
 .btn_s2 .w2trigger_disabled .w2trigger_center {
-	background-image:url(/mp/images/btn_s_c.png);
+	background-image:url(../mp/images/btn_s_c.png);
 	background-repeat:repeat-x;
 	font-size: 12px;
 	font-family: dotum;
@@ -902,7 +902,7 @@ a:active, a:hover, a:focus{
 	text-align: center;
 }
 .btn_s2.w2trigger_disabled .w2trigger_right{
-	background-image:url(/mp/images/btn_s_c.png);
+	background-image:url(../mp/images/btn_s_c.png);
 	background-repeat:no-repeat;
 	width:15px;
 	height:25px;
@@ -910,13 +910,13 @@ a:active, a:hover, a:focus{
 /* 3번 */
 
 .btn_s3 .w2trigger_left {
-	background-image:url(/mp/images/btn_s_c.png);
+	background-image:url(../mp/images/btn_s_c.png);
 	background-repeat:no-repeat;
 	width:15px;
 	height:25px;
 }
 .btn_s3 .w2trigger_center {
-	background-image:url(/mp/images/btn_s_c.png);
+	background-image:url(../mp/images/btn_s_c.png);
 	background-repeat:repeat-x;
 	font-size: 12px;
 	font-family: dotum;
@@ -925,7 +925,7 @@ a:active, a:hover, a:focus{
 	text-align: center;
 }
 .btn_s3 .w2trigger_right{
-	background-image:url(/mp/images/btn_s_r.png);
+	background-image:url(../mp/images/btn_s_r.png);
 	background-repeat:no-repeat;
 	width:15px;
 	height:25px;
@@ -934,13 +934,13 @@ a:active, a:hover, a:focus{
 /* over */
 
 .btn_s3 .w2trigger_over .w2trigger_left {
-	background-image:url(/mp/images/btn_s_c.png);
+	background-image:url(../mp/images/btn_s_c.png);
 	background-repeat:no-repeat;
 	width:15px;
 	height:25px;
 }
 .btn_s3 .w2trigger_over .w2trigger_center {
-	background-image:url(/mp/images/btn_s_c.png);
+	background-image:url(../mp/images/btn_s_c.png);
 	background-repeat:repeat-x;
 	font-size: 12px;
 	font-family: dotum;
@@ -949,7 +949,7 @@ a:active, a:hover, a:focus{
 	text-align: center;
 }
 .btn_s3 .w2trigger_over .w2trigger_right{
-	background-image:url(/mp/images/btn_s_r.png);
+	background-image:url(../mp/images/btn_s_r.png);
 	background-repeat:no-repeat;
 	width:15px;
 	height:25px;
@@ -957,13 +957,13 @@ a:active, a:hover, a:focus{
 
 /* Disabled */
 .btn_s3 .w2trigger_disabled .w2trigger_left {
-	background-image:url(/mp/images/btn_s_c.png);
+	background-image:url(../mp/images/btn_s_c.png);
 	background-repeat:no-repeat;
 	width:15px;
 	height:25px;
 }
 .btn_s3 .w2trigger_disabled .w2trigger_center {
-	background-image:url(/mp/images/btn_s_c.png);
+	background-image:url(../mp/images/btn_s_c.png);
 	background-repeat:repeat-x;
 	font-size: 12px;
 	font-family: dotum;
@@ -972,7 +972,7 @@ a:active, a:hover, a:focus{
 	text-align: center;
 }
 .btn_s3.w2trigger_disabled .w2trigger_right{
-	background-image:url(/mp/images/btn_s_r.png);
+	background-image:url(../mp/images/btn_s_r.png);
 	background-repeat:no-repeat;
 	width:15px;
 	height:25px;
@@ -982,13 +982,13 @@ a:active, a:hover, a:focus{
 /* 1번 온 */
 /* default */
 .btn_on1 .w2trigger_left {
-	background-image:url(/mp/images/btn_s_l_on.png);
+	background-image:url(../mp/images/btn_s_l_on.png);
 	background-repeat:no-repeat;
 	width:15px;
 	height:25px;
 }
 .btn_on1 .w2trigger_center {
-	background-image:url(/mp/images/btn_s_c_on.png);
+	background-image:url(../mp/images/btn_s_c_on.png);
 	background-repeat:repeat-x;
 	font-size: 12px;
 	font-family: dotum;
@@ -997,7 +997,7 @@ a:active, a:hover, a:focus{
 	text-align: center;
 }
 .btn_on1 .w2trigger_right{
-	background-image:url(/mp/images/btn_s_c_ron.png);
+	background-image:url(../mp/images/btn_s_c_ron.png);
 	background-repeat:no-repeat;
 	width:15px;
 	height:25px;
@@ -1006,13 +1006,13 @@ a:active, a:hover, a:focus{
 /* over */
 
 .btn_on1 .w2trigger_over .w2trigger_left {
-	background-image:url(/mp/images/btn_s_l_on.png);
+	background-image:url(../mp/images/btn_s_l_on.png);
 	background-repeat:no-repeat;
 	width:15px;
 	height:25px;
 }
 .btn_on1 .w2trigger_over .w2trigger_center {
-	background-image:url(/mp/images/btn_s_c_on.png);
+	background-image:url(../mp/images/btn_s_c_on.png);
 	background-repeat:repeat-x;
 	font-size: 12px;
 	font-family: dotum;
@@ -1021,7 +1021,7 @@ a:active, a:hover, a:focus{
 	text-align: center;
 }
 .btn_on1 .w2trigger_over .w2trigger_right{
-	background-image:url(/mp/images/btn_s_c_ron.png);
+	background-image:url(../mp/images/btn_s_c_ron.png);
 	background-repeat:no-repeat;
 	width:15px;
 	height:25px;
@@ -1029,13 +1029,13 @@ a:active, a:hover, a:focus{
 
 /* Disabled */
 .btn_on1 .w2trigger_disabled .w2trigger_left {
-	background-image:url(/mp/images/btn_s_l_on.png);
+	background-image:url(../mp/images/btn_s_l_on.png);
 	background-repeat:no-repeat;
 	width:15px;
 	height:25px;
 }
 .btn_on1 .w2trigger_disabled .w2trigger_center {
-	background-image:url(/mp/images/btn_s_c_on.png);
+	background-image:url(../mp/images/btn_s_c_on.png);
 	background-repeat:repeat-x;
 	font-size: 12px;
 	font-family: dotum;
@@ -1044,7 +1044,7 @@ a:active, a:hover, a:focus{
 	text-align: center;
 }
 .btn_on1 .w2trigger_disabled .w2trigger_right{
-	background-image:url(/mp/images/btn_s_c_ron.png);
+	background-image:url(../mp/images/btn_s_c_ron.png);
 	background-repeat:no-repeat;
 	width:15px;
 	height:25px;
@@ -1053,13 +1053,13 @@ a:active, a:hover, a:focus{
 /* 2번 온 */
 /* default */
 .btn_on2 .w2trigger_left {
-	background-image:url(/mp/images/btn_s_c_lon.png);
+	background-image:url(../mp/images/btn_s_c_lon.png);
 	background-repeat:no-repeat;
 	width:15px;
 	height:25px;
 }
 .btn_on2 .w2trigger_center {
-	background-image:url(/mp/images/btn_s_c_on.png);
+	background-image:url(../mp/images/btn_s_c_on.png);
 	background-repeat:repeat-x;
 	font-size: 12px;
 	font-family: dotum;
@@ -1068,7 +1068,7 @@ a:active, a:hover, a:focus{
 	text-align: center;
 }
 .btn_on2 .w2trigger_right{
-	background-image:url(/mp/images/btn_s_c_ron.png);
+	background-image:url(../mp/images/btn_s_c_ron.png);
 	background-repeat:no-repeat;
 	width:15px;
 	height:25px;
@@ -1077,13 +1077,13 @@ a:active, a:hover, a:focus{
 /* over */
 
 .btn_on2 .w2trigger_over .w2trigger_left {
-	background-image:url(/mp/images/btn_s_c_lon.png);
+	background-image:url(../mp/images/btn_s_c_lon.png);
 	background-repeat:no-repeat;
 	width:15px;
 	height:25px;
 }
 .btn_on2 .w2trigger_over .w2trigger_center {
-	background-image:url(/mp/images/btn_s_c_on.png);
+	background-image:url(../mp/images/btn_s_c_on.png);
 	background-repeat:repeat-x;
 	font-size: 12px;
 	font-family: dotum;
@@ -1092,7 +1092,7 @@ a:active, a:hover, a:focus{
 	text-align: center;
 }
 .btn_on2 .w2trigger_over .w2trigger_right{
-	background-image:url(/mp/images/btn_s_c_ron.png);
+	background-image:url(../mp/images/btn_s_c_ron.png);
 	background-repeat:no-repeat;
 	width:15px;
 	height:25px;
@@ -1100,13 +1100,13 @@ a:active, a:hover, a:focus{
 
 /* Disabled */
 .btn_on2 .w2trigger_disabled .w2trigger_left {
-	background-image:url(/mp/images/btn_s_c_lon.png);
+	background-image:url(../mp/images/btn_s_c_lon.png);
 	background-repeat:no-repeat;
 	width:15px;
 	height:25px;
 }
 .btn_on2 .w2trigger_disabled .w2trigger_center {
-	background-image:url(/mp/images/btn_s_c_on.png);
+	background-image:url(../mp/images/btn_s_c_on.png);
 	background-repeat:repeat-x;
 	font-size: 12px;
 	font-family: dotum;
@@ -1115,7 +1115,7 @@ a:active, a:hover, a:focus{
 	text-align: center;
 }
 .btn_on2 .w2trigger_disabled .w2trigger_right{
-	background-image:url(/mp/images/btn_s_c_ron.png);
+	background-image:url(../mp/images/btn_s_c_ron.png);
 	background-repeat:no-repeat;
 	width:15px;
 	height:25px;
@@ -1124,13 +1124,13 @@ a:active, a:hover, a:focus{
 /* 3번 온 */
 /* default */
 .btn_on3 .w2trigger_left {
-	background-image:url(/mp/images/btn_s_c_lon.png);
+	background-image:url(../mp/images/btn_s_c_lon.png);
 	background-repeat:no-repeat;
 	width:15px;
 	height:25px;
 }
 .btn_on3 .w2trigger_center {
-	background-image:url(/mp/images/btn_s_c_on.png);
+	background-image:url(../mp/images/btn_s_c_on.png);
 	background-repeat:repeat-x;
 	font-size: 12px;
 	font-family: dotum;
@@ -1139,7 +1139,7 @@ a:active, a:hover, a:focus{
 	text-align: center;
 }
 .btn_on3 .w2trigger_right{
-	background-image:url(/mp/images/btn_s_r_on.png);
+	background-image:url(../mp/images/btn_s_r_on.png);
 	background-repeat:no-repeat;
 	width:15px;
 	height:25px;
@@ -1148,13 +1148,13 @@ a:active, a:hover, a:focus{
 /* over */
 
 .btn_on3 .w2trigger_over .w2trigger_left {
-	background-image:url(/mp/images/btn_s_c_lon.png);
+	background-image:url(../mp/images/btn_s_c_lon.png);
 	background-repeat:no-repeat;
 	width:15px;
 	height:25px;
 }
 .btn_on3 .w2trigger_over .w2trigger_center {
-	background-image:url(/mp/images/btn_s_c_on.png);
+	background-image:url(../mp/images/btn_s_c_on.png);
 	background-repeat:repeat-x;
 	font-size: 12px;
 	font-family: dotum;
@@ -1163,7 +1163,7 @@ a:active, a:hover, a:focus{
 	text-align: center;
 }
 .btn_on3 .w2trigger_over .w2trigger_right{
-	background-image:url(/mp/images/btn_s_c_lon.png);
+	background-image:url(../mp/images/btn_s_c_lon.png);
 	background-repeat:no-repeat;
 	width:15px;
 	height:25px;
@@ -1171,13 +1171,13 @@ a:active, a:hover, a:focus{
 
 /* Disabled */
 .btn_on3 .w2trigger_disabled .w2trigger_left {
-	background-image:url(/mp/images/btn_s_c_on.png);
+	background-image:url(../mp/images/btn_s_c_on.png);
 	background-repeat:no-repeat;
 	width:15px;
 	height:25px;
 }
 .btn_on3 .w2trigger_disabled .w2trigger_center {
-	background-image:url(/mp/images/btn_s_c_on.png);
+	background-image:url(../mp/images/btn_s_c_on.png);
 	background-repeat:repeat-x;
 	font-size: 12px;
 	font-family: dotum;
@@ -1186,7 +1186,7 @@ a:active, a:hover, a:focus{
 	text-align: center;
 }
 .btn_on3 .w2trigger_disabled .w2trigger_right{
-	background-image:url(/mp/images/btn_s_r_on.png;
+	background-image:url(../mp/images/btn_s_r_on.png;
 	background-repeat:no-repeat;
 	width:15px;
 	height:25px;
@@ -1194,13 +1194,13 @@ a:active, a:hover, a:focus{
 /* 4번 온 */
 /* default */
 .btn_on4 .w2trigger_left {
-	background-image:url(/mp/images/btn_s_l_on.png);
+	background-image:url(../mp/images/btn_s_l_on.png);
 	background-repeat:no-repeat;
 	width:15px;
 	height:25px;
 }
 .btn_on4 .w2trigger_center {
-	background-image:url(/mp/images/btn_s_c_on.png);
+	background-image:url(../mp/images/btn_s_c_on.png);
 	background-repeat:repeat-x;
 	font-size: 12px;
 	font-family: dotum;
@@ -1209,7 +1209,7 @@ a:active, a:hover, a:focus{
 	text-align: center;
 }
 .btn_on4 .w2trigger_right{
-	background-image:url(/mp/images/btn_s_r_on.png);
+	background-image:url(../mp/images/btn_s_r_on.png);
 	background-repeat:no-repeat;
 	width:15px;
 	height:25px;
@@ -1218,13 +1218,13 @@ a:active, a:hover, a:focus{
 /* 팝업 버튼 */
 /* default */
 .btn_po .w2trigger_left {
-	background-image:url(/mp/images/btn_po_l.png);
+	background-image:url(../mp/images/btn_po_l.png);
 	background-repeat:no-repeat;
 	width:15px;
 	height:26px;
 }
 .btn_po .w2trigger_center {
-	background-image:url(/mp/images/btn_po_c.png);
+	background-image:url(../mp/images/btn_po_c.png);
 	background-repeat:repeat-x;
 	font-size: 12px;
 	font-family: dotum;
@@ -1233,7 +1233,7 @@ a:active, a:hover, a:focus{
 	text-align: center;
 }
 .btn_po .w2trigger_right{
-	background-image:url(/mp/images/btn_po_r.png);
+	background-image:url(../mp/images/btn_po_r.png);
 	background-repeat:no-repeat;
 	width:15px;
 	height:26px;
@@ -1242,13 +1242,13 @@ a:active, a:hover, a:focus{
 /* over */
 
 .btn_po .w2trigger_over .w2trigger_left {
-	background-image:url(/mp/images/btn_po_l.png);
+	background-image:url(../mp/images/btn_po_l.png);
 	background-repeat:no-repeat;
 	width:15px;
 	height:26px;
 }
 .btn_po .w2trigger_over .w2trigger_center {
-	background-image:url(/mp/images/btn_po_c.png);
+	background-image:url(../mp/images/btn_po_c.png);
 	background-repeat:repeat-x;
 	font-size: 12px;
 	font-family: dotum;
@@ -1257,7 +1257,7 @@ a:active, a:hover, a:focus{
 	text-align: center;
 }
 .btn_po .w2trigger_over .w2trigger_right{
-	background-image:url(/mp/images/btn_po_r.png);
+	background-image:url(../mp/images/btn_po_r.png);
 	background-repeat:no-repeat;
 	width:15px;
 	height:26px;
@@ -1265,13 +1265,13 @@ a:active, a:hover, a:focus{
 
 /* Disabled */
 .btn_po .w2trigger_disabled .w2trigger_left {
-	background-image:url(/mp/images/btn_po_l.png);
+	background-image:url(../mp/images/btn_po_l.png);
 	background-repeat:no-repeat;
 	width:15px;
 	height:26px;
 }
 .btn_po .w2trigger_disabled .w2trigger_center {
-	background-image:url(/mp/images/btn_po_c.png);
+	background-image:url(../mp/images/btn_po_c.png);
 	background-repeat:repeat-x;
 	font-size: 12px;
 	font-family: dotum;
@@ -1280,7 +1280,7 @@ a:active, a:hover, a:focus{
 	text-align: center;
 }
 .btn_po .w2trigger_disabled .w2trigger_right{
-	background-image:url(/mp/images/btn_po_r.png);
+	background-image:url(../mp/images/btn_po_r.png);
 	background-repeat:no-repeat;
 	width:15px;
 	height:26px;
@@ -1289,13 +1289,13 @@ a:active, a:hover, a:focus{
 /* default */
 
 .btn_se .w2trigger_left {
-	background-image:url(/mp/images/btn_se_l.png);
+	background-image:url(../mp/images/btn_se_l.png);
 	background-repeat:no-repeat;
 	width:18px;
 	height:25px;
 }
 .btn_se .w2trigger_center {
-	background-image:url(/mp/images/btn_se_c.png);
+	background-image:url(../mp/images/btn_se_c.png);
 	background-repeat:repeat-x;
 	font-size: 12px;
 	font-family: dotum;
@@ -1304,7 +1304,7 @@ a:active, a:hover, a:focus{
 	text-align: center;
 }
 .btn_se .w2trigger_right{
-	background-image:url(/mp/images/btn_se_r.png);
+	background-image:url(../mp/images/btn_se_r.png);
 	background-repeat:no-repeat;
 	width:18px;
 	height:25px;
@@ -1313,13 +1313,13 @@ a:active, a:hover, a:focus{
 /* over */
 
 .btn_se .w2trigger_over .w2trigger_left {
-	background-image:url(/mp/images/btn_se_l.png);
+	background-image:url(../mp/images/btn_se_l.png);
 	background-repeat:no-repeat;
 	width:18px;
 	height:25px;
 }
 .btn_se .w2trigger_over .w2trigger_center {
-	background-image:url(/mp/images/btn_se_c.png);
+	background-image:url(../mp/images/btn_se_c.png);
 	background-repeat:repeat-x;
 	font-size: 12px;
 	font-family: dotum;
@@ -1328,7 +1328,7 @@ a:active, a:hover, a:focus{
 	text-align: center;
 }
 .btn_se .w2trigger_over .w2trigger_right{
-	background-image:url(/mp/images/btn_se_r.png);
+	background-image:url(../mp/images/btn_se_r.png);
 	background-repeat:no-repeat;
 	width:18px;
 	height:25px;
@@ -1336,13 +1336,13 @@ a:active, a:hover, a:focus{
 
 /* Disabled */
 .btn_se .w2trigger_disabled .w2trigger_left {
-	background-image:url(/mp/images/btn_se_l.png);
+	background-image:url(../mp/images/btn_se_l.png);
 	background-repeat:no-repeat;
 	width:18px;
 	height:25px;
 }
 .btn_se .w2trigger_disabled .w2trigger_center {
-	background-image:url(/mp/images/btn_se_c.png);
+	background-image:url(../mp/images/btn_se_c.png);
 	background-repeat:repeat-x;
 	font-size: 12px;
 	font-family: dotum;
@@ -1351,7 +1351,7 @@ a:active, a:hover, a:focus{
 	text-align: center;
 }
 .btn_se .w2trigger_disabled .w2trigger_right{
-	background-image:url(/mp/images/btn_se_r.png);
+	background-image:url(../mp/images/btn_se_r.png);
 	background-repeat:no-repeat;
 	width:18px;
 	height:25px;

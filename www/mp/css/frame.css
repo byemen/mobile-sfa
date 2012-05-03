@@ -1,6 +1,6 @@
 /* CSS Document */
 body {
-	background-image: url("/mp/images/eis/bg.png");
+	background-image: url("../mp/images/eis/bg.png");
 	background-repeat: repeat;
 	background-color: #898989;
 	color: #000000;
@@ -53,7 +53,7 @@ a:active, a:hover, a:focus{
 	font-family: Dotum,Helvetica,AppleGothic,Sans-serif;
 	font-size: 16px;
 	vertical-align: middle;
-	background-image:url(/mp/images/eis/main_bullet.png);
+	background-image:url(../mp/images/eis/main_bullet.png);
 	background-repeat:no-repeat;
 	background-position:left middle;
 	padding-left: 24px;
@@ -94,7 +94,7 @@ a:active, a:hover, a:focus{
 	font-family: Dotum,Helvetica,AppleGothic,Sans-serif;
 	font-size: 13px;
 	vertical-align: middle;
-	background-image:url(/mp/images/eis/sub_bullet.png);
+	background-image:url(../mp/images/eis/sub_bullet.png);
 	background-repeat:no-repeat;
 	background-position:left middle;
 	padding-left: 16px;
@@ -104,7 +104,7 @@ a:active, a:hover, a:focus{
 	font-family: Dotum,Helvetica,AppleGothic,Sans-serif;
 	font-size: 13px;
 	vertical-align: middle;
-	background-image:url(/mp/images/eis/sub_bullet.png);
+	background-image:url(../mp/images/eis/sub_bullet.png);
 	background-repeat:no-repeat;
 	background-position:left middle;
 	padding-left: 17px;
@@ -115,7 +115,7 @@ a:active, a:hover, a:focus{
  font-family: Dotum,Helvetica,AppleGothic,Sans-serif;
  font-size: 12px;
  font-weight: bold;
- background-image:url(/mp/images/eis/p_bl_title.png);
+ background-image:url(../mp/images/eis/p_bl_title.png);
  background-repeat:no-repeat;
  background-position:left middle;
  padding-left: 32px;
@@ -130,7 +130,7 @@ a:active, a:hover, a:focus{
 	font-family: Dotum,Helvetica,AppleGothic,Sans-serif;
 	font-size: 12px;
 	vertical-align: middle;
-	background-image:url(/mp/images/eis/bt_pop_01.png);
+	background-image:url(../mp/images/eis/bt_pop_01.png);
 	background-repeat:no-repeat;
 	background-position:left middle;
 	padding-left: 27px;
@@ -140,13 +140,13 @@ a:active, a:hover, a:focus{
 /* 일반 */
 
 .btn_n .w2trigger_left {
-	background-image:url(/mp/images/eis/btn_n_l.png);
+	background-image:url(../mp/images/eis/btn_n_l.png);
 	background-repeat:no-repeat;
 	width:18px;
 	height:24px;
 }
 .btn_n .w2trigger_center {
-	background-image:url(/mp/images/eis/btn_n_c.png);
+	background-image:url(../mp/images/eis/btn_n_c.png);
 	background-repeat:repeat-x;
 	font-size: 12px;
 	font-family: Dotum,Helvetica,AppleGothic,Sans-serif;
@@ -154,7 +154,7 @@ a:active, a:hover, a:focus{
 	text-align: center;
 }
 .btn_n .w2trigger_right{
-	background-image:url(/mp/images/eis/btn_n_r.png);
+	background-image:url(../mp/images/eis/btn_n_r.png);
 	background-repeat:no-repeat;
 	width:18px;
 	height:24px;
@@ -163,13 +163,13 @@ a:active, a:hover, a:focus{
 /* over */
 
 .btn_n .w2trigger_over .w2trigger_left {
-	background-image:url(/mp/images/eis/btn_n_l.png);
+	background-image:url(../mp/images/eis/btn_n_l.png);
 	background-repeat:no-repeat;
 	width:18px;
 	height:24px;
 }
 .btn_n .w2trigger_over .w2trigger_center {
-	background-image:url(/mp/images/eis/btn_n_c.png);
+	background-image:url(../mp/images/eis/btn_n_c.png);
 	background-repeat:repeat-x;
 	font-size: 12px;
 	font-family: Dotum,Helvetica,AppleGothic,Sans-serif;
@@ -177,7 +177,7 @@ a:active, a:hover, a:focus{
 	text-align: center;
 }
 .btn_n .w2trigger_over .w2trigger_right{
-	background-image:url(/mp/images/eis/btn_n_r.png);
+	background-image:url(../mp/images/eis/btn_n_r.png);
 	background-repeat:no-repeat;
 	width:18px;
 	height:24px;
@@ -185,13 +185,13 @@ a:active, a:hover, a:focus{
 
 /* Disabled */
 .btn_n .w2trigger_disabled .w2trigger_left {
-	background-image:url(/mp/images/eis/btn_n_l.png);
+	background-image:url(../mp/images/eis/btn_n_l.png);
 	background-repeat:no-repeat;
 	width:18px;
 	height:24px;
 }
 .btn_n .w2trigger_disabled .w2trigger_center {
-	background-image:url(/mp/images/eis/btn_n_c.png);
+	background-image:url(../mp/images/eis/btn_n_c.png);
 	background-repeat:repeat-x;
 	font-size: 12px;
 	font-family: Dotum,Helvetica,AppleGothic,Sans-serif;
@@ -199,7 +199,7 @@ a:active, a:hover, a:focus{
 	text-align: center;
 }
 .btn_n .w2trigger_disabled .w2trigger_right{
-	background-image:url(/mp/images/eis/btn_n_r.png);
+	background-image:url(../mp/images/eis/btn_n_r.png);
 	background-repeat:no-repeat;
 	width:18px;
 	height:24px;
@@ -207,7 +207,7 @@ a:active, a:hover, a:focus{
 
 /* 신라면 퍼플 */
 .btn_p{
-	background-image:url(/mp/images/eis/btn_sinp2.png);
+	background-image:url(../mp/images/eis/btn_sinp2.png);
 	height: 20px;
 	width: 85px;
 	text-align:center;
@@ -216,7 +216,7 @@ a:active, a:hover, a:focus{
 }
 /* 신라면 블랙 */
 .btn_b{
-	background-image:url(/mp/images/eis/btn_sinb2.png);
+	background-image:url(../mp/images/eis/btn_sinb2.png);
 	height: 20px;
 	width: 85px;
 	text-align:center;
@@ -225,7 +225,7 @@ a:active, a:hover, a:focus{
 }
 /* 신라면 블랙 */
 .btn_b1{
-	background-image:url(/mp/images/eis/btn_sinb1.png);
+	background-image:url(../mp/images/eis/btn_sinb1.png);
 	height: 20px;
 	width: 57px;
 	text-align:center;

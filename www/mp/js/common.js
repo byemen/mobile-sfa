@@ -259,6 +259,7 @@ function gfn_OpenPopup(url,title,w,h,l,t,popId){
 	if(gfn_IsNullVal(popId))
 		popId = "popup";
 	
+    alert(url);
 	WebSquare.uiplugin.popup.openPopup(url, { //get방식으로 파업의 아이디를 넘김니다.
 		id : popId,
 		type : "window", 
